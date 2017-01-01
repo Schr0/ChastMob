@@ -6,6 +6,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
 
 public class ModelChast extends ModelBase
@@ -78,9 +79,9 @@ public class ModelChast extends ModelBase
 
 		if (this.isChild)
 		{
-			float scaleChild = 2.0F;
+			float scaleHalf = 2.0F;
 			GL11.glPushMatrix();
-			GL11.glScalef(1.0F / scaleChild, 1.0F / scaleChild, 1.0F / scaleChild);
+			GL11.glScalef(1.0F / scaleHalf, 1.0F / scaleHalf, 1.0F / scaleHalf);
 			GL11.glTranslatef(0.0F, 24.0F * scale, 0.0F);
 
 			this.body.render(scale);
@@ -106,6 +107,37 @@ public class ModelChast extends ModelBase
 	{
 		EntityChast entityChast = (EntityChast) entityIn;
 
+		if (entityChast.isSitting())
+		{
+			float downRotationPointY = 8.0F;
+			this.body.setRotationPoint(0F, (10F + downRotationPointY), 0F);
+			this.armRight.setRotationPoint(-7F, (8F + downRotationPointY), 0F);
+			this.armLeft.setRotationPoint(7F, (8F + downRotationPointY), 0F);
+			this.legRight.setRotationPoint(-3F, (15F + downRotationPointY), 0F);
+			this.legLeft.setRotationPoint(3F, (15F + downRotationPointY), 0F);
+
+			float angleArmX = -0.95F;
+			this.armRight.rotateAngleX = angleArmX;
+			this.armLeft.rotateAngleX = angleArmX;
+
+			float angleLegX = -1.55F;
+			this.legRight.rotateAngleX = angleLegX;
+			this.legLeft.rotateAngleX = angleLegX;
+		}
+		else
+		{
+			this.body.setRotationPoint(0F, 10F, 0F);
+			this.armRight.setRotationPoint(-7F, 8F, 0F);
+			this.armLeft.setRotationPoint(7F, 8F, 0F);
+			this.legRight.setRotationPoint(-3F, 15F, 0F);
+			this.legLeft.setRotationPoint(3F, 15F, 0F);
+
+			this.armRight.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+			this.armLeft.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
+			this.legRight.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
+			this.legLeft.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+		}
+
 		if (!entityChast.isRiding())
 		{
 			this.body.rotateAngleX = (headPitch / (180F / (float) Math.PI));
@@ -114,27 +146,36 @@ public class ModelChast extends ModelBase
 		this.body.rotateAngleY = (netHeadYaw / (180F / (float) Math.PI));
 		this.body.rotateAngleY = this.armRight.rotateAngleY = this.armLeft.rotateAngleY = this.legRight.rotateAngleY = this.legLeft.rotateAngleY;
 
-		this.core.rotateAngleZ = (ageInTicks * 0.2F);
+		float angelCoreZ = (entityChast.getHealth() / 50F);
+		this.core.rotateAngleZ = (ageInTicks * angelCoreZ);
 
 		this.armRight.rotateAngleX += (MathHelper.sin(ageInTicks * 0.05F) * 0.05F);
 		this.armLeft.rotateAngleX -= (MathHelper.sin(ageInTicks * 0.05F) * 0.05F);
 
-		float angleArmX = 0.36F;
-		this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + angleArmX;
-		this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmX;
-
-		this.armRight.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-		this.armLeft.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
-		this.legRight.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
-		this.legLeft.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+		float angleArmZ = 0.36F;
+		this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + angleArmZ;
+		this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmZ;
 	}
 
 	@Override
 	public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime)
 	{
 		EntityChast entityChast = (EntityChast) entitylivingbaseIn;
+		float angleCoverX = entityChast.getAngleCoverX(partialTickTime);
 
-		this.coverMain.rotateAngleX = -entityChast.getCoverAngle(partialTickTime);
+		this.coverMain.rotateAngleX = -angleCoverX;
+	}
+
+	// TODO /* ======================================== MOD START =====================================*/
+
+	public void postRenderArm(float scale, EnumHandSide side)
+	{
+		this.getArmForSide(side).postRender(scale);
+	}
+
+	private ModelRenderer getArmForSide(EnumHandSide side)
+	{
+		return (side == EnumHandSide.LEFT) ? this.armLeft : this.armRight;
 	}
 
 }
