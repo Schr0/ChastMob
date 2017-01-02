@@ -46,7 +46,7 @@ public class LayerChastArm implements LayerRenderer<EntityChast>
 
 	private float[] getArmRgb(EntityChast entityChast)
 	{
-		EnumDyeColor enumDyeColor = EnumDyeColor.byMetadata(entityChast.getArmColor().getMetadata());
+		EnumDyeColor enumDyeColor = EnumDyeColor.byMetadata(entityChast.getColor().getMetadata());
 
 		return EntitySheep.getDyeRgb(enumDyeColor);
 	}

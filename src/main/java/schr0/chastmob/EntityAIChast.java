@@ -5,18 +5,18 @@ import net.minecraft.entity.ai.EntityAIBase;
 public abstract class EntityAIChast extends EntityAIBase
 {
 
-	private EntityChast entityChast;
+	private EntityChast aiOwnerChast;
 
 	public EntityAIChast(EntityChast entityChast)
 	{
-		this.entityChast = entityChast;
+		this.aiOwnerChast = entityChast;
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public EntityChast getAIChastEntity()
+	public EntityChast getAIOwnerChast()
 	{
-		return this.entityChast;
+		return this.aiOwnerChast;
 	}
 
 }

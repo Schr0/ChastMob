@@ -34,9 +34,9 @@ public class InventoryChast extends InventoryBasic
 	{
 		super.markDirty();
 
-		this.entityChast.setCoverOpen(true);
+		this.entityChast.setOpen(true);
 
-		this.entityChast.setTradePlayer(player);
+		this.entityChast.setAITradeFlag(player);
 	}
 
 	@Override
@@ -44,9 +44,9 @@ public class InventoryChast extends InventoryBasic
 	{
 		super.markDirty();
 
-		this.entityChast.setCoverOpen(false);
+		this.entityChast.setOpen(false);
 
-		this.entityChast.setTradePlayer(null);
+		this.entityChast.setAITradeFlag(null);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

@@ -3,7 +3,7 @@ package schr0.chastmob;
 public class EntityAIChastSit extends EntityAIChast
 {
 
-	private boolean aiIsSitting;
+	private boolean isSitting;
 
 	public EntityAIChastSit(EntityChast entityChast)
 	{
@@ -14,33 +14,38 @@ public class EntityAIChastSit extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIChastEntity().isInWater() || !this.getAIChastEntity().onGround)
+		if (this.getAIOwnerChast().isPanicking())
 		{
 			return false;
 		}
 
-		return this.aiIsSitting;
+		if (this.getAIOwnerChast().isInWater() || !this.getAIOwnerChast().onGround)
+		{
+			return false;
+		}
+
+		return this.isSitting;
 	}
 
 	@Override
 	public void startExecuting()
 	{
-		this.getAIChastEntity().getNavigator().clearPathEntity();
-		this.getAIChastEntity().setSitting(true);
+		this.getAIOwnerChast().getNavigator().clearPathEntity();
+		this.getAIOwnerChast().setSitting(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.getAIChastEntity().getNavigator().clearPathEntity();
-		this.getAIChastEntity().setSitting(false);
+		this.getAIOwnerChast().getNavigator().clearPathEntity();
+		this.getAIOwnerChast().setSitting(false);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
 	public void setSitting(boolean isSitting)
 	{
-		this.aiIsSitting = isSitting;
+		this.isSitting = isSitting;
 	}
 
 }
