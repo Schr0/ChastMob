@@ -16,7 +16,7 @@ public class EntityAIChastTrade extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerChast().isPanicking())
+		if (this.getAIOwnerEntity().isPanic())
 		{
 			return false;
 		}
@@ -32,21 +32,23 @@ public class EntityAIChastTrade extends EntityAIChast
 	@Override
 	public void startExecuting()
 	{
-		this.getAIOwnerChast().getNavigator().clearPathEntity();
-		this.getAIOwnerChast().setTrading(true);
+		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		this.getAIOwnerEntity().setTrade(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.getAIOwnerChast().getNavigator().clearPathEntity();
-		this.getAIOwnerChast().setTrading(false);
+		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		this.getAIOwnerEntity().setTrade(false);
+
+		this.setTrading(null);
 	}
 
 	@Override
 	public void updateTask()
 	{
-		this.getAIOwnerChast().getLookHelper().setLookPositionWithEntity(this.tradePlayer, 10.0F, this.getAIOwnerChast().getVerticalFaceSpeed());
+		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.tradePlayer, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

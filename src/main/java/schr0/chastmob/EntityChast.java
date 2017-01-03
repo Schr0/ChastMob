@@ -3,6 +3,7 @@ package schr0.chastmob;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAILookIdle;
@@ -33,10 +34,11 @@ public class EntityChast extends EntityGolem
 	private static final DataParameter<Byte> OPEN = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer> createKey(EntityChast.class, DataSerializers.VARINT);
 	private static final DataParameter<Byte> SITTING = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
-	private static final DataParameter<Byte> TRADING = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
-	private static final DataParameter<Byte> PANICKING = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+	private static final DataParameter<Byte> TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+	private static final DataParameter<Byte> PANIC = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 
 	private InventoryChast inventoryChast;
+	private EntityAIChastPanic aiChastPanic;
 	private EntityAIChastSit aiChastSit;
 	private EntityAIChastTrade aiChastTrade;
 	private float lidAngle;
@@ -61,28 +63,31 @@ public class EntityChast extends EntityGolem
 		super.initEntityAI();
 
 		EntityAIBase aiSwimming = new EntityAISwimming(this);
-		EntityAIBase aiChastPanic = new EntityAIChastPanic(this);
+		this.aiChastPanic = new EntityAIChastPanic(this);
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
+		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this);
 		EntityAIBase aiWander = new EntityAIWander(this, 1.25D);
 		EntityAIBase aiWatchClosest = new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F);
 		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
 
 		aiSwimming.setMutexBits(0);
-		aiChastPanic.setMutexBits(1);
+		this.aiChastPanic.setMutexBits(1);
 		this.aiChastSit.setMutexBits(1);
 		this.aiChastTrade.setMutexBits(1);
+		aiChastCollectItem.setMutexBits(1);
 		aiWander.setMutexBits(1);
 		aiWatchClosest.setMutexBits(2);
 		aiLookIdle.setMutexBits(3);
 
 		this.tasks.addTask(0, aiSwimming);
-		this.tasks.addTask(1, aiChastPanic);
+		this.tasks.addTask(1, this.aiChastPanic);
 		this.tasks.addTask(2, this.aiChastSit);
 		this.tasks.addTask(3, this.aiChastTrade);
-		this.tasks.addTask(4, aiWander);
-		this.tasks.addTask(5, aiWatchClosest);
-		this.tasks.addTask(6, aiLookIdle);
+		this.tasks.addTask(4, aiChastCollectItem);
+		this.tasks.addTask(5, aiWander);
+		this.tasks.addTask(6, aiWatchClosest);
+		this.tasks.addTask(7, aiLookIdle);
 	}
 
 	@Override
@@ -100,8 +105,8 @@ public class EntityChast extends EntityGolem
 		this.getDataManager().register(OPEN, Byte.valueOf((byte) 0));
 		this.getDataManager().register(COLOR, Integer.valueOf(EnumDyeColor.WHITE.getDyeDamage()));
 		this.getDataManager().register(SITTING, Byte.valueOf((byte) 0));
-		this.getDataManager().register(TRADING, Byte.valueOf((byte) 0));
-		this.getDataManager().register(PANICKING, Byte.valueOf((byte) 0));
+		this.getDataManager().register(TRADE, Byte.valueOf((byte) 0));
+		this.getDataManager().register(PANIC, Byte.valueOf((byte) 0));
 	}
 
 	@Override
@@ -113,6 +118,12 @@ public class EntityChast extends EntityGolem
 		compound.setBoolean(ChastMobNBTTags.CHAST_OPEN, this.isOpen());
 		compound.setByte(ChastMobNBTTags.CHAST_COLOR, (byte) this.getColor().getDyeDamage());
 		compound.setBoolean(ChastMobNBTTags.CHAST_SITTING, this.isSitting());
+
+		// TODO VANILLA BUG (???) FIX
+		if (this.getRidingEntity() instanceof EntityPlayer)
+		{
+			this.dismountRidingEntity();
+		}
 	}
 
 	@Override
@@ -125,6 +136,11 @@ public class EntityChast extends EntityGolem
 		this.setColor(EnumDyeColor.byDyeDamage(compound.getByte(ChastMobNBTTags.CHAST_COLOR)));
 		this.setSitting(compound.getBoolean(ChastMobNBTTags.CHAST_SITTING));
 
+		if (this.aiChastPanic != null)
+		{
+			this.setAIPanicFlag(0);
+		}
+
 		if (this.aiChastSit != null)
 		{
 			this.setAISitFlag(this.isSitting());
@@ -134,6 +150,35 @@ public class EntityChast extends EntityGolem
 		{
 			this.setAITradeFlag(null);
 		}
+	}
+
+	@Override
+	public double getYOffset()
+	{
+		if (this.getRidingEntity() != null)
+		{
+			return (super.getYOffset() - this.getRidingEntity().getYOffset());
+		}
+
+		return super.getYOffset();
+	}
+
+	@Override
+	public boolean attackEntityFrom(DamageSource source, float amount)
+	{
+		if (this.getRidingEntity() instanceof EntityLivingBase)
+		{
+			return false;
+		}
+
+		boolean attackEntityFrom = super.attackEntityFrom(source, amount);
+
+		if (!this.getEntityWorld().isRemote)
+		{
+			this.setAIPanicFlag(Math.max((5 * 20), ((int) amount * 20)));
+		}
+
+		return attackEntityFrom;
 	}
 
 	@Override
@@ -204,10 +249,28 @@ public class EntityChast extends EntityGolem
 				player.displayGUIChest(this.getInventoryChast());
 			}
 
+			/*
+				if (!player.isBeingRidden())
+				{
+					this.startRiding(player);
+				}
+			// */
+
 			player.swingArm(hand);
 		}
 
 		return true;
+	}
+
+	@Override
+	public void updateRidden()
+	{
+		super.updateRidden();
+
+		if (this.isRiding() && this.getRidingEntity().isSneaking())
+		{
+			this.dismountRidingEntity();
+		}
 	}
 
 	@Override
@@ -228,7 +291,7 @@ public class EntityChast extends EntityGolem
 
 	public boolean isOpen()
 	{
-		return ((((Byte) this.getDataManager().get(OPEN)).byteValue() & 16) != 0);
+		return ((((Byte) this.getDataManager().get(OPEN)).byteValue() & 1) != 0);
 	}
 
 	public void setOpen(boolean isCoverOpen)
@@ -237,11 +300,11 @@ public class EntityChast extends EntityGolem
 
 		if (isCoverOpen)
 		{
-			this.getDataManager().set(OPEN, Byte.valueOf((byte) (b0 | 16)));
+			this.getDataManager().set(OPEN, Byte.valueOf((byte) (b0 | 1)));
 		}
 		else
 		{
-			this.getDataManager().set(OPEN, Byte.valueOf((byte) (b0 & -17)));
+			this.getDataManager().set(OPEN, Byte.valueOf((byte) (b0 & -2)));
 		}
 	}
 
@@ -255,28 +318,9 @@ public class EntityChast extends EntityGolem
 		this.getDataManager().set(COLOR, Integer.valueOf(enumDyeColor.getDyeDamage()));
 	}
 
-	public boolean isPanicking()
-	{
-		return ((((Byte) this.getDataManager().get(PANICKING)).byteValue() & 16) != 0);
-	}
-
-	public void setPanicking(boolean isPanic)
-	{
-		byte b0 = ((Byte) this.getDataManager().get(PANICKING)).byteValue();
-
-		if (isPanic)
-		{
-			this.getDataManager().set(PANICKING, Byte.valueOf((byte) (b0 | 16)));
-		}
-		else
-		{
-			this.getDataManager().set(PANICKING, Byte.valueOf((byte) (b0 & -17)));
-		}
-	}
-
 	public boolean isSitting()
 	{
-		return ((((Byte) this.getDataManager().get(SITTING)).byteValue() & 16) != 0);
+		return (((Byte) this.getDataManager().get(SITTING)).byteValue() & 1) != 0;
 	}
 
 	public void setSitting(boolean isSitting)
@@ -285,30 +329,49 @@ public class EntityChast extends EntityGolem
 
 		if (isSitting)
 		{
-			this.getDataManager().set(SITTING, Byte.valueOf((byte) (b0 | 16)));
+			this.getDataManager().set(SITTING, Byte.valueOf((byte) (b0 | 1)));
 		}
 		else
 		{
-			this.getDataManager().set(SITTING, Byte.valueOf((byte) (b0 & -17)));
+			this.getDataManager().set(SITTING, Byte.valueOf((byte) (b0 & -2)));
 		}
 	}
 
-	public boolean isTrading()
+	public boolean isTrade()
 	{
-		return ((((Byte) this.getDataManager().get(TRADING)).byteValue() & 16) != 0);
+		return (((Byte) this.getDataManager().get(TRADE)).byteValue() & 1) != 0;
 	}
 
-	public void setTrading(boolean isSitting)
+	public void setTrade(boolean isTrading)
 	{
-		byte b0 = ((Byte) this.getDataManager().get(TRADING)).byteValue();
+		byte b0 = ((Byte) this.getDataManager().get(TRADE)).byteValue();
 
-		if (isSitting)
+		if (isTrading)
 		{
-			this.getDataManager().set(TRADING, Byte.valueOf((byte) (b0 | 16)));
+			this.getDataManager().set(TRADE, Byte.valueOf((byte) (b0 | 1)));
 		}
 		else
 		{
-			this.getDataManager().set(TRADING, Byte.valueOf((byte) (b0 & -17)));
+			this.getDataManager().set(TRADE, Byte.valueOf((byte) (b0 & -2)));
+		}
+	}
+
+	public boolean isPanic()
+	{
+		return (((Byte) this.getDataManager().get(PANIC)).byteValue() & 1) != 0;
+	}
+
+	public void setPanic(boolean isPanic)
+	{
+		byte b0 = ((Byte) this.getDataManager().get(PANIC)).byteValue();
+
+		if (isPanic)
+		{
+			this.getDataManager().set(PANIC, Byte.valueOf((byte) (b0 | 1)));
+		}
+		else
+		{
+			this.getDataManager().set(PANIC, Byte.valueOf((byte) (b0 & -2)));
 		}
 	}
 
@@ -325,6 +388,17 @@ public class EntityChast extends EntityGolem
 	public void setAITradeFlag(@Nullable EntityPlayer flag)
 	{
 		this.aiChastTrade.setTrading(flag);
+	}
+
+	public void setAIPanicFlag(int flag)
+	{
+		this.aiChastPanic.setPanicking(flag);
+
+		if (0 < flag)
+		{
+			this.aiChastSit.setSitting(false);
+			this.aiChastTrade.setTrading(null);
+		}
 	}
 
 	private void onUpdateCoverOpen(EntityChast entityChast, boolean isCoverOpen)

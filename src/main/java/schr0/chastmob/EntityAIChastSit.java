@@ -14,12 +14,12 @@ public class EntityAIChastSit extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerChast().isPanicking())
+		if (this.getAIOwnerEntity().isPanic())
 		{
 			return false;
 		}
 
-		if (this.getAIOwnerChast().isInWater() || !this.getAIOwnerChast().onGround)
+		if (this.getAIOwnerEntity().isInWater() || !this.getAIOwnerEntity().onGround)
 		{
 			return false;
 		}
@@ -30,15 +30,17 @@ public class EntityAIChastSit extends EntityAIChast
 	@Override
 	public void startExecuting()
 	{
-		this.getAIOwnerChast().getNavigator().clearPathEntity();
-		this.getAIOwnerChast().setSitting(true);
+		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		this.getAIOwnerEntity().setSitting(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.getAIOwnerChast().getNavigator().clearPathEntity();
-		this.getAIOwnerChast().setSitting(false);
+		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		this.getAIOwnerEntity().setSitting(false);
+
+		this.setSitting(false);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

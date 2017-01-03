@@ -112,7 +112,7 @@ public class ModelChast extends ModelBase
 
 		EntityChast entityChast = (EntityChast) entityIn;
 
-		if (entityChast.isSitting())
+		if (entityChast.isSitting() || entityChast.isRiding())
 		{
 			float pointSittingY = 8.0F;
 			this.body.setRotationPoint(0F, (10F + pointSittingY), 0F);
@@ -139,24 +139,23 @@ public class ModelChast extends ModelBase
 
 			float angleSwingArmRightLegLeftX = (MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount);
 			float angleSwingArmLeftLegRightX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount);
-			this.armRight.rotateAngleX = angleSwingArmRightLegLeftX;
+
+			if (entityChast.isPanic())
+			{
+				this.armRight.rotateAngleX = this.armLeft.rotateAngleX = 0.0F;
+
+			}
+			else
+			{
+				this.armRight.rotateAngleX = angleSwingArmRightLegLeftX;
+				this.armLeft.rotateAngleX = angleSwingArmLeftLegRightX;
+			}
+
 			this.legLeft.rotateAngleX = angleSwingArmRightLegLeftX;
-			this.armLeft.rotateAngleX = angleSwingArmLeftLegRightX;
 			this.legRight.rotateAngleX = angleSwingArmLeftLegRightX;
 		}
 
-		this.body.rotateAngleX = (headPitch / (180F / (float) Math.PI));
-		this.body.rotateAngleY = (netHeadYaw / (180F / (float) Math.PI));
-		this.body.rotateAngleY = this.armRight.rotateAngleY = this.armLeft.rotateAngleY = this.legRight.rotateAngleY = this.legLeft.rotateAngleY;
-
-		float angleCoreZ = (ageInTicks * (entityChast.getHealth() / 50F));
-		this.core.rotateAngleZ = angleCoreZ;
-
-		float angleArmX = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F);
-		this.armRight.rotateAngleX += angleArmX;
-		this.armLeft.rotateAngleX -= angleArmX;
-
-		if (entityChast.isPanicking())
+		if (entityChast.isPanic())
 		{
 			float anglePanicArmZ = 2.5F;
 			this.armRight.rotateAngleZ = anglePanicArmZ;
@@ -164,10 +163,25 @@ public class ModelChast extends ModelBase
 		}
 		else
 		{
+			float angleArmX = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F);
+			this.armRight.rotateAngleX += angleArmX;
+			this.armLeft.rotateAngleX -= angleArmX;
+
 			float angleArmZ = 0.35F;
 			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + angleArmZ;
 			this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmZ;
 		}
+
+		if (!entityChast.isRiding())
+		{
+			this.body.rotateAngleX = (headPitch / (180F / (float) Math.PI));
+		}
+
+		this.body.rotateAngleY = (netHeadYaw / (180F / (float) Math.PI));
+		this.body.rotateAngleY = this.armRight.rotateAngleY = this.armLeft.rotateAngleY = this.legRight.rotateAngleY = this.legLeft.rotateAngleY;
+
+		float angleCoreZ = (ageInTicks * (entityChast.getHealth() / 50F));
+		this.core.rotateAngleZ = angleCoreZ;
 	}
 
 	@Override

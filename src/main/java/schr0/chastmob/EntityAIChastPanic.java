@@ -12,7 +12,8 @@ import net.minecraft.world.World;
 public class EntityAIChastPanic extends EntityAIChast
 {
 
-	private double speed;
+	private static final double MOVE_SPEED = 2.5D;
+	private int panicTime;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
@@ -21,116 +22,118 @@ public class EntityAIChastPanic extends EntityAIChast
 	{
 		super(entityChast);
 		this.setMutexBits(1);
-
-		this.speed = 2.5D;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerChast().getAITarget() == null && !this.getAIOwnerChast().isBurning())
+		if (0 < this.panicTime)
 		{
-			return false;
+			return true;
 		}
-		else if (!this.getAIOwnerChast().isBurning())
-		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getAIOwnerChast(), 5, 4);
 
-			if (vec3d == null)
-			{
-				return false;
-			}
-			else
-			{
-				this.randPosX = vec3d.xCoord;
-				this.randPosY = vec3d.yCoord;
-				this.randPosZ = vec3d.zCoord;
-
-				return true;
-			}
-		}
-		else
-		{
-			BlockPos blockpos = this.getRandPos(this.getAIOwnerChast().worldObj, this.getAIOwnerChast(), 5, 4);
-
-			if (blockpos == null)
-			{
-				return false;
-			}
-			else
-			{
-				this.randPosX = (double) blockpos.getX();
-				this.randPosY = (double) blockpos.getY();
-				this.randPosZ = (double) blockpos.getZ();
-
-				return true;
-			}
-		}
-	}
-
-	@Override
-	public boolean continueExecuting()
-	{
-		return !this.getAIOwnerChast().getNavigator().noPath();
+		return false;
 	}
 
 	@Override
 	public void startExecuting()
 	{
-		this.getAIOwnerChast().getNavigator().clearPathEntity();
-		this.getAIOwnerChast().setPanicking(true);
-		this.getAIOwnerChast().setAISitFlag(false);
-		this.getAIOwnerChast().setAITradeFlag(null);
-
-		this.getAIOwnerChast().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
+		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		this.getAIOwnerEntity().setPanic(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.getAIOwnerChast().getNavigator().clearPathEntity();
-		this.getAIOwnerChast().setPanicking(false);
-		this.getAIOwnerChast().setOpen(false);
+		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		this.getAIOwnerEntity().setPanic(false);
+
+		this.getAIOwnerEntity().setOpen(false);
+		this.setPanicking(0);
+		this.setRandPos(0.0D, 0.0D, 0.0D);
 	}
 
 	@Override
 	public void updateTask()
 	{
-		if (this.getAIOwnerChast().getRNG().nextInt(2) == 0)
+		--this.panicTime;
+
+		if (this.getAIOwnerEntity().isBurning())
 		{
-			this.getAIOwnerChast().setOpen(!this.getAIOwnerChast().isOpen());
+			BlockPos blockpos = this.getRandBlockPos(this.getAIOwnerWorld(), this.getAIOwnerEntity(), 5, 4);
+
+			if (blockpos == null)
+			{
+				return;
+			}
+			else
+			{
+				this.setRandPos((double) blockpos.getX(), (double) blockpos.getY(), (double) blockpos.getZ());
+			}
 		}
+		else
+		{
+			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getAIOwnerEntity(), 5, 4);
+
+			if (vec3d == null)
+			{
+				return;
+			}
+			else
+			{
+				this.setRandPos(vec3d.xCoord, vec3d.yCoord, vec3d.zCoord);
+			}
+		}
+
+		if (this.getAIOwnerEntity().getRNG().nextInt(2) == 0)
+		{
+			this.getAIOwnerEntity().setOpen(!this.getAIOwnerEntity().isOpen());
+		}
+
+		this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, MOVE_SPEED);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private BlockPos getRandPos(World worldIn, Entity entityIn, int horizontalRange, int verticalRange)
+	public void setPanicking(int panicTime)
+	{
+		this.panicTime = panicTime;
+	}
+
+	private void setRandPos(double x, double y, double z)
+	{
+		this.randPosX = x;
+		this.randPosY = y;
+		this.randPosZ = z;
+	}
+
+	private BlockPos getRandBlockPos(World worldIn, Entity entityIn, int horizontalRange, int verticalRange)
 	{
 		BlockPos blockpos = new BlockPos(entityIn);
 		BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-		int i = blockpos.getX();
-		int j = blockpos.getY();
-		int k = blockpos.getZ();
-		float f = (float) (horizontalRange * horizontalRange * verticalRange * 2);
+		int pX = blockpos.getX();
+		int pY = blockpos.getY();
+		int pZ = blockpos.getZ();
+		float range = (float) (horizontalRange * horizontalRange * verticalRange * 2);
 		BlockPos blockpos1 = null;
 
-		for (int l = i - horizontalRange; l <= i + horizontalRange; ++l)
+		for (int x = pX - horizontalRange; x <= pX + horizontalRange; ++x)
 		{
-			for (int i1 = j - verticalRange; i1 <= j + verticalRange; ++i1)
+			for (int y = pY - verticalRange; y <= pY + verticalRange; ++y)
 			{
-				for (int j1 = k - horizontalRange; j1 <= k + horizontalRange; ++j1)
+				for (int z = pZ - horizontalRange; z <= pZ + horizontalRange; ++z)
 				{
-					blockpos$mutableblockpos.setPos(l, i1, j1);
+					blockpos$mutableblockpos.setPos(x, y, z);
 					IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
 					Block block = iblockstate.getBlock();
 
 					if (block == Blocks.WATER || block == Blocks.FLOWING_WATER)
 					{
-						float f1 = (float) ((l - i) * (l - i) + (i1 - j) * (i1 - j) + (j1 - k) * (j1 - k));
+						float range1 = (float) ((x - pX) * (x - pX) + (y - pY) * (y - pY) + (z - pZ) * (z - pZ));
 
-						if (f1 < f)
+						if (range1 < range)
 						{
-							f = f1;
+							range = range1;
 							blockpos1 = new BlockPos(blockpos$mutableblockpos);
 						}
 					}

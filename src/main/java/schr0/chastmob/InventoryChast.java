@@ -23,6 +23,11 @@ public class InventoryChast extends InventoryBasic
 	{
 		if (this.entityChast.isEntityAlive())
 		{
+			if (this.entityChast.isPanic())
+			{
+				return false;
+			}
+
 			return (player.getDistanceSqToEntity(this.entityChast) <= 64.0D);
 		}
 

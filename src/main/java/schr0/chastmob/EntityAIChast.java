@@ -1,22 +1,28 @@
 package schr0.chastmob;
 
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.world.World;
 
 public abstract class EntityAIChast extends EntityAIBase
 {
 
-	private EntityChast aiOwnerChast;
+	private EntityChast theChast;
 
 	public EntityAIChast(EntityChast entityChast)
 	{
-		this.aiOwnerChast = entityChast;
+		this.theChast = entityChast;
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public EntityChast getAIOwnerChast()
+	public EntityChast getAIOwnerEntity()
 	{
-		return this.aiOwnerChast;
+		return this.theChast;
+	}
+
+	public World getAIOwnerWorld()
+	{
+		return this.theChast.getEntityWorld();
 	}
 
 }
