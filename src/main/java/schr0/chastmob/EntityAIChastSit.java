@@ -24,7 +24,7 @@ public class EntityAIChastSit extends EntityAIChast
 			return false;
 		}
 
-		return this.isSitting;
+		return this.isSitting();
 	}
 
 	@Override
@@ -44,6 +44,11 @@ public class EntityAIChastSit extends EntityAIChast
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
+
+	public boolean isSitting()
+	{
+		return this.isSitting;
+	}
 
 	public void setSitting(boolean isSitting)
 	{

@@ -21,7 +21,7 @@ public class EntityAIChastTrade extends EntityAIChast
 			return false;
 		}
 
-		if (this.tradePlayer != null)
+		if (this.isTrading())
 		{
 			return true;
 		}
@@ -52,6 +52,11 @@ public class EntityAIChastTrade extends EntityAIChast
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
+
+	public boolean isTrading()
+	{
+		return (this.tradePlayer != null);
+	}
 
 	public void setTrading(EntityPlayer player)
 	{

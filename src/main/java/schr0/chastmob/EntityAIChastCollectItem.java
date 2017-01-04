@@ -11,14 +11,15 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 
 public class EntityAIChastCollectItem extends EntityAIChast
 {
 
-	private static final double MOVE_SPEED = 1.25D;
+	private static final int COLLECT_TIME_MAX = (5 * 20);
 	private static final double SEARCH_XYZ = 5.0D;
-	private EntityItem targetItem;
+	private static final double MOVE_SPEED = 1.25D;
+
+	private EntityItem targetEntityItem;
 	private int collectTime;
 
 	public EntityAIChastCollectItem(EntityChast entityChast)
@@ -30,23 +31,22 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		BlockPos pos = new BlockPos(this.getAIOwnerEntity());
-		List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos).expandXyz(SEARCH_XYZ));
+		List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerBlockPos()).expandXyz(SEARCH_XYZ));
 		TreeMap<Double, EntityItem> treeMapEntityItem = new TreeMap<Double, EntityItem>();
 
-		for (EntityItem entityitem : listEntityItem)
+		for (EntityItem entityItem : listEntityItem)
 		{
-			if (entityitem.isEntityAlive() && this.getAIOwnerEntity().getEntitySenses().canSee(entityitem))
+			if (this.canCollectEntityItem(entityItem))
 			{
-				treeMapEntityItem.put(this.getAIOwnerEntity().getDistanceSqToEntity(entityitem), entityitem);
+				treeMapEntityItem.put(this.getAIOwnerEntity().getDistanceSqToEntity(entityItem), entityItem);
 			}
 		}
 
 		for (Map.Entry<Double, EntityItem> entry : treeMapEntityItem.entrySet())
 		{
-			if (this.isNotFullInventory(this.getAIOwnerEntity().getInventoryChast(), entry.getValue().getEntityItem()))
+			if (this.canStoreInventory(this.getAIOwnerEntity().getInventoryChast(), entry.getValue().getEntityItem()))
 			{
-				this.setTargetEntityItem(entry.getValue(), (10 * 20));
+				this.setCollecting(entry.getValue(), COLLECT_TIME_MAX);
 
 				return true;
 			}
@@ -79,7 +79,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		this.getAIOwnerEntity().getNavigator().clearPathEntity();
 		this.getAIOwnerEntity().setOpen(false);
 
-		this.setTargetEntityItem(null, 0);
+		this.setCollecting(null, 0);
 	}
 
 	@Override
@@ -87,63 +87,75 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		--this.collectTime;
 
-		if (!this.isNotFullInventory(this.getAIOwnerEntity().getInventoryChast(), this.targetItem.getEntityItem()))
+		if (!this.canStoreInventory(this.getAIOwnerEntity().getInventoryChast(), this.targetEntityItem.getEntityItem()))
 		{
-			this.setTargetEntityItem(null, 0);
+			this.setCollecting(null, 0);
 
 			return;
 		}
 
-		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetItem) < 1.5D)
+		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
 		{
-			BlockPos pos = new BlockPos(this.getAIOwnerEntity());
-			List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos).expandXyz(SEARCH_XYZ));
+			List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerBlockPos()).expandXyz(SEARCH_XYZ));
 
 			for (EntityItem entityItem : listEntityItem)
 			{
-				if (entityItem.isEntityAlive() && this.getAIOwnerEntity().getEntitySenses().canSee(entityItem))
+				if (this.targetEntityItem.equals(entityItem) && this.canCollectEntityItem(entityItem))
 				{
-					if (this.targetItem.equals(entityItem))
-					{
-						TileEntityHopper.putDropInInventoryAllSlots(this.getAIOwnerEntity().getInventoryChast(), entityItem);
+					TileEntityHopper.putDropInInventoryAllSlots(this.getAIOwnerEntity().getInventoryChast(), entityItem);
 
-						this.getAIOwnerEntity().setOpen(true);
+					this.getAIOwnerEntity().setOpen(true);
 
-						this.setTargetEntityItem(null, 0);
+					this.setCollecting(null, 0);
 
-						return;
-					}
+					return;
 				}
 			}
 		}
 
-		this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetItem, MOVE_SPEED);
+		this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, MOVE_SPEED);
 
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetItem, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private void setTargetEntityItem(@Nullable EntityItem entityItem, int collectTime)
+	private boolean isCollecting()
 	{
-		this.targetItem = entityItem;
+		return (this.targetEntityItem != null) && (0 < this.collectTime);
+	}
+
+	private void setCollecting(@Nullable EntityItem entityItem, int collectTime)
+	{
+		this.targetEntityItem = entityItem;
 		this.collectTime = collectTime;
 	}
 
-	private boolean isCollecting()
+	private boolean canCollectEntityItem(EntityItem entityItem)
 	{
-		return (this.targetItem != null) && (0 < this.collectTime);
+		return (entityItem.isEntityAlive() && this.getAIOwnerEntity().getEntitySenses().canSee(entityItem));
 	}
 
-	private boolean isNotFullInventory(IInventory inventory, @Nullable ItemStack stack)
+	private boolean canStoreInventory(IInventory inventory, @Nullable ItemStack stack)
 	{
+		boolean hasEmptySlot = (this.getFirstEmptySlot(inventory) != -1);
+
 		if (stack == null)
 		{
-			return !(this.getFirstEmptySlot(inventory) == -1);
+			return hasEmptySlot;
 		}
 		else
 		{
-			return !((this.getFirstEmptySlot(inventory) == -1) && (this.getCanStoreSlot(inventory, stack) == -1));
+			boolean hasCanStoreSlot = (this.getCanStoreSlot(inventory, stack) != -1);
+
+			if (hasEmptySlot)
+			{
+				return true;
+			}
+			else
+			{
+				return hasCanStoreSlot;
+			}
 		}
 	}
 
@@ -168,7 +180,10 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 			if (stackInv != null)
 			{
-				if (stackInv.getItem().equals(stack.getItem()) && stackInv.isStackable() && stackInv.stackSize < stackInv.getMaxStackSize() && stackInv.stackSize < inventory.getInventoryStackLimit() && (!stackInv.getHasSubtypes() || stackInv.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackInv, stack))
+				boolean isItemEqual = (stackInv.getItem().equals(stack.getItem()) && (!stackInv.getHasSubtypes() || stackInv.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackInv, stack));
+				boolean isStackSizeEqual = (stackInv.isStackable() && (stackInv.stackSize < stackInv.getMaxStackSize()) && (stackInv.stackSize < inventory.getInventoryStackLimit()));
+
+				if (isItemEqual && isStackSizeEqual)
 				{
 					return slot;
 				}

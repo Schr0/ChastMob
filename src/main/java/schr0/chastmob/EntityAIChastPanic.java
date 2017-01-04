@@ -13,6 +13,7 @@ public class EntityAIChastPanic extends EntityAIChast
 {
 
 	private static final double MOVE_SPEED = 2.5D;
+
 	private int panicTime;
 	private double randPosX;
 	private double randPosY;
@@ -27,7 +28,7 @@ public class EntityAIChastPanic extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (0 < this.panicTime)
+		if (this.isPanicking())
 		{
 			return true;
 		}
@@ -94,6 +95,11 @@ public class EntityAIChastPanic extends EntityAIChast
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
+
+	public boolean isPanicking()
+	{
+		return (0 < this.panicTime);
+	}
 
 	public void setPanicking(int panicTime)
 	{
