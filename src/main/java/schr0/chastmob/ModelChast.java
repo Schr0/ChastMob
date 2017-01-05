@@ -79,9 +79,10 @@ public class ModelChast extends ModelBase
 
 		if (this.isChild)
 		{
-			float scaleHalf = 2.0F;
 			GL11.glPushMatrix();
-			GL11.glScalef(1.0F / scaleHalf, 1.0F / scaleHalf, 1.0F / scaleHalf);
+
+			float scaleHalf = (1.0F / 2.0F);
+			GL11.glScalef(scaleHalf, scaleHalf, scaleHalf);
 			GL11.glTranslatef(0.0F, 24.0F * scale, 0.0F);
 
 			this.body.render(scale);
@@ -143,7 +144,6 @@ public class ModelChast extends ModelBase
 			if (entityChast.isPanic())
 			{
 				this.armRight.rotateAngleX = this.armLeft.rotateAngleX = 0.0F;
-
 			}
 			else
 			{

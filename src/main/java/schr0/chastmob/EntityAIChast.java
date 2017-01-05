@@ -31,4 +31,9 @@ public abstract class EntityAIChast extends EntityAIBase
 		return (new BlockPos(this.theChast));
 	}
 
+	public InventoryChast getAIOwnerInventory()
+	{
+		return this.theChast.getInventoryChast();
+	}
+
 }

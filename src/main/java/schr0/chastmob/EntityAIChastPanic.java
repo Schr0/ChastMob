@@ -5,6 +5,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -13,6 +15,7 @@ public class EntityAIChastPanic extends EntityAIChast
 {
 
 	private static final double MOVE_SPEED = 2.5D;
+	private static final int IDEL_TIME = (3 * 20);
 
 	private int panicTime;
 	private double randPosX;
@@ -41,6 +44,8 @@ public class EntityAIChastPanic extends EntityAIChast
 	{
 		this.getAIOwnerEntity().getNavigator().clearPathEntity();
 		this.getAIOwnerEntity().setPanic(true);
+
+		this.getAIOwnerEntity().setOpen(true);
 	}
 
 	@Override
@@ -59,17 +64,54 @@ public class EntityAIChastPanic extends EntityAIChast
 	{
 		--this.panicTime;
 
+		if (this.panicTime <= IDEL_TIME)
+		{
+			return;
+		}
+
+		if ((this.getAIOwnerEntity().getRNG().nextInt(20) == 0) && !this.getAIOwnerWorld().isRemote)
+		{
+			for (int slot = 0; slot < this.getAIOwnerInventory().getSizeInventory(); ++slot)
+			{
+				ItemStack stackInv = this.getAIOwnerInventory().getStackInSlot(slot);
+
+				if (ChastMobVanillaHelper.isNotEmptyItemStack(stackInv))
+				{
+					ItemStack stackInvCopy = stackInv.copy();
+
+					stackInvCopy.stackSize = 1;
+
+					Block.spawnAsEntity(this.getAIOwnerWorld(), this.getAIOwnerBlockPos(), stackInvCopy);
+
+					--stackInv.stackSize;
+
+					if (stackInv.stackSize <= 0)
+					{
+						this.getAIOwnerInventory().setInventorySlotContents(slot, null);
+					}
+					else
+					{
+						this.getAIOwnerInventory().setInventorySlotContents(slot, stackInv);
+					}
+
+					this.getAIOwnerEntity().playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+
+					break;
+				}
+			}
+		}
+
 		if (this.getAIOwnerEntity().isBurning())
 		{
-			BlockPos blockpos = this.getRandBlockPos(this.getAIOwnerWorld(), this.getAIOwnerEntity(), 5, 4);
+			BlockPos blockPos = getNearBlockWaterBlockPos(this.getAIOwnerEntity());
 
-			if (blockpos == null)
+			if (blockPos == null)
 			{
 				return;
 			}
 			else
 			{
-				this.setRandPos((double) blockpos.getX(), (double) blockpos.getY(), (double) blockpos.getZ());
+				this.setRandPos((double) blockPos.getX(), (double) blockPos.getY(), (double) blockPos.getZ());
 			}
 		}
 		else
@@ -86,11 +128,6 @@ public class EntityAIChastPanic extends EntityAIChast
 			}
 		}
 
-		if (this.getAIOwnerEntity().getRNG().nextInt(2) == 0)
-		{
-			this.getAIOwnerEntity().setOpen(!this.getAIOwnerEntity().isOpen());
-		}
-
 		this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, MOVE_SPEED);
 	}
 
@@ -104,6 +141,11 @@ public class EntityAIChastPanic extends EntityAIChast
 	public void setPanicking(int panicTime)
 	{
 		this.panicTime = panicTime;
+
+		if (0 < panicTime)
+		{
+			this.panicTime += IDEL_TIME;
+		}
 	}
 
 	private void setRandPos(double x, double y, double z)
@@ -113,24 +155,27 @@ public class EntityAIChastPanic extends EntityAIChast
 		this.randPosZ = z;
 	}
 
-	private BlockPos getRandBlockPos(World worldIn, Entity entityIn, int horizontalRange, int verticalRange)
+	private static BlockPos getNearBlockWaterBlockPos(Entity owner)
 	{
-		BlockPos blockpos = new BlockPos(entityIn);
+		World world = owner.worldObj;
+		int searchXZ = 5;
+		int searchY = 4;
+		BlockPos blockPos = new BlockPos(owner);
 		BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-		int pX = blockpos.getX();
-		int pY = blockpos.getY();
-		int pZ = blockpos.getZ();
-		float range = (float) (horizontalRange * horizontalRange * verticalRange * 2);
-		BlockPos blockpos1 = null;
+		int pX = blockPos.getX();
+		int pY = blockPos.getY();
+		int pZ = blockPos.getZ();
+		float range = (float) (searchXZ * searchXZ * searchY * 2);
+		BlockPos blockPosWater = null;
 
-		for (int x = pX - horizontalRange; x <= pX + horizontalRange; ++x)
+		for (int x = pX - searchXZ; x <= pX + searchXZ; ++x)
 		{
-			for (int y = pY - verticalRange; y <= pY + verticalRange; ++y)
+			for (int y = pY - searchY; y <= pY + searchY; ++y)
 			{
-				for (int z = pZ - horizontalRange; z <= pZ + horizontalRange; ++z)
+				for (int z = pZ - searchXZ; z <= pZ + searchXZ; ++z)
 				{
 					blockpos$mutableblockpos.setPos(x, y, z);
-					IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
+					IBlockState iblockstate = world.getBlockState(blockpos$mutableblockpos);
 					Block block = iblockstate.getBlock();
 
 					if (block == Blocks.WATER || block == Blocks.FLOWING_WATER)
@@ -140,14 +185,14 @@ public class EntityAIChastPanic extends EntityAIChast
 						if (range1 < range)
 						{
 							range = range1;
-							blockpos1 = new BlockPos(blockpos$mutableblockpos);
+							blockPosWater = new BlockPos(blockpos$mutableblockpos);
 						}
 					}
 				}
 			}
 		}
 
-		return blockpos1;
+		return blockPosWater;
 	}
 
 }

@@ -15,7 +15,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 public class EntityAIChastCollectItem extends EntityAIChast
 {
 
-	private static final int COLLECT_TIME_MAX = (5 * 20);
+	private static final int COLLECT_TIME_LIMIT = (5 * 20);
 	private static final double SEARCH_XYZ = 5.0D;
 	private static final double MOVE_SPEED = 1.25D;
 
@@ -44,9 +44,9 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		for (Map.Entry<Double, EntityItem> entry : treeMapEntityItem.entrySet())
 		{
-			if (this.canStoreInventory(this.getAIOwnerEntity().getInventoryChast(), entry.getValue().getEntityItem()))
+			if (this.canStoreInventory(this.getAIOwnerInventory(), entry.getValue().getEntityItem()))
 			{
-				this.setCollecting(entry.getValue(), COLLECT_TIME_MAX);
+				this.setCollecting(entry.getValue(), COLLECT_TIME_LIMIT);
 
 				return true;
 			}
@@ -85,14 +85,18 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	@Override
 	public void updateTask()
 	{
-		--this.collectTime;
-
-		if (!this.canStoreInventory(this.getAIOwnerEntity().getInventoryChast(), this.targetEntityItem.getEntityItem()))
+		if (!this.canStoreInventory(this.getAIOwnerInventory(), this.targetEntityItem.getEntityItem()))
 		{
 			this.setCollecting(null, 0);
 
 			return;
 		}
+
+		--this.collectTime;
+
+		this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, MOVE_SPEED);
+
+		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
 
 		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
 		{
@@ -100,9 +104,9 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 			for (EntityItem entityItem : listEntityItem)
 			{
-				if (this.targetEntityItem.equals(entityItem) && this.canCollectEntityItem(entityItem))
+				if (entityItem.equals(this.targetEntityItem) && this.canCollectEntityItem(entityItem))
 				{
-					TileEntityHopper.putDropInInventoryAllSlots(this.getAIOwnerEntity().getInventoryChast(), entityItem);
+					TileEntityHopper.putDropInInventoryAllSlots(this.getAIOwnerInventory(), entityItem);
 
 					this.getAIOwnerEntity().setOpen(true);
 
@@ -111,11 +115,10 @@ public class EntityAIChastCollectItem extends EntityAIChast
 					return;
 				}
 			}
+
+			// TODO BUG FIX
+			// this.setCollecting(null, 0);
 		}
-
-		this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, MOVE_SPEED);
-
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -133,7 +136,12 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private boolean canCollectEntityItem(EntityItem entityItem)
 	{
-		return (entityItem.isEntityAlive() && this.getAIOwnerEntity().getEntitySenses().canSee(entityItem));
+		if (this.getAIOwnerEntity().getEntitySenses().canSee(entityItem))
+		{
+			return (entityItem.isEntityAlive() && !entityItem.cannotPickup());
+		}
+
+		return false;
 	}
 
 	private boolean canStoreInventory(IInventory inventory, @Nullable ItemStack stack)
@@ -178,7 +186,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		{
 			ItemStack stackInv = inventory.getStackInSlot(slot);
 
-			if (stackInv != null)
+			if (ChastMobVanillaHelper.isNotEmptyItemStack(stackInv))
 			{
 				boolean isItemEqual = (stackInv.getItem().equals(stack.getItem()) && (!stackInv.getHasSubtypes() || stackInv.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackInv, stack));
 				boolean isStackSizeEqual = (stackInv.isStackable() && (stackInv.stackSize < stackInv.getMaxStackSize()) && (stackInv.stackSize < inventory.getInventoryStackLimit()));

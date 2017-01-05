@@ -16,11 +16,6 @@ public class EntityAIChastTrade extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().isPanic())
-		{
-			return false;
-		}
-
 		if (this.isTrading())
 		{
 			return true;

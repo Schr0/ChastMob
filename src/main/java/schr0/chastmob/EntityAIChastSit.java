@@ -14,11 +14,6 @@ public class EntityAIChastSit extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().isPanic())
-		{
-			return false;
-		}
-
 		if (this.getAIOwnerEntity().isInWater() || !this.getAIOwnerEntity().onGround)
 		{
 			return false;

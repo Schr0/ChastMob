@@ -31,11 +31,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EntityChast extends EntityGolem
 {
 
-	private static final DataParameter<Byte> OPEN = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer> createKey(EntityChast.class, DataSerializers.VARINT);
 	private static final DataParameter<Byte> SITTING = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+	private static final DataParameter<Byte> OPEN = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> PANIC = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+
+	private static final int PANIC_TIME_MIN = (4 * 20);
 
 	private InventoryChast inventoryChast;
 	private EntityAIChastPanic aiChastPanic;
@@ -102,9 +104,9 @@ public class EntityChast extends EntityGolem
 	protected void entityInit()
 	{
 		super.entityInit();
-		this.getDataManager().register(OPEN, Byte.valueOf((byte) 0));
 		this.getDataManager().register(COLOR, Integer.valueOf(EnumDyeColor.WHITE.getDyeDamage()));
 		this.getDataManager().register(SITTING, Byte.valueOf((byte) 0));
+		this.getDataManager().register(OPEN, Byte.valueOf((byte) 0));
 		this.getDataManager().register(TRADE, Byte.valueOf((byte) 0));
 		this.getDataManager().register(PANIC, Byte.valueOf((byte) 0));
 	}
@@ -115,11 +117,10 @@ public class EntityChast extends EntityGolem
 		super.writeEntityToNBT(compound);
 
 		compound.setTag(ChastMobNBTTags.CHAST_INVENTORY, this.getInventoryChast().writeInventoryToNBT());
-		compound.setBoolean(ChastMobNBTTags.CHAST_OPEN, this.isOpen());
 		compound.setByte(ChastMobNBTTags.CHAST_COLOR, (byte) this.getColor().getDyeDamage());
 		compound.setBoolean(ChastMobNBTTags.CHAST_SITTING, this.isSitting());
 
-		// TODO VANILLA BUG (???) FIX
+		// TODO BUG FIX
 		if (this.getRidingEntity() instanceof EntityPlayer)
 		{
 			this.dismountRidingEntity();
@@ -132,9 +133,10 @@ public class EntityChast extends EntityGolem
 		super.readEntityFromNBT(compound);
 
 		this.getInventoryChast().readInventoryFromNBT(compound.getTagList(ChastMobNBTTags.CHAST_INVENTORY, 10));
-		this.setOpen(compound.getBoolean(ChastMobNBTTags.CHAST_OPEN));
 		this.setColor(EnumDyeColor.byDyeDamage(compound.getByte(ChastMobNBTTags.CHAST_COLOR)));
 		this.setSitting(compound.getBoolean(ChastMobNBTTags.CHAST_SITTING));
+
+		this.setOpen(false);
 
 		if (this.aiChastPanic != null)
 		{
@@ -173,9 +175,9 @@ public class EntityChast extends EntityGolem
 
 		boolean attackEntityFrom = super.attackEntityFrom(source, amount);
 
-		if (!this.getEntityWorld().isRemote)
+		if ((source.getSourceOfDamage() instanceof EntityLivingBase) && !this.getEntityWorld().isRemote)
 		{
-			this.setAIPanicFlag(Math.max((5 * 20), ((int) amount * 20)));
+			this.setAIPanicFlag(Math.max(PANIC_TIME_MIN, (int) amount * 20));
 		}
 
 		return attackEntityFrom;
@@ -249,14 +251,14 @@ public class EntityChast extends EntityGolem
 				player.displayGUIChest(this.getInventoryChast());
 			}
 
+			player.swingArm(hand);
+
 			/*
 				if (!player.isBeingRidden())
 				{
 					this.startRiding(player);
 				}
 			// */
-
-			player.swingArm(hand);
 		}
 
 		return true;
@@ -278,7 +280,7 @@ public class EntityChast extends EntityGolem
 	{
 		super.onUpdate();
 
-		this.onUpdateCoverOpen(this, this.isOpen());
+		this.onUpdateOpen(this, this.isOpen());
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -287,25 +289,6 @@ public class EntityChast extends EntityGolem
 	public float getAngleCoverX(float partialTickTime)
 	{
 		return ((this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * partialTickTime) * 0.5F * (float) Math.PI);
-	}
-
-	public boolean isOpen()
-	{
-		return ((((Byte) this.getDataManager().get(OPEN)).byteValue() & 1) != 0);
-	}
-
-	public void setOpen(boolean isCoverOpen)
-	{
-		byte b0 = ((Byte) this.getDataManager().get(OPEN)).byteValue();
-
-		if (isCoverOpen)
-		{
-			this.getDataManager().set(OPEN, Byte.valueOf((byte) (b0 | 1)));
-		}
-		else
-		{
-			this.getDataManager().set(OPEN, Byte.valueOf((byte) (b0 & -2)));
-		}
 	}
 
 	public EnumDyeColor getColor()
@@ -334,6 +317,25 @@ public class EntityChast extends EntityGolem
 		else
 		{
 			this.getDataManager().set(SITTING, Byte.valueOf((byte) (b0 & -2)));
+		}
+	}
+
+	public boolean isOpen()
+	{
+		return ((((Byte) this.getDataManager().get(OPEN)).byteValue() & 1) != 0);
+	}
+
+	public void setOpen(boolean isCoverOpen)
+	{
+		byte b0 = ((Byte) this.getDataManager().get(OPEN)).byteValue();
+
+		if (isCoverOpen)
+		{
+			this.getDataManager().set(OPEN, Byte.valueOf((byte) (b0 | 1)));
+		}
+		else
+		{
+			this.getDataManager().set(OPEN, Byte.valueOf((byte) (b0 & -2)));
 		}
 	}
 
@@ -401,7 +403,7 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	private void onUpdateCoverOpen(EntityChast entityChast, boolean isCoverOpen)
+	private void onUpdateOpen(EntityChast entityChast, boolean isCoverOpen)
 	{
 		World world = this.getEntityWorld();
 
