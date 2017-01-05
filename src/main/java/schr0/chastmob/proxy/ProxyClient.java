@@ -1,8 +1,5 @@
 package schr0.chastmob.proxy;
 
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -30,18 +27,6 @@ public class ProxyClient extends ProxyServer
 	public void postInitEventProxy(FMLPostInitializationEvent event)
 	{
 		// none
-	}
-
-	@Override
-	public Minecraft getMinecraft()
-	{
-		return FMLClientHandler.instance().getClient();
-	}
-
-	@Override
-	public void infoModLog(String format, Object... data)
-	{
-		FMLLog.info(format, data);
 	}
 
 }
