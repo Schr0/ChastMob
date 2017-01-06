@@ -94,8 +94,6 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		--this.collectTime;
 
-		this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, MOVE_SPEED);
-
 		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
 
 		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
@@ -118,6 +116,10 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 			// TODO BUG FIX
 			// this.setCollecting(null, 0);
+		}
+		else
+		{
+			this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, MOVE_SPEED);
 		}
 	}
 

@@ -1,7 +1,8 @@
 package schr0.chastmob;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.init.Blocks;
@@ -9,13 +10,13 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 public class EntityAIChastPanic extends EntityAIChast
 {
 
 	private static final double MOVE_SPEED = 2.5D;
 	private static final int IDEL_TIME = (3 * 20);
+	private static final int SEARCH_XYZ = 5;
 
 	private int panicTime;
 	private double randPosX;
@@ -56,7 +57,6 @@ public class EntityAIChastPanic extends EntityAIChast
 
 		this.getAIOwnerEntity().setOpen(false);
 		this.setPanicking(0);
-		this.setRandPos(0.0D, 0.0D, 0.0D);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class EntityAIChastPanic extends EntityAIChast
 			return;
 		}
 
-		if ((this.getAIOwnerEntity().getRNG().nextInt(20) == 0) && !this.getAIOwnerWorld().isRemote)
+		if ((this.getAIOwnerEntity().getRNG().nextInt(10) == 0) && !this.getAIOwnerWorld().isRemote)
 		{
 			for (int slot = 0; slot < this.getAIOwnerInventory().getSizeInventory(); ++slot)
 			{
@@ -77,6 +77,11 @@ public class EntityAIChastPanic extends EntityAIChast
 
 				if (ChastMobVanillaHelper.isNotEmptyItemStack(stackInv))
 				{
+					if (this.getAIOwnerEntity().getRNG().nextInt(2) == 0)
+					{
+						continue;
+					}
+
 					ItemStack stackInvCopy = stackInv.copy();
 
 					stackInvCopy.stackSize = 1;
@@ -103,7 +108,7 @@ public class EntityAIChastPanic extends EntityAIChast
 
 		if (this.getAIOwnerEntity().isBurning())
 		{
-			BlockPos blockPos = getNearBlockWaterBlockPos(this.getAIOwnerEntity());
+			BlockPos blockPos = this.getNearWaterBlockPos(this.getAIOwnerEntity(), SEARCH_XYZ);
 
 			if (blockPos == null)
 			{
@@ -111,12 +116,14 @@ public class EntityAIChastPanic extends EntityAIChast
 			}
 			else
 			{
-				this.setRandPos((double) blockPos.getX(), (double) blockPos.getY(), (double) blockPos.getZ());
+				this.randPosX = (double) blockPos.getX();
+				this.randPosY = (double) blockPos.getY();
+				this.randPosZ = (double) blockPos.getZ();
 			}
 		}
 		else
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getAIOwnerEntity(), 5, 4);
+			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getAIOwnerEntity(), SEARCH_XYZ, SEARCH_XYZ);
 
 			if (vec3d == null)
 			{
@@ -124,7 +131,9 @@ public class EntityAIChastPanic extends EntityAIChast
 			}
 			else
 			{
-				this.setRandPos(vec3d.xCoord, vec3d.yCoord, vec3d.zCoord);
+				this.randPosX = vec3d.xCoord;
+				this.randPosY = vec3d.yCoord;
+				this.randPosZ = vec3d.zCoord;
 			}
 		}
 
@@ -141,6 +150,9 @@ public class EntityAIChastPanic extends EntityAIChast
 	public void setPanicking(int panicTime)
 	{
 		this.panicTime = panicTime;
+		this.randPosX = 0;
+		this.randPosY = 0;
+		this.randPosZ = 0;
 
 		if (0 < panicTime)
 		{
@@ -148,44 +160,34 @@ public class EntityAIChastPanic extends EntityAIChast
 		}
 	}
 
-	private void setRandPos(double x, double y, double z)
+	@Nullable
+	private BlockPos getNearWaterBlockPos(Entity owner, int searchXYZ)
 	{
-		this.randPosX = x;
-		this.randPosY = y;
-		this.randPosZ = z;
-	}
-
-	private static BlockPos getNearBlockWaterBlockPos(Entity owner)
-	{
-		World world = owner.worldObj;
-		int searchXZ = 5;
-		int searchY = 4;
 		BlockPos blockPos = new BlockPos(owner);
-		BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-		int pX = blockPos.getX();
-		int pY = blockPos.getY();
-		int pZ = blockPos.getZ();
-		float range = (float) (searchXZ * searchXZ * searchY * 2);
+		int owerPosX = blockPos.getX();
+		int owerPosY = blockPos.getY();
+		int owerPosZ = blockPos.getZ();
+		float rangeOrigin = (float) (searchXYZ * searchXYZ * searchXYZ * 2);
+		BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
 		BlockPos blockPosWater = null;
 
-		for (int x = pX - searchXZ; x <= pX + searchXZ; ++x)
+		for (int posX = (owerPosX - searchXYZ); posX <= (owerPosX + searchXYZ); ++posX)
 		{
-			for (int y = pY - searchY; y <= pY + searchY; ++y)
+			for (int posY = (owerPosY - searchXYZ); posY <= (owerPosY + searchXYZ); ++posY)
 			{
-				for (int z = pZ - searchXZ; z <= pZ + searchXZ; ++z)
+				for (int posZ = (owerPosZ - searchXYZ); posZ <= (owerPosZ + searchXYZ); ++posZ)
 				{
-					blockpos$mutableblockpos.setPos(x, y, z);
-					IBlockState iblockstate = world.getBlockState(blockpos$mutableblockpos);
-					Block block = iblockstate.getBlock();
+					blockPosMutable.setPos(posX, posY, posZ);
+					Block block = owner.worldObj.getBlockState(blockPosMutable).getBlock();
 
-					if (block == Blocks.WATER || block == Blocks.FLOWING_WATER)
+					if (block.equals(Blocks.WATER) || block.equals(Blocks.FLOWING_WATER))
 					{
-						float range1 = (float) ((x - pX) * (x - pX) + (y - pY) * (y - pY) + (z - pZ) * (z - pZ));
+						float range = (float) ((posX - owerPosX) * (posX - owerPosX) + (posY - owerPosY) * (posY - owerPosY) + (posZ - owerPosZ) * (posZ - owerPosZ));
 
-						if (range1 < range)
+						if (range < rangeOrigin)
 						{
-							range = range1;
-							blockPosWater = new BlockPos(blockpos$mutableblockpos);
+							rangeOrigin = range;
+							blockPosWater = new BlockPos(blockPosMutable);
 						}
 					}
 				}

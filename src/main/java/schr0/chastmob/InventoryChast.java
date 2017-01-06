@@ -9,11 +9,13 @@ import net.minecraft.nbt.NBTTagList;
 public class InventoryChast extends InventoryBasic
 {
 
+	private static final int INVENTORY_SIZE = (3 * 9);
+
 	private EntityChast entityChast;
 
 	public InventoryChast(EntityChast entityChast)
 	{
-		super(entityChast.getName(), false, (3 * 9));
+		super(entityChast.getName(), false, INVENTORY_SIZE);
 
 		this.entityChast = entityChast;
 	}
@@ -41,7 +43,7 @@ public class InventoryChast extends InventoryBasic
 
 		this.entityChast.setOpen(true);
 
-		this.entityChast.setAITradeFlag(player);
+		this.entityChast.setAITrading(player);
 	}
 
 	@Override
@@ -51,50 +53,50 @@ public class InventoryChast extends InventoryBasic
 
 		this.entityChast.setOpen(false);
 
-		this.entityChast.setAITradeFlag(null);
+		this.entityChast.setAITrading(null);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
 	public void readInventoryFromNBT(NBTTagList nbtlist)
 	{
-		int slotsize;
+		int slot;
 
-		for (slotsize = 0; slotsize < this.getSizeInventory(); ++slotsize)
+		for (slot = 0; slot < this.getSizeInventory(); ++slot)
 		{
-			this.setInventorySlotContents(slotsize, (ItemStack) null);
+			this.setInventorySlotContents(slot, (ItemStack) null);
 		}
 
-		for (slotsize = 0; slotsize < nbtlist.tagCount(); ++slotsize)
+		for (slot = 0; slot < nbtlist.tagCount(); ++slot)
 		{
-			NBTTagCompound nbttagcompound = nbtlist.getCompoundTagAt(slotsize);
-			int slot = nbttagcompound.getByte("Slot") & 255;
+			NBTTagCompound nbttagCompound = nbtlist.getCompoundTagAt(slot);
+			slot = nbttagCompound.getByte("Slot") & 255;
 
 			if ((0 <= slot) && (slot < this.getSizeInventory()))
 			{
-				this.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(nbttagcompound));
+				this.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(nbttagCompound));
 			}
 		}
 	}
 
 	public NBTTagList writeInventoryToNBT()
 	{
-		NBTTagList nbttaglist = new NBTTagList();
+		NBTTagList nbttagList = new NBTTagList();
 
 		for (int slotsize = 0; slotsize < this.getSizeInventory(); ++slotsize)
 		{
-			ItemStack itemstack = this.getStackInSlot(slotsize);
+			ItemStack itemStack = this.getStackInSlot(slotsize);
 
-			if (itemstack != null)
+			if (itemStack != null)
 			{
-				NBTTagCompound nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte("Slot", (byte) slotsize);
-				itemstack.writeToNBT(nbttagcompound);
-				nbttaglist.appendTag(nbttagcompound);
+				NBTTagCompound nbttagCompound = new NBTTagCompound();
+				nbttagCompound.setByte("Slot", (byte) slotsize);
+				itemStack.writeToNBT(nbttagCompound);
+				nbttagList.appendTag(nbttagCompound);
 			}
 		}
 
-		return nbttaglist;
+		return nbttagList;
 	}
 
 }

@@ -14,6 +14,7 @@ public class ModelChast extends ModelBase
 
 	public static final int WIDTH = 64;
 	public static final int HEIGHT = 64;
+
 	public ModelRenderer body;
 	public ModelRenderer core;
 	public ModelRenderer coverMain;

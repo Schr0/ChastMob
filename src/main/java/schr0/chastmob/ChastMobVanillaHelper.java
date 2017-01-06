@@ -15,9 +15,4 @@ public class ChastMobVanillaHelper
 		return (ItemStack) null;
 	}
 
-	public static void setEmptyItemStack(ItemStack stack)
-	{
-		stack = null;
-	}
-
 }

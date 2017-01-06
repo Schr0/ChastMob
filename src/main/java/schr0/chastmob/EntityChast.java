@@ -68,6 +68,7 @@ public class EntityChast extends EntityGolem
 		this.aiChastPanic = new EntityAIChastPanic(this);
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
+		EntityAIChastStoreChest aiChastStoreInventory = new EntityAIChastStoreChest(this);
 		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this);
 		EntityAIBase aiWander = new EntityAIWander(this, 1.25D);
 		EntityAIBase aiWatchClosest = new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F);
@@ -77,6 +78,7 @@ public class EntityChast extends EntityGolem
 		this.aiChastPanic.setMutexBits(1);
 		this.aiChastSit.setMutexBits(1);
 		this.aiChastTrade.setMutexBits(1);
+		aiChastStoreInventory.setMutexBits(1);
 		aiChastCollectItem.setMutexBits(1);
 		aiWander.setMutexBits(1);
 		aiWatchClosest.setMutexBits(2);
@@ -86,10 +88,11 @@ public class EntityChast extends EntityGolem
 		this.tasks.addTask(1, this.aiChastPanic);
 		this.tasks.addTask(2, this.aiChastSit);
 		this.tasks.addTask(3, this.aiChastTrade);
-		this.tasks.addTask(4, aiChastCollectItem);
-		this.tasks.addTask(5, aiWander);
-		this.tasks.addTask(6, aiWatchClosest);
-		this.tasks.addTask(7, aiLookIdle);
+		this.tasks.addTask(4, aiChastStoreInventory);
+		this.tasks.addTask(5, aiChastCollectItem);
+		this.tasks.addTask(6, aiWander);
+		this.tasks.addTask(7, aiWatchClosest);
+		this.tasks.addTask(8, aiLookIdle);
 	}
 
 	@Override
@@ -140,17 +143,17 @@ public class EntityChast extends EntityGolem
 
 		if (this.aiChastPanic != null)
 		{
-			this.setAIPanicFlag(0);
+			this.setAIPanicking(0);
 		}
 
 		if (this.aiChastSit != null)
 		{
-			this.setAISitFlag(this.isSitting());
+			this.setAISitting(this.isSitting());
 		}
 
 		if (this.aiChastTrade != null)
 		{
-			this.setAITradeFlag(null);
+			this.setAITrading(null);
 		}
 	}
 
@@ -177,7 +180,7 @@ public class EntityChast extends EntityGolem
 
 		if ((source.getSourceOfDamage() instanceof EntityLivingBase) && !this.getEntityWorld().isRemote)
 		{
-			this.setAIPanicFlag(Math.max(PANIC_TIME_MIN, (int) amount * 20));
+			this.setAIPanicking(Math.max(PANIC_TIME_MIN, (int) amount * 20));
 		}
 
 		return attackEntityFrom;
@@ -231,13 +234,20 @@ public class EntityChast extends EntityGolem
 					return true;
 				}
 			}
+
+			/*
+			if (!player.isBeingRidden())
+			{
+				this.startRiding(player);
+			}
+			// */
 		}
 
 		if (player.isSneaking())
 		{
 			if (isServerWorld)
 			{
-				this.setAISitFlag(!this.isSitting());
+				this.setAISitting(!this.isSitting());
 
 				this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 			}
@@ -252,13 +262,6 @@ public class EntityChast extends EntityGolem
 			}
 
 			player.swingArm(hand);
-
-			/*
-				if (!player.isBeingRidden())
-				{
-					this.startRiding(player);
-				}
-			// */
 		}
 
 		return true;
@@ -382,21 +385,21 @@ public class EntityChast extends EntityGolem
 		return this.inventoryChast;
 	}
 
-	public void setAISitFlag(boolean flag)
+	public void setAISitting(boolean isSitting)
 	{
-		this.aiChastSit.setSitting(flag);
+		this.aiChastSit.setSitting(isSitting);
 	}
 
-	public void setAITradeFlag(@Nullable EntityPlayer flag)
+	public void setAITrading(@Nullable EntityPlayer tradePlayer)
 	{
-		this.aiChastTrade.setTrading(flag);
+		this.aiChastTrade.setTrading(tradePlayer);
 	}
 
-	public void setAIPanicFlag(int flag)
+	public void setAIPanicking(int panicTime)
 	{
-		this.aiChastPanic.setPanicking(flag);
+		this.aiChastPanic.setPanicking(panicTime);
 
-		if (0 < flag)
+		if (0 < panicTime)
 		{
 			this.aiChastSit.setSitting(false);
 			this.aiChastTrade.setTrading(null);
@@ -405,15 +408,13 @@ public class EntityChast extends EntityGolem
 
 	private void onUpdateOpen(EntityChast entityChast, boolean isCoverOpen)
 	{
-		World world = this.getEntityWorld();
-
 		this.prevLidAngle = this.lidAngle;
 
 		if (isCoverOpen && (this.lidAngle == 0.0F))
 		{
 			entityChast.setOpen(true);
 
-			this.playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
+			this.playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, entityChast.rand.nextFloat() * 0.1F + 0.9F);
 		}
 
 		if ((!isCoverOpen && (0.0F < this.lidAngle)) || (isCoverOpen && (this.lidAngle < 1.0F)))
@@ -440,7 +441,7 @@ public class EntityChast extends EntityGolem
 			{
 				entityChast.setOpen(false);
 
-				this.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
+				this.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 0.5F, entityChast.rand.nextFloat() * 0.1F + 0.9F);
 			}
 
 			if (this.lidAngle < 0.0F)

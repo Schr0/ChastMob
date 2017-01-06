@@ -53,9 +53,9 @@ public class EntityAIChastTrade extends EntityAIChast
 		return (this.tradePlayer != null);
 	}
 
-	public void setTrading(EntityPlayer player)
+	public void setTrading(EntityPlayer tradePlayer)
 	{
-		this.tradePlayer = player;
+		this.tradePlayer = tradePlayer;
 	}
 
 }
