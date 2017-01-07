@@ -14,9 +14,9 @@ import net.minecraft.util.math.Vec3d;
 public class EntityAIChastPanic extends EntityAIChast
 {
 
-	private static final double MOVE_SPEED = 2.5D;
 	private static final int IDEL_TIME = (3 * 20);
 	private static final int SEARCH_XYZ = 5;
+	private static final double MOVE_SPEED = 2.5D;
 
 	private int panicTime;
 	private double randPosX;
@@ -75,7 +75,7 @@ public class EntityAIChastPanic extends EntityAIChast
 			{
 				ItemStack stackInv = this.getAIOwnerInventory().getStackInSlot(slot);
 
-				if (ChastMobVanillaHelper.isNotEmptyItemStack(stackInv))
+				if (ChastMobHelper.isNotEmptyItemStack(stackInv))
 				{
 					if (this.getAIOwnerEntity().getRNG().nextInt(2) == 0)
 					{

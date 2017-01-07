@@ -27,7 +27,7 @@ public class LayerChastHeldItem implements LayerRenderer<EntityChast>
 		ItemStack stackMain = isPrimaryHand ? entityChast.getHeldItemOffhand() : entityChast.getHeldItemMainhand();
 		ItemStack stackOff = isPrimaryHand ? entityChast.getHeldItemMainhand() : entityChast.getHeldItemOffhand();
 
-		if (ChastMobVanillaHelper.isNotEmptyItemStack(stackMain) || ChastMobVanillaHelper.isNotEmptyItemStack(stackOff))
+		if (ChastMobHelper.isNotEmptyItemStack(stackMain) || ChastMobHelper.isNotEmptyItemStack(stackOff))
 		{
 			GlStateManager.pushMatrix();
 
@@ -48,7 +48,7 @@ public class LayerChastHeldItem implements LayerRenderer<EntityChast>
 
 	private void renderHeldItem(EntityChast entityChast, ItemStack stack, ItemCameraTransforms.TransformType transformType, EnumHandSide handSide)
 	{
-		if (ChastMobVanillaHelper.isNotEmptyItemStack(stack))
+		if (ChastMobHelper.isNotEmptyItemStack(stack))
 		{
 			GlStateManager.pushMatrix();
 

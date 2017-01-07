@@ -7,8 +7,6 @@ import java.util.TreeMap;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
 
@@ -16,6 +14,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 {
 
 	private static final int COLLECT_TIME_LIMIT = (5 * 20);
+	private static final int COLLECT_TIME_INTERVAN = (20 / 10);
 	private static final double SEARCH_XYZ = 5.0D;
 	private static final double MOVE_SPEED = 1.25D;
 
@@ -44,7 +43,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		for (Map.Entry<Double, EntityItem> entry : treeMapEntityItem.entrySet())
 		{
-			if (this.canStoreInventory(this.getAIOwnerInventory(), entry.getValue().getEntityItem()))
+			if (ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), entry.getValue().getEntityItem()))
 			{
 				this.setCollecting(entry.getValue(), COLLECT_TIME_LIMIT);
 
@@ -85,7 +84,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	@Override
 	public void updateTask()
 	{
-		if (!this.canStoreInventory(this.getAIOwnerInventory(), this.targetEntityItem.getEntityItem()))
+		if (!ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), this.targetEntityItem.getEntityItem()))
 		{
 			this.setCollecting(null, 0);
 
@@ -108,14 +107,16 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 					this.getAIOwnerEntity().setOpen(true);
 
-					this.setCollecting(null, 0);
-
-					return;
+					this.onResetInterval();
 				}
 			}
 
-			// TODO BUG FIX
-			// this.setCollecting(null, 0);
+			if (0 < this.collectTime)
+			{
+				return;
+			}
+
+			this.setCollecting(null, 0);
 		}
 		else
 		{
@@ -136,6 +137,11 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		this.collectTime = collectTime;
 	}
 
+	private void onResetInterval()
+	{
+		this.collectTime = COLLECT_TIME_INTERVAN;
+	}
+
 	private boolean canCollectEntityItem(EntityItem entityItem)
 	{
 		if (this.getAIOwnerEntity().getEntitySenses().canSee(entityItem))
@@ -144,63 +150,6 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		}
 
 		return false;
-	}
-
-	private boolean canStoreInventory(IInventory inventory, @Nullable ItemStack stack)
-	{
-		boolean hasEmptySlot = (this.getFirstEmptySlot(inventory) != -1);
-
-		if (stack == null)
-		{
-			return hasEmptySlot;
-		}
-		else
-		{
-			boolean hasCanStoreSlot = (this.getCanStoreSlot(inventory, stack) != -1);
-
-			if (hasEmptySlot)
-			{
-				return true;
-			}
-			else
-			{
-				return hasCanStoreSlot;
-			}
-		}
-	}
-
-	private int getFirstEmptySlot(IInventory inventory)
-	{
-		for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
-		{
-			if (inventory.getStackInSlot(slot) == null)
-			{
-				return slot;
-			}
-		}
-
-		return -1;
-	}
-
-	private int getCanStoreSlot(IInventory inventory, ItemStack stack)
-	{
-		for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
-		{
-			ItemStack stackInv = inventory.getStackInSlot(slot);
-
-			if (ChastMobVanillaHelper.isNotEmptyItemStack(stackInv))
-			{
-				boolean isItemEqual = (stackInv.getItem().equals(stack.getItem()) && (!stackInv.getHasSubtypes() || stackInv.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackInv, stack));
-				boolean isStackSizeEqual = (stackInv.isStackable() && (stackInv.stackSize < stackInv.getMaxStackSize()) && (stackInv.stackSize < inventory.getInventoryStackLimit()));
-
-				if (isItemEqual && isStackSizeEqual)
-				{
-					return slot;
-				}
-			}
-		}
-
-		return -1;
 	}
 
 }

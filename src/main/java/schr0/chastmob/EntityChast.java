@@ -32,17 +32,18 @@ public class EntityChast extends EntityGolem
 {
 
 	private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer> createKey(EntityChast.class, DataSerializers.VARINT);
-	private static final DataParameter<Byte> SITTING = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> OPEN = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
-	private static final DataParameter<Byte> TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> PANIC = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+	private static final DataParameter<Byte> SIT = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+	private static final DataParameter<Byte> TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 
 	private static final int PANIC_TIME_MIN = (4 * 20);
 
-	private InventoryChast inventoryChast;
 	private EntityAIChastPanic aiChastPanic;
 	private EntityAIChastSit aiChastSit;
 	private EntityAIChastTrade aiChastTrade;
+
+	private InventoryChast inventoryChast;
 	private float lidAngle;
 	private float prevLidAngle;
 
@@ -68,7 +69,7 @@ public class EntityChast extends EntityGolem
 		this.aiChastPanic = new EntityAIChastPanic(this);
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
-		EntityAIChastStoreChest aiChastStoreInventory = new EntityAIChastStoreChest(this);
+		EntityAIChastStoreChest aiChastStoreChest = new EntityAIChastStoreChest(this);
 		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this);
 		EntityAIBase aiWander = new EntityAIWander(this, 1.25D);
 		EntityAIBase aiWatchClosest = new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F);
@@ -78,7 +79,7 @@ public class EntityChast extends EntityGolem
 		this.aiChastPanic.setMutexBits(1);
 		this.aiChastSit.setMutexBits(1);
 		this.aiChastTrade.setMutexBits(1);
-		aiChastStoreInventory.setMutexBits(1);
+		aiChastStoreChest.setMutexBits(1);
 		aiChastCollectItem.setMutexBits(1);
 		aiWander.setMutexBits(1);
 		aiWatchClosest.setMutexBits(2);
@@ -88,7 +89,7 @@ public class EntityChast extends EntityGolem
 		this.tasks.addTask(1, this.aiChastPanic);
 		this.tasks.addTask(2, this.aiChastSit);
 		this.tasks.addTask(3, this.aiChastTrade);
-		this.tasks.addTask(4, aiChastStoreInventory);
+		this.tasks.addTask(4, aiChastStoreChest);
 		this.tasks.addTask(5, aiChastCollectItem);
 		this.tasks.addTask(6, aiWander);
 		this.tasks.addTask(7, aiWatchClosest);
@@ -108,10 +109,10 @@ public class EntityChast extends EntityGolem
 	{
 		super.entityInit();
 		this.getDataManager().register(COLOR, Integer.valueOf(EnumDyeColor.WHITE.getDyeDamage()));
-		this.getDataManager().register(SITTING, Byte.valueOf((byte) 0));
 		this.getDataManager().register(OPEN, Byte.valueOf((byte) 0));
-		this.getDataManager().register(TRADE, Byte.valueOf((byte) 0));
 		this.getDataManager().register(PANIC, Byte.valueOf((byte) 0));
+		this.getDataManager().register(SIT, Byte.valueOf((byte) 0));
+		this.getDataManager().register(TRADE, Byte.valueOf((byte) 0));
 	}
 
 	@Override
@@ -120,8 +121,10 @@ public class EntityChast extends EntityGolem
 		super.writeEntityToNBT(compound);
 
 		compound.setTag(ChastMobNBTTags.CHAST_INVENTORY, this.getInventoryChast().writeInventoryToNBT());
+
 		compound.setByte(ChastMobNBTTags.CHAST_COLOR, (byte) this.getColor().getDyeDamage());
-		compound.setBoolean(ChastMobNBTTags.CHAST_SITTING, this.isSitting());
+
+		compound.setBoolean(ChastMobNBTTags.CHAST_SIT, this.isSitting());
 
 		// TODO BUG FIX
 		if (this.getRidingEntity() instanceof EntityPlayer)
@@ -136,8 +139,8 @@ public class EntityChast extends EntityGolem
 		super.readEntityFromNBT(compound);
 
 		this.getInventoryChast().readInventoryFromNBT(compound.getTagList(ChastMobNBTTags.CHAST_INVENTORY, 10));
+
 		this.setColor(EnumDyeColor.byDyeDamage(compound.getByte(ChastMobNBTTags.CHAST_COLOR)));
-		this.setSitting(compound.getBoolean(ChastMobNBTTags.CHAST_SITTING));
 
 		this.setOpen(false);
 
@@ -145,6 +148,8 @@ public class EntityChast extends EntityGolem
 		{
 			this.setAIPanicking(0);
 		}
+
+		this.setSitting(compound.getBoolean(ChastMobNBTTags.CHAST_SIT));
 
 		if (this.aiChastSit != null)
 		{
@@ -209,7 +214,7 @@ public class EntityChast extends EntityGolem
 
 		boolean isServerWorld = (!this.getEntityWorld().isRemote);
 
-		if (ChastMobVanillaHelper.isNotEmptyItemStack(stack))
+		if (ChastMobHelper.isNotEmptyItemStack(stack))
 		{
 			if (stack.getItem().equals(Items.DYE))
 			{
@@ -306,20 +311,20 @@ public class EntityChast extends EntityGolem
 
 	public boolean isSitting()
 	{
-		return (((Byte) this.getDataManager().get(SITTING)).byteValue() & 1) != 0;
+		return (((Byte) this.getDataManager().get(SIT)).byteValue() & 1) != 0;
 	}
 
 	public void setSitting(boolean isSitting)
 	{
-		byte b0 = ((Byte) this.getDataManager().get(SITTING)).byteValue();
+		byte b0 = ((Byte) this.getDataManager().get(SIT)).byteValue();
 
 		if (isSitting)
 		{
-			this.getDataManager().set(SITTING, Byte.valueOf((byte) (b0 | 1)));
+			this.getDataManager().set(SIT, Byte.valueOf((byte) (b0 | 1)));
 		}
 		else
 		{
-			this.getDataManager().set(SITTING, Byte.valueOf((byte) (b0 & -2)));
+			this.getDataManager().set(SIT, Byte.valueOf((byte) (b0 & -2)));
 		}
 	}
 
@@ -406,24 +411,24 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	private void onUpdateOpen(EntityChast entityChast, boolean isCoverOpen)
+	private void onUpdateOpen(EntityChast entityChast, boolean isOpen)
 	{
 		this.prevLidAngle = this.lidAngle;
 
-		if (isCoverOpen && (this.lidAngle == 0.0F))
+		if (isOpen && (this.lidAngle == 0.0F))
 		{
 			entityChast.setOpen(true);
 
 			this.playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, entityChast.rand.nextFloat() * 0.1F + 0.9F);
 		}
 
-		if ((!isCoverOpen && (0.0F < this.lidAngle)) || (isCoverOpen && (this.lidAngle < 1.0F)))
+		if ((!isOpen && (0.0F < this.lidAngle)) || (isOpen && (this.lidAngle < 1.0F)))
 		{
 			float angel1 = 0.1F;
 			float angel2 = this.lidAngle;
 			float angel3 = 0.5F;
 
-			if (isCoverOpen)
+			if (isOpen)
 			{
 				this.lidAngle += angel1;
 			}
