@@ -28,11 +28,7 @@ public class ChastMobHelper
 	{
 		boolean hasEmptySlot = (getFirstEmptySlot(inventory) != -1);
 
-		if (stack == null)
-		{
-			return hasEmptySlot;
-		}
-		else
+		if (isNotEmptyItemStack(stack))
 		{
 			boolean hasCanStoreSlot = (getCanStoreSlot(inventory, stack) != -1);
 
@@ -45,13 +41,17 @@ public class ChastMobHelper
 				return hasCanStoreSlot;
 			}
 		}
+		else
+		{
+			return hasEmptySlot;
+		}
 	}
 
 	public static int getFirstEmptySlot(IInventory inventory)
 	{
 		for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
 		{
-			if (inventory.getStackInSlot(slot) == null)
+			if (!isNotEmptyItemStack(inventory.getStackInSlot(slot)))
 			{
 				return slot;
 			}
@@ -66,7 +66,7 @@ public class ChastMobHelper
 		{
 			ItemStack stackInv = inventory.getStackInSlot(slot);
 
-			if (ChastMobHelper.isNotEmptyItemStack(stackInv))
+			if (isNotEmptyItemStack(stackInv))
 			{
 				boolean isItemEqual = (stackInv.getItem().equals(stack.getItem()) && (!stackInv.getHasSubtypes() || stackInv.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackInv, stack));
 				boolean isStackSizeEqual = (stackInv.isStackable() && (stackInv.stackSize < stackInv.getMaxStackSize()) && (stackInv.stackSize < inventory.getInventoryStackLimit()));

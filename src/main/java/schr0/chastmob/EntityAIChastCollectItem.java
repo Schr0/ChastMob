@@ -14,7 +14,6 @@ public class EntityAIChastCollectItem extends EntityAIChast
 {
 
 	private static final int COLLECT_TIME_LIMIT = (5 * 20);
-	private static final int COLLECT_TIME_INTERVAN = (20 / 10);
 	private static final double SEARCH_XYZ = 5.0D;
 	private static final double MOVE_SPEED = 1.25D;
 
@@ -107,16 +106,11 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 					this.getAIOwnerEntity().setOpen(true);
 
-					this.onResetInterval();
+					this.setCollecting(null, 0);
+
+					return;
 				}
 			}
-
-			if (0 < this.collectTime)
-			{
-				return;
-			}
-
-			this.setCollecting(null, 0);
 		}
 		else
 		{
@@ -135,11 +129,6 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		this.targetEntityItem = entityItem;
 		this.collectTime = collectTime;
-	}
-
-	private void onResetInterval()
-	{
-		this.collectTime = COLLECT_TIME_INTERVAN;
 	}
 
 	private boolean canCollectEntityItem(EntityItem entityItem)

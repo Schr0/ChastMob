@@ -64,7 +64,7 @@ public class InventoryChast extends InventoryBasic
 
 		for (slot = 0; slot < this.getSizeInventory(); ++slot)
 		{
-			this.setInventorySlotContents(slot, (ItemStack) null);
+			this.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());
 		}
 
 		for (slot = 0; slot < nbtlist.tagCount(); ++slot)
@@ -87,7 +87,7 @@ public class InventoryChast extends InventoryBasic
 		{
 			ItemStack itemStack = this.getStackInSlot(slotsize);
 
-			if (itemStack != null)
+			if (ChastMobHelper.isNotEmptyItemStack(itemStack))
 			{
 				NBTTagCompound nbttagCompound = new NBTTagCompound();
 				nbttagCompound.setByte("Slot", (byte) slotsize);

@@ -17,7 +17,6 @@ public class EntityAIChastStoreChest extends EntityAIChast
 {
 
 	private static final int STORE_TIME_LIMIT = (5 * 20);
-	private static final int STORE_TIME_INTERVAN = (3 * 20);
 	private static final int SEARCH_XYZ = 5;
 	private static final double MOVE_SPEED = 1.25D;
 
@@ -92,8 +91,6 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 			if ((tileEntityChest != null) && tileEntityChest.equals(this.targetChest))
 			{
-				this.getAIOwnerEntity().setOpen(true);
-
 				for (int slot = 0; slot < this.getAIOwnerInventory().getSizeInventory(); ++slot)
 				{
 					ItemStack stackInv = this.getAIOwnerInventory().getStackInSlot(slot);
@@ -102,17 +99,14 @@ public class EntityAIChastStoreChest extends EntityAIChast
 					{
 						this.getAIOwnerInventory().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) tileEntityChest, stackInv, EnumFacing.UP));
 
-						this.onResetInterval();
+						this.getAIOwnerEntity().setOpen(true);
+
+						this.setStoring(null, 0);
+
+						return;
 					}
 				}
 			}
-
-			if (0 < this.storeTime)
-			{
-				return;
-			}
-
-			this.setStoring(null, 0);
 		}
 		else
 		{
@@ -131,11 +125,6 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		this.targetChest = tileEntityChest;
 		this.storeTime = storeTime;
-	}
-
-	private void onResetInterval()
-	{
-		this.storeTime = STORE_TIME_INTERVAN;
 	}
 
 	private TileEntityChest getNearChestTileEntity(Entity owner, int searchXYZ)

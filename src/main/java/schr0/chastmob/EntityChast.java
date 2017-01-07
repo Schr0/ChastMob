@@ -2,6 +2,7 @@ package schr0.chastmob;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -11,6 +12,7 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -37,12 +39,9 @@ public class EntityChast extends EntityGolem
 	private static final DataParameter<Byte> SIT = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 
-	private static final int PANIC_TIME_MIN = (4 * 20);
-
 	private EntityAIChastPanic aiChastPanic;
 	private EntityAIChastSit aiChastSit;
 	private EntityAIChastTrade aiChastTrade;
-
 	private InventoryChast inventoryChast;
 	private float lidAngle;
 	private float prevLidAngle;
@@ -72,7 +71,8 @@ public class EntityChast extends EntityGolem
 		EntityAIChastStoreChest aiChastStoreChest = new EntityAIChastStoreChest(this);
 		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this);
 		EntityAIBase aiWander = new EntityAIWander(this, 1.25D);
-		EntityAIBase aiWatchClosest = new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F);
+		EntityAIBase aiWatchClosestGolem = new EntityAIWatchClosest(this, EntityGolem.class, 6.0F);
+		EntityAIBase aiWatchClosestPlayer = new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F);
 		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
 
 		aiSwimming.setMutexBits(0);
@@ -82,7 +82,8 @@ public class EntityChast extends EntityGolem
 		aiChastStoreChest.setMutexBits(1);
 		aiChastCollectItem.setMutexBits(1);
 		aiWander.setMutexBits(1);
-		aiWatchClosest.setMutexBits(2);
+		aiWatchClosestGolem.setMutexBits(2);
+		aiWatchClosestPlayer.setMutexBits(2);
 		aiLookIdle.setMutexBits(3);
 
 		this.tasks.addTask(0, aiSwimming);
@@ -92,8 +93,9 @@ public class EntityChast extends EntityGolem
 		this.tasks.addTask(4, aiChastStoreChest);
 		this.tasks.addTask(5, aiChastCollectItem);
 		this.tasks.addTask(6, aiWander);
-		this.tasks.addTask(7, aiWatchClosest);
-		this.tasks.addTask(8, aiLookIdle);
+		this.tasks.addTask(7, aiWatchClosestGolem);
+		this.tasks.addTask(8, aiWatchClosestPlayer);
+		this.tasks.addTask(9, aiLookIdle);
 	}
 
 	@Override
@@ -174,6 +176,19 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Override
+	public double getMountedYOffset()
+	{
+		if (this.isSitting())
+		{
+			return ((double) this.height * 0.45);
+		}
+		else
+		{
+			return ((double) this.height * 0.80);
+		}
+	}
+
+	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount)
 	{
 		if (this.getRidingEntity() instanceof EntityLivingBase)
@@ -185,7 +200,7 @@ public class EntityChast extends EntityGolem
 
 		if ((source.getSourceOfDamage() instanceof EntityLivingBase) && !this.getEntityWorld().isRemote)
 		{
-			this.setAIPanicking(Math.max(PANIC_TIME_MIN, (int) amount * 20));
+			this.setAIPanicking(Math.max((4 * 20), (int) amount * 20));
 		}
 
 		return attackEntityFrom;
@@ -254,6 +269,19 @@ public class EntityChast extends EntityGolem
 			{
 				this.setAISitting(!this.isSitting());
 
+				for (Entity entity : this.getPassengers())
+				{
+					if (entity instanceof EntityTameable)
+					{
+						EntityTameable entityTameable = (EntityTameable) entity;
+
+						entityTameable.setSitting(false);
+						entityTameable.getAISit().setSitting(false);
+					}
+
+					entity.dismountRidingEntity();
+				}
+
 				this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 			}
 
@@ -277,9 +305,14 @@ public class EntityChast extends EntityGolem
 	{
 		super.updateRidden();
 
-		if (this.isRiding() && this.getRidingEntity().isSneaking())
+		if (this.isRiding())
 		{
-			this.dismountRidingEntity();
+			this.prevRotationYaw = this.rotationYaw = this.getRidingEntity().rotationYaw;
+
+			if (this.getRidingEntity().isSneaking())
+			{
+				this.dismountRidingEntity();
+			}
 		}
 	}
 

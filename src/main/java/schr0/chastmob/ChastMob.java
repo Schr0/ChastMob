@@ -59,6 +59,8 @@ public class ChastMob
 	@Mod.EventHandler
 	public void initEvent(FMLInitializationEvent event)
 	{
+		(new ChastMobEvent()).init();
+
 		this.proxy.initEventProxy(event);
 	}
 
