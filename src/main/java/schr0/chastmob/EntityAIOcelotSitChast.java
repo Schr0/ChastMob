@@ -23,6 +23,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	private double maxDistance;
 	private EntityChast targetEntityChast;
 	private int sitTime;
+	private boolean isEntityAIOcelotSitChast;
 
 	public EntityAIOcelotSitChast(EntityOcelot owner, float moveSpeed, double maxDistance)
 	{
@@ -31,7 +32,6 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 		this.theOwnerEntity = owner;
 		this.theOwnerWorld = owner.worldObj;
 		this.theOwnerBlockPos = new BlockPos(owner);
-
 		this.moveSpeed = moveSpeed;
 		this.maxDistance = maxDistance;
 	}
@@ -43,43 +43,67 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 		{
 			return true;
 		}
-
-		if (this.theOwnerEntity.isTamed() && !this.theOwnerEntity.isSitting())
+		else
 		{
-			List<EntityChast> listEntityChast = this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(this.maxDistance));
+			this.isEntityAIOcelotSitChast = false;
 
-			for (EntityChast entityChast : listEntityChast)
+			if (this.theOwnerEntity.isTamed() && !this.theOwnerEntity.isSitting())
 			{
-				if (this.canSitEntityChast(entityChast))
-				{
-					this.setSitting(entityChast, SIT_TIME_LIMIT);
+				List<EntityChast> listEntityChast = this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(this.maxDistance));
 
-					return true;
+				for (EntityChast entityChast : listEntityChast)
+				{
+					if (this.canSitEntityChast(entityChast))
+					{
+						this.isEntityAIOcelotSitChast = true;
+
+						this.setTargetChast(entityChast, SIT_TIME_LIMIT);
+
+						break;
+					}
 				}
 			}
-		}
 
-		return false;
+			return this.isEntityAIOcelotSitChast;
+		}
 	}
 
 	@Override
 	public boolean continueExecuting()
 	{
-		if (super.continueExecuting())
+		if (this.isEntityAIOcelotSitChast)
 		{
-			return true;
+			return this.hasTargetChast();
 		}
+		else
+		{
+			return super.continueExecuting();
+		}
+	}
 
-		return this.isSitting();
-
+	@Override
+	public void startExecuting()
+	{
+		if (this.isEntityAIOcelotSitChast)
+		{
+			this.theOwnerEntity.getAISit().setSitting(false);
+			this.theOwnerEntity.setSitting(false);
+		}
+		else
+		{
+			super.startExecuting();
+		}
 	}
 
 	@Override
 	public void resetTask()
 	{
-		if (this.targetEntityChast != null)
+		if (this.isEntityAIOcelotSitChast)
 		{
-			this.setSitting(null, 0);
+			this.theOwnerEntity.getAISit().setSitting(true);
+			this.theOwnerEntity.setSitting(true);
+
+			this.setTargetChast(null, 0);
 		}
 		else
 		{
@@ -90,9 +114,11 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	@Override
 	public void updateTask()
 	{
-		if (this.isSitting())
+		if (this.isEntityAIOcelotSitChast)
 		{
 			--this.sitTime;
+
+			this.theOwnerEntity.getLookHelper().setLookPositionWithEntity(this.targetEntityChast, 10.0F, this.theOwnerEntity.getVerticalFaceSpeed());
 
 			if (this.theOwnerEntity.getDistanceSqToEntity(this.targetEntityChast) < 1.5D)
 			{
@@ -102,11 +128,9 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 				{
 					if (entityChast.equals(this.targetEntityChast) && this.canSitEntityChast(entityChast))
 					{
-						this.theOwnerEntity.setSitting(true);
-
 						this.theOwnerEntity.startRiding(entityChast);
 
-						this.sitTime = 0;
+						this.setTargetChast(null, 0);
 
 						return;
 					}
@@ -125,12 +149,12 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private boolean isSitting()
+	private boolean hasTargetChast()
 	{
-		return (this.targetEntityChast != null) && (0 < this.sitTime);
+		return ((this.targetEntityChast != null) && (0 < this.sitTime));
 	}
 
-	private void setSitting(@Nullable EntityChast entityChast, int sitTime)
+	private void setTargetChast(@Nullable EntityChast entityChast, int sitTime)
 	{
 		this.targetEntityChast = entityChast;
 		this.sitTime = sitTime;

@@ -22,8 +22,8 @@ public class ChastMobEvent
 	{
 		if ((event.getEntityLiving().ticksExisted < 5) && (event.getEntityLiving() instanceof EntityOcelot))
 		{
-			HashSet<EntityAITaskEntry> hashset = new HashSet<EntityAITaskEntry>();
 			EntityOcelot entityOcelot = (EntityOcelot) event.getEntityLiving();
+			HashSet<EntityAITaskEntry> hashset = new HashSet<EntityAITaskEntry>();
 
 			for (EntityAITaskEntry taskEntry : entityOcelot.tasks.taskEntries)
 			{

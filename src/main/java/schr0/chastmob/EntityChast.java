@@ -225,8 +225,6 @@ public class EntityChast extends EntityGolem
 	@Override
 	public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
 	{
-		boolean isCanceledInteract = (!hand.equals(EnumHand.MAIN_HAND)) || this.isPanic();
-
 		if ((!hand.equals(EnumHand.MAIN_HAND)) || this.isPanic())
 		{
 			return false;
@@ -261,10 +259,10 @@ public class EntityChast extends EntityGolem
 			}
 
 			/*
-			if (!player.isBeingRidden())
-			{
-				this.startRiding(player);
-			}
+				if (!player.isBeingRidden())
+				{
+					this.startRiding(player);
+				}
 			// */
 		}
 
@@ -272,20 +270,20 @@ public class EntityChast extends EntityGolem
 		{
 			if (isServerWorld)
 			{
-				this.setSitting(!this.isSit());
-
 				for (Entity entity : this.getPassengers())
 				{
 					if (entity instanceof EntityTameable)
 					{
 						EntityTameable entityTameable = (EntityTameable) entity;
 
-						entityTameable.setSitting(false);
 						entityTameable.getAISit().setSitting(false);
+						entityTameable.setSitting(false);
 					}
 
 					entity.dismountRidingEntity();
 				}
+
+				this.setSitting(!this.isSit());
 
 				this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 			}
@@ -294,24 +292,15 @@ public class EntityChast extends EntityGolem
 		}
 		else
 		{
-			if (isServerWorld)
+			if (this.getPassengers().isEmpty())
 			{
-				for (Entity entity : this.getPassengers())
+				if (isServerWorld)
 				{
-					if (entity instanceof EntityTameable)
-					{
-						EntityTameable entityTameable = (EntityTameable) entity;
-
-						entityTameable.setSitting(false);
-					}
-
-					entity.dismountRidingEntity();
+					player.displayGUIChest(this.getInventoryChast());
 				}
 
-				player.displayGUIChest(this.getInventoryChast());
+				player.swingArm(hand);
 			}
-
-			player.swingArm(hand);
 		}
 
 		return true;
