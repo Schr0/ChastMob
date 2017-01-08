@@ -64,15 +64,18 @@ public class EntityChast extends EntityGolem
 	{
 		super.initEntityAI();
 
+		double moveSpeed = 1.25D;
+		int maxDistance = 5;
+
 		EntityAIBase aiSwimming = new EntityAISwimming(this);
-		this.aiChastPanic = new EntityAIChastPanic(this);
+		this.aiChastPanic = new EntityAIChastPanic(this, (moveSpeed * 2), (maxDistance * 2));
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
-		EntityAIChastStoreChest aiChastStoreChest = new EntityAIChastStoreChest(this);
-		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this);
-		EntityAIBase aiWander = new EntityAIWander(this, 1.25D);
-		EntityAIBase aiWatchClosestGolem = new EntityAIWatchClosest(this, EntityGolem.class, 6.0F);
-		EntityAIBase aiWatchClosestPlayer = new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F);
+		EntityAIChastStoreChest aiChastStoreChest = new EntityAIChastStoreChest(this, moveSpeed, maxDistance);
+		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this, moveSpeed, (double) maxDistance);
+		EntityAIWander aiWander = new EntityAIWander(this, moveSpeed);
+		EntityAIBase aiWatchClosestGolem = new EntityAIWatchClosest(this, EntityGolem.class, (float) maxDistance);
+		EntityAIBase aiWatchClosestPlayer = new EntityAIWatchClosest(this, EntityPlayer.class, (float) maxDistance);
 		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
 
 		aiSwimming.setMutexBits(0);
@@ -84,7 +87,7 @@ public class EntityChast extends EntityGolem
 		aiWander.setMutexBits(1);
 		aiWatchClosestGolem.setMutexBits(2);
 		aiWatchClosestPlayer.setMutexBits(2);
-		aiLookIdle.setMutexBits(3);
+		aiLookIdle.setMutexBits(2);
 
 		this.tasks.addTask(0, aiSwimming);
 		this.tasks.addTask(1, this.aiChastPanic);
@@ -126,7 +129,7 @@ public class EntityChast extends EntityGolem
 
 		compound.setByte(ChastMobNBTTags.CHAST_COLOR, (byte) this.getColor().getDyeDamage());
 
-		compound.setBoolean(ChastMobNBTTags.CHAST_SIT, this.isSitting());
+		compound.setBoolean(ChastMobNBTTags.CHAST_SIT, this.isSit());
 
 		// TODO BUG FIX
 		if (this.getRidingEntity() instanceof EntityPlayer)
@@ -148,19 +151,19 @@ public class EntityChast extends EntityGolem
 
 		if (this.aiChastPanic != null)
 		{
-			this.setAIPanicking(0);
+			this.setPanicking(0);
 		}
 
-		this.setSitting(compound.getBoolean(ChastMobNBTTags.CHAST_SIT));
+		this.setSit(compound.getBoolean(ChastMobNBTTags.CHAST_SIT));
 
 		if (this.aiChastSit != null)
 		{
-			this.setAISitting(this.isSitting());
+			this.setSitting(this.isSit());
 		}
 
 		if (this.aiChastTrade != null)
 		{
-			this.setAITrading(null);
+			this.setTrading(null);
 		}
 	}
 
@@ -178,7 +181,7 @@ public class EntityChast extends EntityGolem
 	@Override
 	public double getMountedYOffset()
 	{
-		if (this.isSitting())
+		if (this.isSit())
 		{
 			return ((double) this.height * 0.45);
 		}
@@ -200,7 +203,7 @@ public class EntityChast extends EntityGolem
 
 		if ((source.getSourceOfDamage() instanceof EntityLivingBase) && !this.getEntityWorld().isRemote)
 		{
-			this.setAIPanicking(Math.max((4 * 20), (int) amount * 20));
+			this.setPanicking(Math.max((4 * 20), (int) amount * 20));
 		}
 
 		return attackEntityFrom;
@@ -222,7 +225,9 @@ public class EntityChast extends EntityGolem
 	@Override
 	public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
 	{
-		if (!hand.equals(EnumHand.MAIN_HAND))
+		boolean isCanceledInteract = (!hand.equals(EnumHand.MAIN_HAND)) || this.isPanic();
+
+		if ((!hand.equals(EnumHand.MAIN_HAND)) || this.isPanic())
 		{
 			return false;
 		}
@@ -267,7 +272,7 @@ public class EntityChast extends EntityGolem
 		{
 			if (isServerWorld)
 			{
-				this.setAISitting(!this.isSitting());
+				this.setSitting(!this.isSit());
 
 				for (Entity entity : this.getPassengers())
 				{
@@ -291,6 +296,18 @@ public class EntityChast extends EntityGolem
 		{
 			if (isServerWorld)
 			{
+				for (Entity entity : this.getPassengers())
+				{
+					if (entity instanceof EntityTameable)
+					{
+						EntityTameable entityTameable = (EntityTameable) entity;
+
+						entityTameable.setSitting(false);
+					}
+
+					entity.dismountRidingEntity();
+				}
+
 				player.displayGUIChest(this.getInventoryChast());
 			}
 
@@ -342,16 +359,16 @@ public class EntityChast extends EntityGolem
 		this.getDataManager().set(COLOR, Integer.valueOf(enumDyeColor.getDyeDamage()));
 	}
 
-	public boolean isSitting()
+	public boolean isSit()
 	{
 		return (((Byte) this.getDataManager().get(SIT)).byteValue() & 1) != 0;
 	}
 
-	public void setSitting(boolean isSitting)
+	public void setSit(boolean isSit)
 	{
 		byte b0 = ((Byte) this.getDataManager().get(SIT)).byteValue();
 
-		if (isSitting)
+		if (isSit)
 		{
 			this.getDataManager().set(SIT, Byte.valueOf((byte) (b0 | 1)));
 		}
@@ -366,11 +383,11 @@ public class EntityChast extends EntityGolem
 		return ((((Byte) this.getDataManager().get(OPEN)).byteValue() & 1) != 0);
 	}
 
-	public void setOpen(boolean isCoverOpen)
+	public void setOpen(boolean isOpen)
 	{
 		byte b0 = ((Byte) this.getDataManager().get(OPEN)).byteValue();
 
-		if (isCoverOpen)
+		if (isOpen)
 		{
 			this.getDataManager().set(OPEN, Byte.valueOf((byte) (b0 | 1)));
 		}
@@ -385,11 +402,11 @@ public class EntityChast extends EntityGolem
 		return (((Byte) this.getDataManager().get(TRADE)).byteValue() & 1) != 0;
 	}
 
-	public void setTrade(boolean isTrading)
+	public void setTrade(boolean isTradeg)
 	{
 		byte b0 = ((Byte) this.getDataManager().get(TRADE)).byteValue();
 
-		if (isTrading)
+		if (isTradeg)
 		{
 			this.getDataManager().set(TRADE, Byte.valueOf((byte) (b0 | 1)));
 		}
@@ -423,17 +440,17 @@ public class EntityChast extends EntityGolem
 		return this.inventoryChast;
 	}
 
-	public void setAISitting(boolean isSitting)
+	public void setSitting(boolean isSitting)
 	{
 		this.aiChastSit.setSitting(isSitting);
 	}
 
-	public void setAITrading(@Nullable EntityPlayer tradePlayer)
+	public void setTrading(@Nullable EntityPlayer tradePlayer)
 	{
 		this.aiChastTrade.setTrading(tradePlayer);
 	}
 
-	public void setAIPanicking(int panicTime)
+	public void setPanicking(int panicTime)
 	{
 		this.aiChastPanic.setPanicking(panicTime);
 

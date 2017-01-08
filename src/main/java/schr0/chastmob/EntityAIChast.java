@@ -14,6 +14,18 @@ public abstract class EntityAIChast extends EntityAIBase
 		this.theChast = entityChast;
 	}
 
+	@Override
+	public void startExecuting()
+	{
+		this.theChast.getNavigator().clearPathEntity();
+	}
+
+	@Override
+	public void resetTask()
+	{
+		this.theChast.getNavigator().clearPathEntity();
+	}
+
 	// TODO /* ======================================== MOD START =====================================*/
 
 	public EntityChast getAIOwnerEntity()

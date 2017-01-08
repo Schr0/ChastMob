@@ -17,16 +17,19 @@ public class EntityAIChastStoreChest extends EntityAIChast
 {
 
 	private static final int STORE_TIME_LIMIT = (5 * 20);
-	private static final int SEARCH_XYZ = 5;
-	private static final double MOVE_SPEED = 1.25D;
 
+	private double moveSpeed;
+	private int maxDistance;
 	private TileEntityChest targetChest;
 	private int storeTime;
 
-	public EntityAIChastStoreChest(EntityChast entityChast)
+	public EntityAIChastStoreChest(EntityChast entityChast, double moveSpeed, int maxDistance)
 	{
 		super(entityChast);
 		this.setMutexBits(1);
+
+		this.moveSpeed = moveSpeed;
+		this.maxDistance = maxDistance;
 	}
 
 	@Override
@@ -37,7 +40,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 			return false;
 		}
 
-		TileEntityChest tileEntityChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), SEARCH_XYZ);
+		TileEntityChest tileEntityChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
 
 		if (tileEntityChest != null)
 		{
@@ -63,14 +66,16 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public void startExecuting()
 	{
-		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		super.startExecuting();
+
 		this.getAIOwnerEntity().setOpen(false);
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		super.resetTask();
+
 		this.getAIOwnerEntity().setOpen(false);
 
 		this.setStoring(null, 0);
@@ -87,7 +92,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		if (this.getAIOwnerEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
 		{
-			TileEntityChest tileEntityChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), SEARCH_XYZ);
+			TileEntityChest tileEntityChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
 
 			if ((tileEntityChest != null) && tileEntityChest.equals(this.targetChest))
 			{
@@ -100,17 +105,15 @@ public class EntityAIChastStoreChest extends EntityAIChast
 						this.getAIOwnerInventory().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) tileEntityChest, stackInv, EnumFacing.UP));
 
 						this.getAIOwnerEntity().setOpen(true);
-
-						this.setStoring(null, 0);
-
-						return;
 					}
 				}
+
+				this.setStoring(null, 0);
 			}
 		}
 		else
 		{
-			this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), MOVE_SPEED);
+			this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.moveSpeed);
 		}
 	}
 

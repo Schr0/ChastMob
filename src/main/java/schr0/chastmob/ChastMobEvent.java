@@ -36,7 +36,7 @@ public class ChastMobEvent
 			for (EntityAITaskEntry task : hashset)
 			{
 				entityOcelot.tasks.removeTask(task.action);
-				entityOcelot.tasks.addTask(task.priority, new EntityAIOcelotSitChast(entityOcelot, 0.8F));
+				entityOcelot.tasks.addTask(task.priority, new EntityAIOcelotSitChast(entityOcelot, 0.8F, 8.0D));
 			}
 		}
 	}

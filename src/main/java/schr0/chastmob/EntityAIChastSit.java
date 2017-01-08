@@ -25,15 +25,17 @@ public class EntityAIChastSit extends EntityAIChast
 	@Override
 	public void startExecuting()
 	{
-		this.getAIOwnerEntity().getNavigator().clearPathEntity();
-		this.getAIOwnerEntity().setSitting(true);
+		super.startExecuting();
+
+		this.getAIOwnerEntity().setSit(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.getAIOwnerEntity().getNavigator().clearPathEntity();
-		this.getAIOwnerEntity().setSitting(false);
+		super.resetTask();
+
+		this.getAIOwnerEntity().setSit(false);
 
 		this.setSitting(false);
 	}

@@ -15,18 +15,21 @@ public class EntityAIChastPanic extends EntityAIChast
 {
 
 	private static final int IDEL_TIME = (3 * 20);
-	private static final int SEARCH_XYZ = 5;
-	private static final double MOVE_SPEED = 2.5D;
 
+	private double moveSpeed;
+	private int maxDistance;
 	private int panicTime;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
 
-	public EntityAIChastPanic(EntityChast entityChast)
+	public EntityAIChastPanic(EntityChast entityChast, double moveSpeed, int maxDistance)
 	{
 		super(entityChast);
 		this.setMutexBits(1);
+
+		this.moveSpeed = moveSpeed;
+		this.maxDistance = maxDistance;
 	}
 
 	@Override
@@ -43,19 +46,20 @@ public class EntityAIChastPanic extends EntityAIChast
 	@Override
 	public void startExecuting()
 	{
-		this.getAIOwnerEntity().getNavigator().clearPathEntity();
-		this.getAIOwnerEntity().setPanic(true);
+		super.startExecuting();
 
+		this.getAIOwnerEntity().setPanic(true);
 		this.getAIOwnerEntity().setOpen(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.getAIOwnerEntity().getNavigator().clearPathEntity();
-		this.getAIOwnerEntity().setPanic(false);
+		super.resetTask();
 
+		this.getAIOwnerEntity().setPanic(false);
 		this.getAIOwnerEntity().setOpen(false);
+
 		this.setPanicking(0);
 	}
 
@@ -108,7 +112,7 @@ public class EntityAIChastPanic extends EntityAIChast
 
 		if (this.getAIOwnerEntity().isBurning())
 		{
-			BlockPos blockPos = this.getNearWaterBlockPos(this.getAIOwnerEntity(), SEARCH_XYZ);
+			BlockPos blockPos = this.getNearWaterBlockPos(this.getAIOwnerEntity(), this.maxDistance);
 
 			if (blockPos == null)
 			{
@@ -123,7 +127,7 @@ public class EntityAIChastPanic extends EntityAIChast
 		}
 		else
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getAIOwnerEntity(), SEARCH_XYZ, SEARCH_XYZ);
+			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getAIOwnerEntity(), this.maxDistance, this.maxDistance);
 
 			if (vec3d == null)
 			{
@@ -137,7 +141,7 @@ public class EntityAIChastPanic extends EntityAIChast
 			}
 		}
 
-		this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, MOVE_SPEED);
+		this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.moveSpeed);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

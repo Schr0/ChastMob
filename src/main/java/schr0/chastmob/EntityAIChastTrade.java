@@ -27,14 +27,16 @@ public class EntityAIChastTrade extends EntityAIChast
 	@Override
 	public void startExecuting()
 	{
-		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		super.startExecuting();
+
 		this.getAIOwnerEntity().setTrade(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		super.resetTask();
+
 		this.getAIOwnerEntity().setTrade(false);
 
 		this.setTrading(null);

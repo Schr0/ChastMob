@@ -14,23 +14,26 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 {
 
 	private static final int SIT_TIME_LIMIT = (5 * 20);
-	private static final double SEARCH_XYZ = 8.0D;
 
 	private EntityOcelot theOwnerEntity;
 	private World theOwnerWorld;
 	private BlockPos theOwnerBlockPos;
+
 	private float moveSpeed;
+	private double maxDistance;
 	private EntityChast targetEntityChast;
 	private int sitTime;
 
-	public EntityAIOcelotSitChast(EntityOcelot owner, float speed)
+	public EntityAIOcelotSitChast(EntityOcelot owner, float moveSpeed, double maxDistance)
 	{
-		super(owner, speed);
+		super(owner, moveSpeed);
 
 		this.theOwnerEntity = owner;
 		this.theOwnerWorld = owner.worldObj;
 		this.theOwnerBlockPos = new BlockPos(owner);
-		this.moveSpeed = speed;
+
+		this.moveSpeed = moveSpeed;
+		this.maxDistance = maxDistance;
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 		if (this.theOwnerEntity.isTamed() && !this.theOwnerEntity.isSitting())
 		{
-			List<EntityChast> listEntityChast = this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(SEARCH_XYZ));
+			List<EntityChast> listEntityChast = this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(this.maxDistance));
 
 			for (EntityChast entityChast : listEntityChast)
 			{
@@ -93,7 +96,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 			if (this.theOwnerEntity.getDistanceSqToEntity(this.targetEntityChast) < 1.5D)
 			{
-				List<EntityChast> listEntityChast = this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(SEARCH_XYZ));
+				List<EntityChast> listEntityChast = this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(maxDistance));
 
 				for (EntityChast entityChast : listEntityChast)
 				{
@@ -137,7 +140,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		if (this.theOwnerEntity.getEntitySenses().canSee(entityChast))
 		{
-			return (entityChast.isEntityAlive() && !entityChast.isBeingRidden() && entityChast.isSitting());
+			return (entityChast.isEntityAlive() && !entityChast.isBeingRidden() && entityChast.isSit());
 		}
 
 		return false;

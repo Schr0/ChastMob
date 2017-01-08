@@ -14,22 +14,25 @@ public class EntityAIChastCollectItem extends EntityAIChast
 {
 
 	private static final int COLLECT_TIME_LIMIT = (5 * 20);
-	private static final double SEARCH_XYZ = 5.0D;
-	private static final double MOVE_SPEED = 1.25D;
 
+	private double moveSpeed;
+	private double maxDistance;
 	private EntityItem targetEntityItem;
 	private int collectTime;
 
-	public EntityAIChastCollectItem(EntityChast entityChast)
+	public EntityAIChastCollectItem(EntityChast entityChast, double moveSpeed, double maxDistance)
 	{
 		super(entityChast);
 		this.setMutexBits(1);
+
+		this.moveSpeed = moveSpeed;
+		this.maxDistance = maxDistance;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerBlockPos()).expandXyz(SEARCH_XYZ));
+		List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerBlockPos()).expandXyz(this.maxDistance));
 		TreeMap<Double, EntityItem> treeMapEntityItem = new TreeMap<Double, EntityItem>();
 
 		for (EntityItem entityItem : listEntityItem)
@@ -67,14 +70,16 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	@Override
 	public void startExecuting()
 	{
-		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		super.startExecuting();
+
 		this.getAIOwnerEntity().setOpen(false);
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.getAIOwnerEntity().getNavigator().clearPathEntity();
+		super.resetTask();
+
 		this.getAIOwnerEntity().setOpen(false);
 
 		this.setCollecting(null, 0);
@@ -96,7 +101,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
 		{
-			List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerBlockPos()).expandXyz(SEARCH_XYZ));
+			List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerBlockPos()).expandXyz(this.maxDistance));
 
 			for (EntityItem entityItem : listEntityItem)
 			{
@@ -114,7 +119,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		}
 		else
 		{
-			this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, MOVE_SPEED);
+			this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.moveSpeed);
 		}
 	}
 

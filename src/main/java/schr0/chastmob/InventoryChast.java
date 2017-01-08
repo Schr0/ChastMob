@@ -43,7 +43,7 @@ public class InventoryChast extends InventoryBasic
 
 		this.entityChast.setOpen(true);
 
-		this.entityChast.setAITrading(player);
+		this.entityChast.setTrading(player);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class InventoryChast extends InventoryBasic
 
 		this.entityChast.setOpen(false);
 
-		this.entityChast.setAITrading(null);
+		this.entityChast.setTrading(null);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

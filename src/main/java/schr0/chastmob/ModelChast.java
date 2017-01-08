@@ -118,7 +118,7 @@ public class ModelChast extends ModelBase
 		this.body.rotateAngleY = (netHeadYaw / (180F / (float) Math.PI));
 		this.core.rotateAngleZ = (ageInTicks * (entityChast.getHealth() / 50F));
 
-		if (entityChast.isSitting() || entityChast.isRiding())
+		if (entityChast.isSit() || entityChast.isRiding())
 		{
 			float pointSitY = 8.0F;
 			this.body.setRotationPoint(0F, (10F + pointSitY), 0F);
