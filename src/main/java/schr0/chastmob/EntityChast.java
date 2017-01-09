@@ -12,6 +12,7 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
+import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -313,11 +314,37 @@ public class EntityChast extends EntityGolem
 
 		if (this.isRiding())
 		{
-			this.prevRotationYaw = this.rotationYaw = this.getRidingEntity().rotationYaw;
+			Entity ridingEntity = this.getRidingEntity();
 
-			if (this.getRidingEntity().isSneaking())
+			this.prevRotationYaw = this.rotationYaw = ridingEntity.rotationYaw;
+
+			if (ridingEntity.isSneaking())
 			{
 				this.dismountRidingEntity();
+			}
+		}
+	}
+
+	@Override
+	public void updatePassenger(Entity passenger)
+	{
+		super.updatePassenger(passenger);
+
+		if (passenger.getClass().equals(EntityOcelot.class))
+		{
+			EntityOcelot entityOcelot = (EntityOcelot) passenger;
+
+			if (!entityOcelot.isSitting())
+			{
+				entityOcelot.getAISit().setSitting(true);
+				entityOcelot.setSitting(true);
+			}
+		}
+		else
+		{
+			if (this.isSit())
+			{
+				this.setSitting(false);
 			}
 		}
 	}

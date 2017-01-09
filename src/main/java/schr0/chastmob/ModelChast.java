@@ -114,7 +114,15 @@ public class ModelChast extends ModelBase
 
 		EntityChast entityChast = (EntityChast) entityIn;
 
-		this.body.rotateAngleX = (headPitch / (180F / (float) Math.PI));
+		if (entityChast.isRiding() || !entityChast.getPassengers().isEmpty())
+		{
+			this.body.rotateAngleX = 0.0F;
+		}
+		else
+		{
+			this.body.rotateAngleX = (headPitch / (180F / (float) Math.PI));
+		}
+
 		this.body.rotateAngleY = (netHeadYaw / (180F / (float) Math.PI));
 		this.core.rotateAngleZ = (ageInTicks * (entityChast.getHealth() / 50F));
 
