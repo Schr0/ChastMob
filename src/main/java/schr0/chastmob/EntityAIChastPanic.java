@@ -23,13 +23,13 @@ public class EntityAIChastPanic extends EntityAIChast
 	private double randPosY;
 	private double randPosZ;
 
-	public EntityAIChastPanic(EntityChast entityChast, double moveSpeed, int maxDistance)
+	public EntityAIChastPanic(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
 		this.setMutexBits(1);
 
-		this.moveSpeed = moveSpeed;
-		this.maxDistance = maxDistance;
+		this.moveSpeed = speed;
+		this.maxDistance = distance;
 	}
 
 	@Override
@@ -48,8 +48,8 @@ public class EntityAIChastPanic extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getAIOwnerEntity().setPanic(true);
-		this.getAIOwnerEntity().setOpen(true);
+		this.getAIOwnerEntity().setStatePanic(true);
+		this.getAIOwnerEntity().setCoverOpen(true);
 	}
 
 	@Override
@@ -57,8 +57,8 @@ public class EntityAIChastPanic extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getAIOwnerEntity().setPanic(false);
-		this.getAIOwnerEntity().setOpen(false);
+		this.getAIOwnerEntity().setStatePanic(false);
+		this.getAIOwnerEntity().setCoverOpen(false);
 
 		this.setPanicking(0);
 	}
@@ -73,7 +73,7 @@ public class EntityAIChastPanic extends EntityAIChast
 			return;
 		}
 
-		if ((this.getAIOwnerEntity().getRNG().nextInt(10) == 0) && !this.getAIOwnerWorld().isRemote)
+		if ((this.getAIOwnerEntity().getRNG().nextInt(10) == 0) && !this.getAIWorld().isRemote)
 		{
 			for (int slot = 0; slot < this.getAIOwnerInventory().getSizeInventory(); ++slot)
 			{
@@ -90,7 +90,7 @@ public class EntityAIChastPanic extends EntityAIChast
 
 					stackInvCopy.stackSize = 1;
 
-					Block.spawnAsEntity(this.getAIOwnerWorld(), this.getAIOwnerBlockPos(), stackInvCopy);
+					Block.spawnAsEntity(this.getAIWorld(), new BlockPos(this.getAIOwnerEntity()), stackInvCopy);
 
 					--stackInv.stackSize;
 

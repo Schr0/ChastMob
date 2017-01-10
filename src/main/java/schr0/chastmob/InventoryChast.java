@@ -25,7 +25,7 @@ public class InventoryChast extends InventoryBasic
 	{
 		if (this.entityChast.isEntityAlive())
 		{
-			if (this.entityChast.isPanic())
+			if (this.entityChast.isStatePanic())
 			{
 				return false;
 			}
@@ -41,9 +41,9 @@ public class InventoryChast extends InventoryBasic
 	{
 		super.markDirty();
 
-		this.entityChast.setOpen(true);
+		this.entityChast.setCoverOpen(true);
 
-		this.entityChast.setTrading(player);
+		this.entityChast.setAITrading(player);
 	}
 
 	@Override
@@ -51,9 +51,9 @@ public class InventoryChast extends InventoryBasic
 	{
 		super.markDirty();
 
-		this.entityChast.setOpen(false);
+		this.entityChast.setCoverOpen(false);
 
-		this.entityChast.setTrading(null);
+		this.entityChast.setAITrading(null);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

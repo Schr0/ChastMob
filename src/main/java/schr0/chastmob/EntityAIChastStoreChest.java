@@ -23,30 +23,33 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	private TileEntityChest targetChest;
 	private int storeTime;
 
-	public EntityAIChastStoreChest(EntityChast entityChast, double moveSpeed, int maxDistance)
+	public EntityAIChastStoreChest(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
 		this.setMutexBits(1);
 
-		this.moveSpeed = moveSpeed;
-		this.maxDistance = maxDistance;
+		this.moveSpeed = speed;
+		this.maxDistance = distance;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), ChastMobHelper.getEmptyItemStack()))
+		if (this.getAIOwnerEntity().isOwnerFollow())
 		{
 			return false;
 		}
 
-		TileEntityChest tileEntityChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
-
-		if (tileEntityChest != null)
+		if (!ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), ChastMobHelper.getEmptyItemStack()))
 		{
-			this.setStoring(tileEntityChest, STORE_TIME_LIMIT);
+			TileEntityChest tileEntityChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
 
-			return true;
+			if (tileEntityChest != null)
+			{
+				this.setStoring(tileEntityChest, STORE_TIME_LIMIT);
+
+				return true;
+			}
 		}
 
 		return false;
@@ -68,7 +71,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getAIOwnerEntity().setOpen(false);
+		this.getAIOwnerEntity().setCoverOpen(false);
 	}
 
 	@Override
@@ -76,7 +79,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getAIOwnerEntity().setOpen(false);
+		this.getAIOwnerEntity().setCoverOpen(false);
 
 		this.setStoring(null, 0);
 	}
@@ -104,7 +107,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 					{
 						this.getAIOwnerInventory().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) tileEntityChest, stackInv, EnumFacing.UP));
 
-						this.getAIOwnerEntity().setOpen(true);
+						this.getAIOwnerEntity().setCoverOpen(true);
 					}
 				}
 

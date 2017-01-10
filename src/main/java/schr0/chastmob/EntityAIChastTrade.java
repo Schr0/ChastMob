@@ -29,7 +29,7 @@ public class EntityAIChastTrade extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getAIOwnerEntity().setTrade(true);
+		this.getAIOwnerEntity().setStateTrade(true);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class EntityAIChastTrade extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getAIOwnerEntity().setTrade(false);
+		this.getAIOwnerEntity().setStateTrade(false);
 
 		this.setTrading(null);
 	}

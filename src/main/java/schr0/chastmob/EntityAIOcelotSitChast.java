@@ -25,15 +25,15 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	private int sitTime;
 	private boolean isEntityAIOcelotSitChast;
 
-	public EntityAIOcelotSitChast(EntityOcelot owner, float moveSpeed, double maxDistance)
+	public EntityAIOcelotSitChast(EntityOcelot owner, float speed, double distance)
 	{
-		super(owner, moveSpeed);
+		super(owner, speed);
 
 		this.theOwnerEntity = owner;
 		this.theOwnerWorld = owner.worldObj;
 		this.theOwnerBlockPos = new BlockPos(owner);
-		this.moveSpeed = moveSpeed;
-		this.maxDistance = maxDistance;
+		this.moveSpeed = speed;
+		this.maxDistance = distance;
 	}
 
 	@Override
@@ -53,11 +53,11 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 				for (EntityChast entityChast : listEntityChast)
 				{
-					if (this.canSitEntityChast(entityChast))
+					if (this.canSittingChast(entityChast))
 					{
 						this.isEntityAIOcelotSitChast = true;
 
-						this.setTargetChast(entityChast, SIT_TIME_LIMIT);
+						this.setSittingChast(entityChast, SIT_TIME_LIMIT);
 
 						break;
 					}
@@ -73,7 +73,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		if (this.isEntityAIOcelotSitChast)
 		{
-			return this.hasTargetChast();
+			return this.isSittingChast();
 		}
 		else
 		{
@@ -103,7 +103,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 			this.theOwnerEntity.getAISit().setSitting(true);
 			this.theOwnerEntity.setSitting(true);
 
-			this.setTargetChast(null, 0);
+			this.setSittingChast(null, 0);
 		}
 		else
 		{
@@ -126,11 +126,11 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 				for (EntityChast entityChast : listEntityChast)
 				{
-					if (entityChast.equals(this.targetEntityChast) && this.canSitEntityChast(entityChast))
+					if (entityChast.equals(this.targetEntityChast) && this.canSittingChast(entityChast))
 					{
 						this.theOwnerEntity.startRiding(entityChast);
 
-						this.setTargetChast(null, 0);
+						this.setSittingChast(null, 0);
 
 						return;
 					}
@@ -149,22 +149,22 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private boolean hasTargetChast()
+	private boolean isSittingChast()
 	{
 		return ((this.targetEntityChast != null) && (0 < this.sitTime));
 	}
 
-	private void setTargetChast(@Nullable EntityChast entityChast, int sitTime)
+	private void setSittingChast(@Nullable EntityChast entityChast, int sitTime)
 	{
 		this.targetEntityChast = entityChast;
 		this.sitTime = sitTime;
 	}
 
-	private boolean canSitEntityChast(EntityChast entityChast)
+	private boolean canSittingChast(EntityChast entityChast)
 	{
 		if (this.theOwnerEntity.getEntitySenses().canSee(entityChast))
 		{
-			return (entityChast.isEntityAlive() && !entityChast.isBeingRidden() && entityChast.isSit());
+			return (entityChast.isEntityAlive() && !entityChast.isBeingRidden() && entityChast.isStateSit());
 		}
 
 		return false;

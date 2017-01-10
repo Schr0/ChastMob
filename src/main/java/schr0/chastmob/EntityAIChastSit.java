@@ -27,7 +27,7 @@ public class EntityAIChastSit extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getAIOwnerEntity().setSit(true);
+		this.getAIOwnerEntity().setStateSit(true);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class EntityAIChastSit extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getAIOwnerEntity().setSit(false);
+		this.getAIOwnerEntity().setStateSit(false);
 
 		this.setSitting(false);
 	}

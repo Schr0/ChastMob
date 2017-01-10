@@ -126,7 +126,7 @@ public class ModelChast extends ModelBase
 		this.body.rotateAngleY = (netHeadYaw / (180F / (float) Math.PI));
 		this.core.rotateAngleZ = (ageInTicks * (entityChast.getHealth() / 50F));
 
-		if (entityChast.isSit() || entityChast.isRiding())
+		if (entityChast.isStateSit() || entityChast.isRiding())
 		{
 			float pointSitY = 8.0F;
 			this.body.setRotationPoint(0F, (10F + pointSitY), 0F);
@@ -154,7 +154,7 @@ public class ModelChast extends ModelBase
 			float angleSwingArmRightLegLeftX = (MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount);
 			float angleSwingArmLeftLegRightX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount);
 
-			if (entityChast.isPanic())
+			if (entityChast.isStatePanic())
 			{
 				this.armRight.rotateAngleX = 0.0F;
 				this.armLeft.rotateAngleX = 0.0F;
@@ -173,7 +173,7 @@ public class ModelChast extends ModelBase
 		this.armRight.rotateAngleX += angleArmX;
 		this.armLeft.rotateAngleX -= angleArmX;
 
-		if (entityChast.isPanic())
+		if (entityChast.isStatePanic())
 		{
 			float anglePanicArmZ = 2.5F;
 			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + anglePanicArmZ;

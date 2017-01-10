@@ -33,19 +33,33 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.theChast;
 	}
 
-	public World getAIOwnerWorld()
+	public InventoryChast getAIOwnerInventory()
+	{
+		return this.theChast.getInventoryChast();
+	}
+
+	public World getAIWorld()
 	{
 		return this.theChast.getEntityWorld();
 	}
 
 	public BlockPos getAIOwnerBlockPos()
 	{
-		return (new BlockPos(this.theChast));
-	}
+		BlockPos blockPos = new BlockPos(this.theChast);
 
-	public InventoryChast getAIOwnerInventory()
-	{
-		return this.theChast.getInventoryChast();
+		if (this.theChast.isOwnerFollow())
+		{
+			if (this.theChast.isOwnerTame() && (this.theChast.getOwnerEntity() != null))
+			{
+				blockPos = new BlockPos(this.theChast.getOwnerEntity());
+			}
+		}
+		else
+		{
+			// none
+		}
+
+		return blockPos;
 	}
 
 }
