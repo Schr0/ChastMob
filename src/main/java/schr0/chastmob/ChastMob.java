@@ -11,6 +11,7 @@ import schr0.chastmob.proxy.ProxyServer;
 @Mod(modid = ChastMob.MOD_ID, name = ChastMob.MOD_NAME, version = ChastMob.MOD_VERSION, dependencies = ChastMob.MOD_DEPENDENCIES)
 public class ChastMob
 {
+
 	/**
 	 * ModのID.
 	 */

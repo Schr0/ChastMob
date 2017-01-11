@@ -1,5 +1,6 @@
 package schr0.chastmob;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -43,15 +44,17 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.theChast.getEntityWorld();
 	}
 
-	public BlockPos getAIOwnerBlockPos()
+	public BlockPos getAIBlockPos()
 	{
-		BlockPos blockPos = new BlockPos(this.theChast);
+		BlockPos blockPos = this.theChast.getPosition();
 
-		if (this.theChast.isOwnerFollow())
+		if (this.theChast.isModeFollow())
 		{
-			if (this.theChast.isOwnerTame() && (this.theChast.getOwnerEntity() != null))
+			EntityLivingBase entityLivingBase = this.theChast.getOwnerEntity();
+
+			if (this.theChast.isOwnerTame() && (entityLivingBase != null))
 			{
-				blockPos = new BlockPos(this.theChast.getOwnerEntity());
+				blockPos = entityLivingBase.getPosition();
 			}
 		}
 		else
@@ -60,6 +63,21 @@ public abstract class EntityAIChast extends EntityAIBase
 		}
 
 		return blockPos;
+	}
+
+	public boolean isRunningBaseAI()
+	{
+		return this.theChast.isStatePanic() || this.theChast.isStateSit() || this.theChast.isStateTrade();
+	}
+
+	public boolean canStartFollowAI()
+	{
+		return this.theChast.isModeFollow();
+	}
+
+	public boolean canStartFreedomAI()
+	{
+		return !this.theChast.isModeFollow();
 	}
 
 }

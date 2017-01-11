@@ -3,7 +3,6 @@ package schr0.chastmob;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.BlockChest;
-import net.minecraft.entity.Entity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -16,12 +15,12 @@ import net.minecraft.world.World;
 public class EntityAIChastStoreChest extends EntityAIChast
 {
 
-	private static final int STORE_TIME_LIMIT = (5 * 20);
+	private static final int TIME_LIMIT = (5 * 20);
 
 	private double moveSpeed;
 	private int maxDistance;
+	private int timeCounter;
 	private TileEntityChest targetChest;
-	private int storeTime;
 
 	public EntityAIChastStoreChest(EntityChast entityChast, double speed, int distance)
 	{
@@ -35,18 +34,18 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().isOwnerFollow())
+		if (this.isRunningBaseAI() || ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), ChastMobHelper.getEmptyItemStack()))
 		{
 			return false;
 		}
 
-		if (!ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), ChastMobHelper.getEmptyItemStack()))
+		if (this.canStartFreedomAI())
 		{
-			TileEntityChest tileEntityChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
+			TileEntityChest tileEntityChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.getAIBlockPos(), this.maxDistance);
 
 			if (tileEntityChest != null)
 			{
-				this.setStoring(tileEntityChest, STORE_TIME_LIMIT);
+				this.setStoring(TIME_LIMIT, tileEntityChest);
 
 				return true;
 			}
@@ -81,13 +80,13 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		this.getAIOwnerEntity().setCoverOpen(false);
 
-		this.setStoring(null, 0);
+		this.setStoring(0, null);
 	}
 
 	@Override
 	public void updateTask()
 	{
-		--this.storeTime;
+		--this.timeCounter;
 
 		BlockPos targetBlockPos = this.targetChest.getPos();
 
@@ -95,7 +94,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		if (this.getAIOwnerEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
 		{
-			TileEntityChest tileEntityChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
+			TileEntityChest tileEntityChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.getAIBlockPos(), this.maxDistance);
 
 			if ((tileEntityChest != null) && tileEntityChest.equals(this.targetChest))
 			{
@@ -111,7 +110,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 					}
 				}
 
-				this.setStoring(null, 0);
+				this.setStoring(0, null);
 			}
 		}
 		else
@@ -124,22 +123,20 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 	public boolean isStoring()
 	{
-		return (this.targetChest != null) && (0 < this.storeTime);
+		return (0 < this.timeCounter) && (this.targetChest != null);
 	}
 
-	private void setStoring(@Nullable TileEntityChest tileEntityChest, int storeTime)
+	public void setStoring(int timeCounter, @Nullable TileEntityChest tileEntityChest)
 	{
+		this.timeCounter = timeCounter;
 		this.targetChest = tileEntityChest;
-		this.storeTime = storeTime;
 	}
 
-	private TileEntityChest getNearChestTileEntity(Entity owner, int searchXYZ)
+	private TileEntityChest getNearChestTileEntity(EntityChast entityChast, BlockPos blockPos, int searchXYZ)
 	{
-		World world = owner.worldObj;
-		BlockPos blockPosOwner = new BlockPos(owner);
-		int pX = blockPosOwner.getX();
-		int pY = blockPosOwner.getY();
-		int pZ = blockPosOwner.getZ();
+		int pX = blockPos.getX();
+		int pY = blockPos.getY();
+		int pZ = blockPos.getZ();
 		float rangeOrigin = (float) (searchXYZ * searchXYZ * searchXYZ * 2);
 		BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
 		TileEntityChest tileEntityChest = null;
@@ -151,9 +148,10 @@ public class EntityAIChastStoreChest extends EntityAIChast
 				for (int z = (pZ - searchXYZ); z <= (pZ + searchXYZ); ++z)
 				{
 					blockPosMutable.setPos(x, y, z);
+					World world = entityChast.worldObj;
 					TileEntity tileEntity = world.getTileEntity(blockPosMutable);
 
-					if ((tileEntity instanceof TileEntityChest) && ChastMobHelper.canBlockBeSeen(owner, blockPosMutable))
+					if ((tileEntity instanceof TileEntityChest) && ChastMobHelper.canBlockBeSeen(entityChast, blockPosMutable))
 					{
 						boolean isLockedChest = (((BlockChest) world.getBlockState(blockPosMutable).getBlock()).getLockableContainer(world, blockPosMutable) == null);
 

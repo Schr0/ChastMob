@@ -13,17 +13,17 @@ import net.minecraft.world.World;
 public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 {
 
-	private static final int SIT_TIME_LIMIT = (5 * 20);
+	private static final int TIME_LIMIT = (5 * 20);
 
 	private EntityOcelot theOwnerEntity;
 	private World theOwnerWorld;
 	private BlockPos theOwnerBlockPos;
 
+	private boolean isEntityAIOcelotSitChast;
 	private float moveSpeed;
 	private double maxDistance;
+	private int timeCounter;
 	private EntityChast targetEntityChast;
-	private int sitTime;
-	private boolean isEntityAIOcelotSitChast;
 
 	public EntityAIOcelotSitChast(EntityOcelot owner, float speed, double distance)
 	{
@@ -31,7 +31,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 		this.theOwnerEntity = owner;
 		this.theOwnerWorld = owner.worldObj;
-		this.theOwnerBlockPos = new BlockPos(owner);
+		this.theOwnerBlockPos = owner.getPosition();
 		this.moveSpeed = speed;
 		this.maxDistance = distance;
 	}
@@ -57,7 +57,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 					{
 						this.isEntityAIOcelotSitChast = true;
 
-						this.setSittingChast(entityChast, SIT_TIME_LIMIT);
+						this.setSittingChast(TIME_LIMIT, entityChast);
 
 						break;
 					}
@@ -103,7 +103,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 			this.theOwnerEntity.getAISit().setSitting(true);
 			this.theOwnerEntity.setSitting(true);
 
-			this.setSittingChast(null, 0);
+			this.setSittingChast(0, null);
 		}
 		else
 		{
@@ -116,7 +116,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		if (this.isEntityAIOcelotSitChast)
 		{
-			--this.sitTime;
+			--this.timeCounter;
 
 			this.theOwnerEntity.getLookHelper().setLookPositionWithEntity(this.targetEntityChast, 10.0F, this.theOwnerEntity.getVerticalFaceSpeed());
 
@@ -130,7 +130,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 					{
 						this.theOwnerEntity.startRiding(entityChast);
 
-						this.setSittingChast(null, 0);
+						this.setSittingChast(0, null);
 
 						return;
 					}
@@ -149,15 +149,15 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private boolean isSittingChast()
+	public boolean isSittingChast()
 	{
-		return ((this.targetEntityChast != null) && (0 < this.sitTime));
+		return (0 < this.timeCounter) && (this.targetEntityChast != null);
 	}
 
-	private void setSittingChast(@Nullable EntityChast entityChast, int sitTime)
+	public void setSittingChast(int timeCounter, @Nullable EntityChast entityChast)
 	{
+		this.timeCounter = timeCounter;
 		this.targetEntityChast = entityChast;
-		this.sitTime = sitTime;
 	}
 
 	private boolean canSittingChast(EntityChast entityChast)

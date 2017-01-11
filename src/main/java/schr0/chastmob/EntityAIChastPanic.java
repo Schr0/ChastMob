@@ -18,7 +18,7 @@ public class EntityAIChastPanic extends EntityAIChast
 
 	private double moveSpeed;
 	private int maxDistance;
-	private int panicTime;
+	private int timeCounter;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
@@ -47,8 +47,8 @@ public class EntityAIChastPanic extends EntityAIChast
 	public void startExecuting()
 	{
 		super.startExecuting();
-
 		this.getAIOwnerEntity().setStatePanic(true);
+
 		this.getAIOwnerEntity().setCoverOpen(true);
 	}
 
@@ -56,19 +56,18 @@ public class EntityAIChastPanic extends EntityAIChast
 	public void resetTask()
 	{
 		super.resetTask();
-
 		this.getAIOwnerEntity().setStatePanic(false);
-		this.getAIOwnerEntity().setCoverOpen(false);
 
+		this.getAIOwnerEntity().setCoverOpen(false);
 		this.setPanicking(0);
 	}
 
 	@Override
 	public void updateTask()
 	{
-		--this.panicTime;
+		--this.timeCounter;
 
-		if (this.panicTime <= IDEL_TIME)
+		if (this.timeCounter <= IDEL_TIME)
 		{
 			return;
 		}
@@ -90,7 +89,7 @@ public class EntityAIChastPanic extends EntityAIChast
 
 					stackInvCopy.stackSize = 1;
 
-					Block.spawnAsEntity(this.getAIWorld(), new BlockPos(this.getAIOwnerEntity()), stackInvCopy);
+					Block.spawnAsEntity(this.getAIWorld(), this.getAIOwnerEntity().getPosition(), stackInvCopy);
 
 					--stackInv.stackSize;
 
@@ -148,19 +147,19 @@ public class EntityAIChastPanic extends EntityAIChast
 
 	public boolean isPanicking()
 	{
-		return (0 < this.panicTime);
+		return (0 < this.timeCounter);
 	}
 
-	public void setPanicking(int panicTime)
+	public void setPanicking(int timeCounter)
 	{
-		this.panicTime = panicTime;
+		this.timeCounter = timeCounter;
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
 
-		if (0 < panicTime)
+		if (0 < timeCounter)
 		{
-			this.panicTime += IDEL_TIME;
+			this.timeCounter += IDEL_TIME;
 		}
 	}
 

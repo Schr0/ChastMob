@@ -13,12 +13,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 public class EntityAIChastCollectItem extends EntityAIChast
 {
 
-	private static final int COLLECT_TIME_LIMIT = (5 * 20);
+	private static final int TIME_LIMIT = (5 * 20);
 
 	private double moveSpeed;
 	private double maxDistance;
+	private int timeCounter;
 	private EntityItem targetEntityItem;
-	private int collectTime;
 
 	public EntityAIChastCollectItem(EntityChast entityChast, double speed, double distance)
 	{
@@ -32,7 +32,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		List<EntityItem> listEntityItem = this.getAIWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerBlockPos()).expandXyz(this.maxDistance));
+		List<EntityItem> listEntityItem = this.getAIWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIBlockPos()).expandXyz(this.maxDistance));
 		TreeMap<Double, EntityItem> treeMapEntityItem = new TreeMap<Double, EntityItem>();
 
 		for (EntityItem entityItem : listEntityItem)
@@ -47,7 +47,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		{
 			if (ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), entry.getValue().getEntityItem()))
 			{
-				this.setCollecting(entry.getValue(), COLLECT_TIME_LIMIT);
+				this.setCollecting(TIME_LIMIT, entry.getValue());
 
 				return true;
 			}
@@ -81,20 +81,19 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		super.resetTask();
 
 		this.getAIOwnerEntity().setCoverOpen(false);
-
-		this.setCollecting(null, 0);
+		this.setCollecting(0, null);
 	}
 
 	@Override
 	public void updateTask()
 	{
-		--this.collectTime;
+		--this.timeCounter;
 
 		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
 
 		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
 		{
-			List<EntityItem> listEntityItem = this.getAIWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerBlockPos()).expandXyz(this.maxDistance));
+			List<EntityItem> listEntityItem = this.getAIWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIBlockPos()).expandXyz(this.maxDistance));
 
 			for (EntityItem entityItem : listEntityItem)
 			{
@@ -104,7 +103,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 					this.getAIOwnerEntity().setCoverOpen(true);
 
-					this.setCollecting(null, 0);
+					this.setCollecting(0, null);
 
 					return;
 				}
@@ -118,15 +117,15 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private boolean isCollecting()
+	public boolean isCollecting()
 	{
-		return (this.targetEntityItem != null) && (0 < this.collectTime);
+		return (0 < this.timeCounter) && (this.targetEntityItem != null);
 	}
 
-	private void setCollecting(@Nullable EntityItem entityItem, int collectTime)
+	public void setCollecting(int timeCounter, @Nullable EntityItem entityItem)
 	{
+		this.timeCounter = timeCounter;
 		this.targetEntityItem = entityItem;
-		this.collectTime = collectTime;
 	}
 
 	private boolean canCollecting(EntityItem entityItem)

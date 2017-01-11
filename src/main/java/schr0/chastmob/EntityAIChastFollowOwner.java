@@ -12,12 +12,12 @@ import net.minecraft.util.math.MathHelper;
 public class EntityAIChastFollowOwner extends EntityAIChast
 {
 
-	private static final int FOLLOW_TIME_LIMIT = (5 * 20);
+	private static final int TIME_LIMIT = (5 * 20);
 
 	private double moveSpeed;
 	private double minDistance;
+	private int timeCounter;
 	private EntityLivingBase targetOwner;
-	private int followTime;
 
 	public EntityAIChastFollowOwner(EntityChast entityChast, double speed, double distance)
 	{
@@ -31,24 +31,27 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (!this.getAIOwnerEntity().isOwnerFollow())
+		if (this.isRunningBaseAI())
 		{
 			return false;
 		}
 
-		EntityLivingBase owner = this.getAIOwnerEntity().getOwnerEntity();
-
-		if (this.canFollowing(owner))
+		if (this.canStartFollowAI())
 		{
-			if (this.getAIOwnerEntity().getDistanceSqToEntity(owner) < this.minDistance)
-			{
-				return false;
-			}
-			else
-			{
-				this.setFollowing(owner, FOLLOW_TIME_LIMIT);
+			EntityLivingBase owner = this.getAIOwnerEntity().getOwnerEntity();
 
-				return true;
+			if (this.canFollowing(owner))
+			{
+				if (this.getAIOwnerEntity().getDistanceSqToEntity(owner) < this.minDistance)
+				{
+					return false;
+				}
+				else
+				{
+					this.setFollowing(TIME_LIMIT, owner);
+
+					return true;
+				}
 			}
 		}
 
@@ -71,15 +74,15 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.setFollowing(null, 0);
+		this.setFollowing(0, null);
 	}
 
 	@Override
 	public void updateTask()
 	{
-		--this.followTime;
+		--this.timeCounter;
 
-		if (this.followTime <= 0)
+		if (this.timeCounter <= 0)
 		{
 			if (!this.getAIOwnerEntity().getLeashed())
 			{
@@ -95,7 +98,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 						{
 							this.getAIOwnerEntity().setLocationAndAngles((double) ((float) (ownerPosX + x) + 0.5F), (double) ownerPosY, (double) ((float) (ownerPosZ + z) + 0.5F), this.getAIOwnerEntity().rotationYaw, this.getAIOwnerEntity().rotationPitch);
 
-							this.setFollowing(null, 0);
+							this.setFollowing(0, null);
 
 							return;
 						}
@@ -103,7 +106,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 				}
 			}
 
-			this.setFollowing(null, 0);
+			this.setFollowing(0, null);
 
 			return;
 		}
@@ -112,7 +115,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.minDistance)
 		{
-			this.setFollowing(null, 0);
+			this.setFollowing(0, null);
 		}
 		else
 		{
@@ -122,15 +125,15 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private boolean isFollowing()
+	public boolean isFollowing()
 	{
-		return (this.targetOwner != null) && (0 < this.followTime);
+		return (0 < this.timeCounter) && (this.targetOwner != null);
 	}
 
-	private void setFollowing(@Nullable EntityLivingBase entityLivingBase, int followTime)
+	public void setFollowing(int timeCounter, @Nullable EntityLivingBase entityLivingBase)
 	{
+		this.timeCounter = timeCounter;
 		this.targetOwner = entityLivingBase;
-		this.followTime = followTime;
 	}
 
 	private boolean canFollowing(EntityLivingBase entityLivingBase)
