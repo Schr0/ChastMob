@@ -40,9 +40,7 @@ public class InventoryChast extends InventoryBasic
 	public void openInventory(EntityPlayer player)
 	{
 		super.markDirty();
-
 		this.entityChast.setCoverOpen(true);
-
 		this.entityChast.setAITrading(player);
 	}
 
@@ -50,9 +48,7 @@ public class InventoryChast extends InventoryBasic
 	public void closeInventory(EntityPlayer player)
 	{
 		super.markDirty();
-
 		this.entityChast.setCoverOpen(false);
-
 		this.entityChast.setAITrading(null);
 	}
 
@@ -60,14 +56,9 @@ public class InventoryChast extends InventoryBasic
 
 	public void readInventoryFromNBT(NBTTagList nbtlist)
 	{
-		int slot;
+		this.clear();
 
-		for (slot = 0; slot < this.getSizeInventory(); ++slot)
-		{
-			this.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());
-		}
-
-		for (slot = 0; slot < nbtlist.tagCount(); ++slot)
+		for (int slot = 0; slot < nbtlist.tagCount(); ++slot)
 		{
 			NBTTagCompound nbttagCompound = nbtlist.getCompoundTagAt(slot);
 			slot = nbttagCompound.getByte("Slot") & 255;
@@ -83,16 +74,16 @@ public class InventoryChast extends InventoryBasic
 	{
 		NBTTagList nbttagList = new NBTTagList();
 
-		for (int slotsize = 0; slotsize < this.getSizeInventory(); ++slotsize)
+		for (int slot = 0; slot < this.getSizeInventory(); ++slot)
 		{
-			ItemStack itemStack = this.getStackInSlot(slotsize);
+			ItemStack itemstack = this.getStackInSlot(slot);
 
-			if (ChastMobHelper.isNotEmptyItemStack(itemStack))
+			if (ChastMobHelper.isNotEmptyItemStack(itemstack))
 			{
-				NBTTagCompound nbttagCompound = new NBTTagCompound();
-				nbttagCompound.setByte("Slot", (byte) slotsize);
-				itemStack.writeToNBT(nbttagCompound);
-				nbttagList.appendTag(nbttagCompound);
+				NBTTagCompound nbttagcompound = new NBTTagCompound();
+				nbttagcompound.setByte("Slot", (byte) slot);
+				itemstack.writeToNBT(nbttagcompound);
+				nbttagList.appendTag(nbttagcompound);
 			}
 		}
 

@@ -2,18 +2,13 @@ package schr0.chastmob;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.BlockChest;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.tileentity.TileEntityHopper;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class EntityAIChastStoreChest extends EntityAIChast
+public class EntityAIChastGoHome extends EntityAIChast
 {
 
 	private static final int TIME_LIMIT = (5 * 20);
@@ -23,7 +18,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	private int timeCounter;
 	private TileEntityChest targetChest;
 
-	public EntityAIChastStoreChest(EntityChast entityChast, double speed, int distance)
+	public EntityAIChastGoHome(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
 		this.setMutexBits(1);
@@ -35,33 +30,19 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (!ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), ChastMobHelper.getEmptyItemStack()))
+		if (this.getAIOwnerEntity().isOwnerFollow())
 		{
-			if (this.getAIOwnerEntity().isOwnerFollow())
+			return false;
+		}
+		else
+		{
+			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIOwnerPosition(true));
+
+			if (this.canGoingTileEntityChest(homeChest))
 			{
-				return false;
-			}
-			else
-			{
-				TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIOwnerPosition(true));
+				this.setGoing(TIME_LIMIT, homeChest);
 
-				if (this.canStoringTileEntityChest(homeChest))
-				{
-					this.setStoring(TIME_LIMIT, homeChest);
-
-					return true;
-				}
-				else
-				{
-					TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
-
-					if (this.canStoringTileEntityChest(nearOpenChest))
-					{
-						this.setStoring(TIME_LIMIT, nearOpenChest);
-
-						return true;
-					}
-				}
+				return true;
 			}
 		}
 
@@ -71,7 +52,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean continueExecuting()
 	{
-		if (this.isStoring())
+		if (this.isGoing())
 		{
 			return true;
 		}
@@ -94,7 +75,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		this.getAIOwnerEntity().setCoverOpen(false);
 
-		this.setStoring(0, null);
+		this.setGoing(0, null);
 	}
 
 	@Override
@@ -108,24 +89,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		if (this.getAIOwnerEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
 		{
-			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
-
-			if ((nearChest != null) && nearChest.equals(this.targetChest))
-			{
-				for (int slot = 0; slot < this.getAIOwnerInventory().getSizeInventory(); ++slot)
-				{
-					ItemStack stackInv = this.getAIOwnerInventory().getStackInSlot(slot);
-
-					if (ChastMobHelper.isNotEmptyItemStack(stackInv))
-					{
-						this.getAIOwnerInventory().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) nearChest, stackInv, EnumFacing.UP));
-
-						this.getAIOwnerEntity().setCoverOpen(true);
-					}
-				}
-
-				this.setStoring(0, null);
-			}
+			this.setGoing(0, null);
 		}
 		else
 		{
@@ -143,6 +107,8 @@ public class EntityAIChastStoreChest extends EntityAIChast
 						{
 							this.getAIOwnerEntity().setLocationAndAngles((double) ((float) (ownerPosX + x) + 0.5F), (double) ownerPosY, (double) ((float) (ownerPosZ + z) + 0.5F), this.getAIOwnerEntity().rotationYaw, this.getAIOwnerEntity().rotationPitch);
 
+							this.setGoing(0, null);
+
 							return;
 						}
 					}
@@ -153,28 +119,35 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public boolean isStoring()
+	public boolean isGoing()
 	{
 		return (0 < this.timeCounter) && (this.targetChest != null);
 	}
 
-	public void setStoring(int timeCounter, @Nullable TileEntityChest tileEntityChest)
+	public void setGoing(int timeCounter, @Nullable TileEntityChest tileEntityChest)
 	{
 		this.timeCounter = timeCounter;
 		this.targetChest = tileEntityChest;
 	}
 
-	private boolean canStoringTileEntityChest(TileEntityChest tileEntityChest)
+	private boolean canGoingTileEntityChest(TileEntityChest tileEntityChest)
 	{
 		if (tileEntityChest != null)
 		{
+			TileEntityChest nearChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
+
+			if (nearChest != null && nearChest.equals(tileEntityChest))
+			{
+				return false;
+			}
+
 			return ChastMobHelper.canBlockBeSeen(this.getAIOwnerEntity(), tileEntityChest.getPos());
 		}
 
 		return false;
 	}
 
-	private TileEntityChest getNearOpenChestTileEntity(EntityChast entityChast, int searchXYZ)
+	private TileEntityChest getNearChestTileEntity(EntityChast entityChast, int searchXYZ)
 	{
 		BlockPos blockPos = entityChast.getPosition();
 		int pX = blockPos.getX();
@@ -196,30 +169,13 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 					if (tileEntity instanceof TileEntityChest)
 					{
-						boolean isLockedChest = (((BlockChest) world.getBlockState(blockPosMutable).getBlock()).getLockableContainer(world, blockPosMutable) == null);
-
-						if (isLockedChest)
-						{
-							continue;
-						}
-
 						float range = (float) ((x - pX) * (x - pX) + (y - pY) * (y - pY) + (z - pZ) * (z - pZ));
 
 						if (range < rangeOrigin)
 						{
 							rangeOrigin = range;
 
-							for (int slot = 0; slot < this.getAIOwnerInventory().getSizeInventory(); ++slot)
-							{
-								ItemStack stackInv = this.getAIOwnerInventory().getStackInSlot(slot);
-
-								if (ChastMobHelper.canStoreInventory((IInventory) tileEntity, stackInv))
-								{
-									tileEntityChest = (TileEntityChest) tileEntity;
-
-									break;
-								}
-							}
+							tileEntityChest = (TileEntityChest) tileEntity;
 						}
 					}
 				}

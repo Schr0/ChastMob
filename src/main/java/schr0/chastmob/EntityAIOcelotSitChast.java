@@ -53,11 +53,11 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 				for (EntityChast entityChast : listEntityChast)
 				{
-					if (this.canSittingChast(entityChast))
+					if (this.canSittingEntityChast(entityChast))
 					{
 						this.isEntityAIOcelotSitChast = true;
 
-						this.setSittingChast(TIME_LIMIT, entityChast);
+						this.setSitting(TIME_LIMIT, entityChast);
 
 						break;
 					}
@@ -73,7 +73,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		if (this.isEntityAIOcelotSitChast)
 		{
-			return this.isSittingChast();
+			return this.isSitting();
 		}
 		else
 		{
@@ -103,7 +103,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 			this.theOwnerEntity.getAISit().setSitting(true);
 			this.theOwnerEntity.setSitting(true);
 
-			this.setSittingChast(0, null);
+			this.setSitting(0, null);
 		}
 		else
 		{
@@ -126,11 +126,11 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 				for (EntityChast entityChast : listEntityChast)
 				{
-					if (entityChast.equals(this.targetEntityChast) && this.canSittingChast(entityChast))
+					if (entityChast.equals(this.targetEntityChast) && this.canSittingEntityChast(entityChast))
 					{
 						this.theOwnerEntity.startRiding(entityChast);
 
-						this.setSittingChast(0, null);
+						this.setSitting(0, null);
 
 						return;
 					}
@@ -149,18 +149,18 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public boolean isSittingChast()
+	public boolean isSitting()
 	{
 		return (0 < this.timeCounter) && (this.targetEntityChast != null);
 	}
 
-	public void setSittingChast(int timeCounter, @Nullable EntityChast entityChast)
+	public void setSitting(int timeCounter, @Nullable EntityChast entityChast)
 	{
 		this.timeCounter = timeCounter;
 		this.targetEntityChast = entityChast;
 	}
 
-	private boolean canSittingChast(EntityChast entityChast)
+	private boolean canSittingEntityChast(EntityChast entityChast)
 	{
 		if (this.theOwnerEntity.getEntitySenses().canSee(entityChast))
 		{

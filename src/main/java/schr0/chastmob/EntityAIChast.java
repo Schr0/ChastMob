@@ -1,7 +1,11 @@
 package schr0.chastmob;
 
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -39,16 +43,16 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.theChast.getInventoryChast();
 	}
 
-	public World getAIWorld()
-	{
-		return this.theChast.getEntityWorld();
-	}
-
-	public BlockPos getAIBlockPos()
+	public BlockPos getAIOwnerPosition(boolean isAIMode)
 	{
 		BlockPos blockPos = this.theChast.getPosition();
 
-		if (this.theChast.isModeFollow())
+		if (!isAIMode)
+		{
+			return blockPos;
+		}
+
+		if (this.theChast.isOwnerFollow())
 		{
 			EntityLivingBase entityLivingBase = this.theChast.getOwnerEntity();
 
@@ -59,25 +63,32 @@ public abstract class EntityAIChast extends EntityAIBase
 		}
 		else
 		{
-			// none
+			ItemStack stackMain = this.theChast.getHeldItem(EnumHand.MAIN_HAND);
+
+			if (ChastMobHelper.isNotEmptyItemStack(stackMain) && (stackMain.getItem() instanceof ItemHomeChestMap))
+			{
+				BlockPos blockPosHome = ((ItemHomeChestMap) stackMain.getItem()).getHomeChestBlockPos(stackMain);
+
+				if (blockPosHome != null)
+				{
+					blockPos = blockPosHome;
+				}
+			}
 		}
 
 		return blockPos;
 	}
 
-	public boolean isRunningBaseAI()
+	public World getAIOwnerWorld()
 	{
-		return this.theChast.isStatePanic() || this.theChast.isStateSit() || this.theChast.isStateTrade();
+		return this.theChast.getEntityWorld();
 	}
 
-	public boolean canStartFollowAI()
+	public boolean isEmptyBlock(BlockPos pos)
 	{
-		return this.theChast.isModeFollow();
-	}
+		IBlockState state = this.getAIOwnerWorld().getBlockState(pos);
 
-	public boolean canStartFreedomAI()
-	{
-		return !this.theChast.isModeFollow();
+		return state.getMaterial().equals(Material.AIR) ? true : !state.isFullCube();
 	}
 
 }

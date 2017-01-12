@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Optional;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -20,6 +21,7 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
@@ -42,7 +44,7 @@ public class EntityChast extends EntityGolem
 	private static final DataParameter<Byte> COVER_OPEN = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Optional<UUID>> OWNER_UUID = EntityDataManager.<Optional<UUID>> createKey(EntityChast.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 	private static final DataParameter<Byte> OWNER_TAME = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
-	private static final DataParameter<Byte> MODE_FOLLOW = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+	private static final DataParameter<Byte> OWNER_FOLLOW = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> STATE_PANIC = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> STATE_SIT = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> STATE_TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
@@ -77,48 +79,45 @@ public class EntityChast extends EntityGolem
 
 		// Base
 		EntityAIBase aiSwimming = new EntityAISwimming(this);
-		this.aiChastPanic = new EntityAIChastPanic(this, (speed * 2), (distance * 2));
+		this.aiChastPanic = new EntityAIChastPanic(this, (speed * 2), distance);
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
+		// Follow || Freedom
 		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this, speed, (double) distance);
-		// Follow || Freedom (Patrol)
 		EntityAIBase aiChastFollowOwner = new EntityAIChastFollowOwner(this, speed, (double) distance);
+		EntityAIBase aiChastGoHome = new EntityAIChastGoHome(this, speed, distance);
 		EntityAIBase aiChastStoreChest = new EntityAIChastStoreChest(this, speed, distance);
 		// Wander
-		EntityAIBase aiChastWander = new EntityAIChastWander(this, speed, (distance * 2));
+		EntityAIBase aiChastWander = new EntityAIChastWander(this, speed, distance);
 		EntityAIBase aiWatchClosestPlayer = new EntityAIWatchClosest(this, EntityPlayer.class, (float) distance);
 		EntityAIBase aiWatchClosestGolem = new EntityAIWatchClosest(this, EntityGolem.class, (float) distance);
 		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
 
-		// Base
 		aiSwimming.setMutexBits(0);
 		this.aiChastPanic.setMutexBits(1);
 		this.aiChastSit.setMutexBits(1);
 		this.aiChastTrade.setMutexBits(1);
 		aiChastCollectItem.setMutexBits(1);
-		// Follow || Freedom (Patrol)
 		aiChastFollowOwner.setMutexBits(1);
+		aiChastGoHome.setMutexBits(1);
 		aiChastStoreChest.setMutexBits(1);
-		// Wander
 		aiChastWander.setMutexBits(1);
 		aiWatchClosestPlayer.setMutexBits(2);
 		aiWatchClosestGolem.setMutexBits(2);
 		aiLookIdle.setMutexBits(2);
 
-		// Base
 		this.tasks.addTask(0, aiSwimming);
 		this.tasks.addTask(1, this.aiChastPanic);
 		this.tasks.addTask(2, this.aiChastSit);
 		this.tasks.addTask(3, this.aiChastTrade);
 		this.tasks.addTask(4, aiChastCollectItem);
-		// Follow || Freedom (Patrol)
 		this.tasks.addTask(5, aiChastFollowOwner);
-		this.tasks.addTask(5, aiChastStoreChest);
-		// Wander
-		this.tasks.addTask(6, aiChastWander);
-		this.tasks.addTask(7, aiWatchClosestPlayer);
-		this.tasks.addTask(7, aiWatchClosestGolem);
-		this.tasks.addTask(8, aiLookIdle);
+		this.tasks.addTask(5, aiChastGoHome);
+		this.tasks.addTask(6, aiChastStoreChest);
+		this.tasks.addTask(7, aiChastWander);
+		this.tasks.addTask(8, aiWatchClosestPlayer);
+		this.tasks.addTask(8, aiWatchClosestGolem);
+		this.tasks.addTask(9, aiLookIdle);
 	}
 
 	@Override
@@ -137,7 +136,7 @@ public class EntityChast extends EntityGolem
 		this.getDataManager().register(COVER_OPEN, Byte.valueOf((byte) 0));
 		this.getDataManager().register(OWNER_UUID, Optional.<UUID> absent());
 		this.getDataManager().register(OWNER_TAME, Byte.valueOf((byte) 0));
-		this.getDataManager().register(MODE_FOLLOW, Byte.valueOf((byte) 0));
+		this.getDataManager().register(OWNER_FOLLOW, Byte.valueOf((byte) 0));
 		this.getDataManager().register(STATE_PANIC, Byte.valueOf((byte) 0));
 		this.getDataManager().register(STATE_SIT, Byte.valueOf((byte) 0));
 		this.getDataManager().register(STATE_TRADE, Byte.valueOf((byte) 0));
@@ -161,7 +160,7 @@ public class EntityChast extends EntityGolem
 			compound.setString(ChastMobNBTTags.CHAST_OWNER_UUID, this.getOwnerUUID().toString());
 		}
 
-		compound.setBoolean(ChastMobNBTTags.CHAST_MODE_FOLLOW, this.isModeFollow());
+		compound.setBoolean(ChastMobNBTTags.CHAST_OWNER_FOLLOW, this.isOwnerFollow());
 
 		compound.setBoolean(ChastMobNBTTags.CHAST_STATE_SIT, this.isStateSit());
 
@@ -207,7 +206,7 @@ public class EntityChast extends EntityGolem
 			}
 		}
 
-		this.setModeFollow(compound.getBoolean(ChastMobNBTTags.CHAST_MODE_FOLLOW));
+		this.setOwnerFollow(compound.getBoolean(ChastMobNBTTags.CHAST_OWNER_FOLLOW));
 
 		if (this.aiChastPanic != null)
 		{
@@ -273,12 +272,7 @@ public class EntityChast extends EntityGolem
 
 		if ((source.getSourceOfDamage() instanceof EntityLivingBase) && !this.getEntityWorld().isRemote)
 		{
-			int sec = (int) amount;
-
-			sec = Math.max(4, sec);
-			sec = Math.min(8, sec);
-
-			this.setAIPanicking(sec * 20);
+			this.setAIPanicking((int) amount);
 		}
 
 		return attackEntityFrom;
@@ -316,19 +310,22 @@ public class EntityChast extends EntityGolem
 
 			if (ChastMobHelper.isNotEmptyItemStack(stack))
 			{
-				// TODO TEST
-				if (stack.getItem().equals(Items.STICK))
+				if (stack.getItem().equals(ChastMobItems.HOME_CHEST_MAP))
 				{
-					if (isServerWorld)
+					ItemStack stackMain = this.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+
+					if (!ChastMobHelper.isNotEmptyItemStack(stackMain))
 					{
-						this.setModeFollow(!this.isModeFollow());
+						this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
+
+						player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ChastMobHelper.getEmptyItemStack());
+
+						this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+
+						player.swingArm(hand);
+
+						return true;
 					}
-
-					this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
-
-					player.swingArm(hand);
-
-					return true;
 				}
 
 				if (stack.getItem().equals(Items.DYE))
@@ -374,6 +371,22 @@ public class EntityChast extends EntityGolem
 					}
 
 					this.setAISitting(!this.isStateSit());
+
+					if (this.isStateSit())
+					{
+						this.setOwnerFollow(!this.isOwnerFollow());
+					}
+					else
+					{
+						ItemStack stackMain = this.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+
+						if (ChastMobHelper.isNotEmptyItemStack(stackMain))
+						{
+							Block.spawnAsEntity(this.getEntityWorld(), this.getPosition(), stackMain);
+
+							this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ChastMobHelper.getEmptyItemStack());
+						}
+					}
 				}
 
 				this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
@@ -471,7 +484,6 @@ public class EntityChast extends EntityGolem
 			this.setArmColor(EnumDyeColor.byDyeDamage(player.getRNG().nextInt(15)));
 			this.setOwnerTame(true);
 			this.setOwnerUUID(player.getUniqueID());
-			this.setModeFollow(true);
 			this.setAISitting(true);
 		}
 	}
@@ -541,22 +553,22 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public boolean isModeFollow()
+	public boolean isOwnerFollow()
 	{
-		return ((((Byte) this.getDataManager().get(MODE_FOLLOW)).byteValue() & 1) != 0);
+		return ((((Byte) this.getDataManager().get(OWNER_FOLLOW)).byteValue() & 1) != 0);
 	}
 
-	public void setModeFollow(boolean isModeFollow)
+	public void setOwnerFollow(boolean isModeFollow)
 	{
-		byte b0 = ((Byte) this.getDataManager().get(MODE_FOLLOW)).byteValue();
+		byte b0 = ((Byte) this.getDataManager().get(OWNER_FOLLOW)).byteValue();
 
 		if (isModeFollow)
 		{
-			this.getDataManager().set(MODE_FOLLOW, Byte.valueOf((byte) (b0 | 1)));
+			this.getDataManager().set(OWNER_FOLLOW, Byte.valueOf((byte) (b0 | 1)));
 		}
 		else
 		{
-			this.getDataManager().set(MODE_FOLLOW, Byte.valueOf((byte) (b0 & -2)));
+			this.getDataManager().set(OWNER_FOLLOW, Byte.valueOf((byte) (b0 & -2)));
 		}
 	}
 

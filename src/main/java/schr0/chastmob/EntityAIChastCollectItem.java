@@ -1,8 +1,6 @@
 package schr0.chastmob;
 
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
@@ -32,28 +30,25 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		List<EntityItem> listEntityItem = this.getAIWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIBlockPos()).expandXyz(this.maxDistance));
-		TreeMap<Double, EntityItem> treeMapEntityItem = new TreeMap<Double, EntityItem>();
+		List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerPosition(true)).expandXyz(this.maxDistance));
+		float rangeOrigin = (float) (this.maxDistance * this.maxDistance * this.maxDistance * 2);
 
 		for (EntityItem entityItem : listEntityItem)
 		{
-			if (this.canCollecting(entityItem))
+			if (this.canCollectEntityItem(entityItem))
 			{
-				treeMapEntityItem.put(this.getAIOwnerEntity().getDistanceSqToEntity(entityItem), entityItem);
+				float range = (float) this.getAIOwnerEntity().getDistanceSqToEntity(entityItem);
+
+				if (range < rangeOrigin)
+				{
+					rangeOrigin = range;
+
+					this.setCollecting(TIME_LIMIT, entityItem);
+				}
 			}
 		}
 
-		for (Map.Entry<Double, EntityItem> entry : treeMapEntityItem.entrySet())
-		{
-			if (ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), entry.getValue().getEntityItem()))
-			{
-				this.setCollecting(TIME_LIMIT, entry.getValue());
-
-				return true;
-			}
-		}
-
-		return false;
+		return this.isCollecting();
 	}
 
 	@Override
@@ -93,11 +88,11 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
 		{
-			List<EntityItem> listEntityItem = this.getAIWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIBlockPos()).expandXyz(this.maxDistance));
+			List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerPosition(true)).expandXyz(this.maxDistance));
 
 			for (EntityItem entityItem : listEntityItem)
 			{
-				if (entityItem.equals(this.targetEntityItem) && this.canCollecting(entityItem))
+				if (entityItem.equals(this.targetEntityItem) && this.canCollectEntityItem(entityItem))
 				{
 					TileEntityHopper.putDropInInventoryAllSlots(this.getAIOwnerInventory(), entityItem);
 
@@ -128,7 +123,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		this.targetEntityItem = entityItem;
 	}
 
-	private boolean canCollecting(EntityItem entityItem)
+	private boolean canCollectEntityItem(EntityItem entityItem)
 	{
 		if (this.getAIOwnerEntity().getEntitySenses().canSee(entityItem))
 		{

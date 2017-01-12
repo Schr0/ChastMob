@@ -2,8 +2,6 @@ package schr0.chastmob;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -31,16 +29,11 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.isRunningBaseAI())
-		{
-			return false;
-		}
-
-		if (this.canStartFollowAI())
+		if (this.getAIOwnerEntity().isOwnerFollow())
 		{
 			EntityLivingBase owner = this.getAIOwnerEntity().getOwnerEntity();
 
-			if (this.canFollowing(owner))
+			if (this.canFollowEntityLivingBase(owner))
 			{
 				if (this.getAIOwnerEntity().getDistanceSqToEntity(owner) < this.minDistance)
 				{
@@ -82,9 +75,15 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		--this.timeCounter;
 
-		if (this.timeCounter <= 0)
+		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
+
+		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.minDistance)
 		{
-			if (!this.getAIOwnerEntity().getLeashed())
+			this.setFollowing(0, null);
+		}
+		else
+		{
+			if (!this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.moveSpeed))
 			{
 				int ownerPosX = MathHelper.floor_double(this.targetOwner.posX) - 2;
 				int ownerPosY = MathHelper.floor_double(this.targetOwner.getEntityBoundingBox().minY);
@@ -94,32 +93,15 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 				{
 					for (int z = 0; z <= 4; ++z)
 					{
-						if ((x < 1 || z < 1 || x > 3 || z > 3) && this.getAIWorld().getBlockState(new BlockPos(ownerPosX + x, ownerPosY - 1, ownerPosZ + z)).isFullyOpaque() && this.isEmptyBlock(new BlockPos(ownerPosX + x, ownerPosY, ownerPosZ + z)) && this.isEmptyBlock(new BlockPos(ownerPosX + x, ownerPosY + 1, ownerPosZ + z)))
+						if ((x < 1 || z < 1 || x > 3 || z > 3) && this.getAIOwnerWorld().getBlockState(new BlockPos(ownerPosX + x, ownerPosY - 1, ownerPosZ + z)).isFullyOpaque() && this.isEmptyBlock(new BlockPos(ownerPosX + x, ownerPosY, ownerPosZ + z)) && this.isEmptyBlock(new BlockPos(ownerPosX + x, ownerPosY + 1, ownerPosZ + z)))
 						{
 							this.getAIOwnerEntity().setLocationAndAngles((double) ((float) (ownerPosX + x) + 0.5F), (double) ownerPosY, (double) ((float) (ownerPosZ + z) + 0.5F), this.getAIOwnerEntity().rotationYaw, this.getAIOwnerEntity().rotationPitch);
-
-							this.setFollowing(0, null);
 
 							return;
 						}
 					}
 				}
 			}
-
-			this.setFollowing(0, null);
-
-			return;
-		}
-
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
-
-		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.minDistance)
-		{
-			this.setFollowing(0, null);
-		}
-		else
-		{
-			this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.moveSpeed);
 		}
 	}
 
@@ -136,7 +118,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 		this.targetOwner = entityLivingBase;
 	}
 
-	private boolean canFollowing(EntityLivingBase entityLivingBase)
+	private boolean canFollowEntityLivingBase(EntityLivingBase entityLivingBase)
 	{
 		if ((entityLivingBase instanceof EntityPlayer) && !((EntityPlayer) entityLivingBase).isSpectator())
 		{
@@ -144,13 +126,6 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 		}
 
 		return false;
-	}
-
-	private boolean isEmptyBlock(BlockPos pos)
-	{
-		IBlockState state = this.getAIWorld().getBlockState(pos);
-
-		return state.getMaterial().equals(Material.AIR) ? true : !state.isFullCube();
 	}
 
 }

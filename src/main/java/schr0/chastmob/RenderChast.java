@@ -18,6 +18,7 @@ public class RenderChast extends RenderLiving<EntityChast>
 		super(renderManagerIn, modelBaseIn, shadowSizeIn);
 		this.addLayer(new LayerChastCore(this));
 		this.addLayer(new LayerChastArm(this));
+		this.addLayer(new LayerChastMode(this));
 		this.addLayer(new LayerChastHeldItem(this));
 	}
 

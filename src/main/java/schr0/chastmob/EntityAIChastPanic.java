@@ -72,11 +72,13 @@ public class EntityAIChastPanic extends EntityAIChast
 			return;
 		}
 
-		if ((this.getAIOwnerEntity().getRNG().nextInt(10) == 0) && !this.getAIWorld().isRemote)
+		if ((this.getAIOwnerEntity().getRNG().nextInt(10) == 0) && !this.getAIOwnerWorld().isRemote)
 		{
-			for (int slot = 0; slot < this.getAIOwnerInventory().getSizeInventory(); ++slot)
+			InventoryChast inventoryChast = this.getAIOwnerEntity().getInventoryChast();
+
+			for (int slot = 0; slot < inventoryChast.getSizeInventory(); ++slot)
 			{
-				ItemStack stackInv = this.getAIOwnerInventory().getStackInSlot(slot);
+				ItemStack stackInv = inventoryChast.getStackInSlot(slot);
 
 				if (ChastMobHelper.isNotEmptyItemStack(stackInv))
 				{
@@ -89,17 +91,17 @@ public class EntityAIChastPanic extends EntityAIChast
 
 					stackInvCopy.stackSize = 1;
 
-					Block.spawnAsEntity(this.getAIWorld(), this.getAIOwnerEntity().getPosition(), stackInvCopy);
+					Block.spawnAsEntity(this.getAIOwnerWorld(), this.getAIOwnerPosition(false), stackInvCopy);
 
 					--stackInv.stackSize;
 
 					if (stackInv.stackSize <= 0)
 					{
-						this.getAIOwnerInventory().setInventorySlotContents(slot, null);
+						inventoryChast.setInventorySlotContents(slot, null);
 					}
 					else
 					{
-						this.getAIOwnerInventory().setInventorySlotContents(slot, stackInv);
+						inventoryChast.setInventorySlotContents(slot, stackInv);
 					}
 
 					this.getAIOwnerEntity().playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
@@ -152,15 +154,22 @@ public class EntityAIChastPanic extends EntityAIChast
 
 	public void setPanicking(int timeCounter)
 	{
-		this.timeCounter = timeCounter;
+		if (0 < timeCounter)
+		{
+			int sec = timeCounter;
+			sec = Math.max(4, sec);
+			sec = Math.min(8, sec);
+
+			this.timeCounter = (sec * 20) + IDEL_TIME;
+		}
+		else
+		{
+			this.timeCounter = 0;
+		}
+
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
-
-		if (0 < timeCounter)
-		{
-			this.timeCounter += IDEL_TIME;
-		}
 	}
 
 	@Nullable
