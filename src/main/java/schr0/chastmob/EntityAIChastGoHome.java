@@ -36,7 +36,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 		}
 		else
 		{
-			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIOwnerPosition(true));
+			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIOwnerPosition());
 
 			if (this.canGoingTileEntityChest(homeChest))
 			{

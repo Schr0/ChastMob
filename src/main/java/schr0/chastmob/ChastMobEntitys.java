@@ -34,9 +34,9 @@ public class ChastMobEntitys
 		RenderingRegistry.registerEntityRenderingHandler(EntityChast.class, new IRenderFactory()
 		{
 			@Override
-			public Render createRenderFor(RenderManager manager)
+			public Render createRenderFor(RenderManager renderManager)
 			{
-				return new RenderChast(manager, new ModelChast(), 0.5F);
+				return new RenderChast(renderManager, new ModelChast(), 0.5F);
 			}
 		});
 	}

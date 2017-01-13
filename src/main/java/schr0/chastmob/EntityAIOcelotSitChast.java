@@ -49,9 +49,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 			if (this.theOwnerEntity.isTamed() && !this.theOwnerEntity.isSitting())
 			{
-				List<EntityChast> listEntityChast = this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(this.maxDistance));
-
-				for (EntityChast entityChast : listEntityChast)
+				for (EntityChast entityChast : this.getAroundEntityChast())
 				{
 					if (this.canSittingEntityChast(entityChast))
 					{
@@ -122,9 +120,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 			if (this.theOwnerEntity.getDistanceSqToEntity(this.targetEntityChast) < 1.5D)
 			{
-				List<EntityChast> listEntityChast = this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(maxDistance));
-
-				for (EntityChast entityChast : listEntityChast)
+				for (EntityChast entityChast : this.getAroundEntityChast())
 				{
 					if (entityChast.equals(this.targetEntityChast) && this.canSittingEntityChast(entityChast))
 					{
@@ -158,6 +154,11 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		this.timeCounter = timeCounter;
 		this.targetEntityChast = entityChast;
+	}
+
+	private List<EntityChast> getAroundEntityChast()
+	{
+		return this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(this.maxDistance));
 	}
 
 	private boolean canSittingEntityChast(EntityChast entityChast)

@@ -30,10 +30,9 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerPosition(true)).expandXyz(this.maxDistance));
 		float rangeOrigin = (float) (this.maxDistance * this.maxDistance * this.maxDistance * 2);
 
-		for (EntityItem entityItem : listEntityItem)
+		for (EntityItem entityItem : this.getAroundEntityItem())
 		{
 			if (this.canCollectEntityItem(entityItem))
 			{
@@ -88,9 +87,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
 		{
-			List<EntityItem> listEntityItem = this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerPosition(true)).expandXyz(this.maxDistance));
-
-			for (EntityItem entityItem : listEntityItem)
+			for (EntityItem entityItem : this.getAroundEntityItem())
 			{
 				if (entityItem.equals(this.targetEntityItem) && this.canCollectEntityItem(entityItem))
 				{
@@ -121,6 +118,11 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		this.timeCounter = timeCounter;
 		this.targetEntityItem = entityItem;
+	}
+
+	private List<EntityItem> getAroundEntityItem()
+	{
+		return this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerPosition()).expandXyz(this.maxDistance));
 	}
 
 	private boolean canCollectEntityItem(EntityItem entityItem)

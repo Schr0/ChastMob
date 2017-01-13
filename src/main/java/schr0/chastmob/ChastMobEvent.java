@@ -23,17 +23,17 @@ public class ChastMobEvent
 		if ((event.getEntityLiving().ticksExisted < 5) && (event.getEntityLiving() instanceof EntityOcelot))
 		{
 			EntityOcelot entityOcelot = (EntityOcelot) event.getEntityLiving();
-			HashSet<EntityAITaskEntry> hashset = new HashSet<EntityAITaskEntry>();
+			HashSet<EntityAITaskEntry> hashSetEntityAITaskEntry = new HashSet<EntityAITaskEntry>();
 
 			for (EntityAITaskEntry taskEntry : entityOcelot.tasks.taskEntries)
 			{
 				if (taskEntry.action.getClass().equals(EntityAIOcelotSit.class))
 				{
-					hashset.add(taskEntry);
+					hashSetEntityAITaskEntry.add(taskEntry);
 				}
 			}
 
-			for (EntityAITaskEntry task : hashset)
+			for (EntityAITaskEntry task : hashSetEntityAITaskEntry)
 			{
 				entityOcelot.tasks.removeTask(task.action);
 				entityOcelot.tasks.addTask(task.priority, new EntityAIOcelotSitChast(entityOcelot, 0.8F, 8.0D));

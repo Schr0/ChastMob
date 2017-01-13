@@ -74,41 +74,7 @@ public class EntityAIChastPanic extends EntityAIChast
 
 		if ((this.getAIOwnerEntity().getRNG().nextInt(10) == 0) && !this.getAIOwnerWorld().isRemote)
 		{
-			InventoryChast inventoryChast = this.getAIOwnerEntity().getInventoryChast();
-
-			for (int slot = 0; slot < inventoryChast.getSizeInventory(); ++slot)
-			{
-				ItemStack stackInv = inventoryChast.getStackInSlot(slot);
-
-				if (ChastMobHelper.isNotEmptyItemStack(stackInv))
-				{
-					if (this.getAIOwnerEntity().getRNG().nextInt(2) == 0)
-					{
-						continue;
-					}
-
-					ItemStack stackInvCopy = stackInv.copy();
-
-					stackInvCopy.stackSize = 1;
-
-					Block.spawnAsEntity(this.getAIOwnerWorld(), this.getAIOwnerPosition(false), stackInvCopy);
-
-					--stackInv.stackSize;
-
-					if (stackInv.stackSize <= 0)
-					{
-						inventoryChast.setInventorySlotContents(slot, null);
-					}
-					else
-					{
-						inventoryChast.setInventorySlotContents(slot, stackInv);
-					}
-
-					this.getAIOwnerEntity().playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
-
-					break;
-				}
-			}
+			this.onPanicDropItem(this.getAIOwnerEntity());
 		}
 
 		if (this.getAIOwnerEntity().isBurning())
@@ -172,10 +138,49 @@ public class EntityAIChastPanic extends EntityAIChast
 		this.randPosZ = 0;
 	}
 
-	@Nullable
-	private BlockPos getNearWaterBlockPos(Entity owner, int searchXYZ)
+	private void onPanicDropItem(EntityChast entityChast)
 	{
-		BlockPos blockPos = new BlockPos(owner);
+		InventoryChast inventoryChast = entityChast.getInventoryChast();
+
+		for (int slot = 0; slot < inventoryChast.getSizeInventory(); ++slot)
+		{
+			ItemStack stackInv = inventoryChast.getStackInSlot(slot);
+
+			if (ChastMobHelper.isNotEmptyItemStack(stackInv))
+			{
+				if (entityChast.getRNG().nextInt(2) == 0)
+				{
+					continue;
+				}
+
+				ItemStack stackInvCopy = stackInv.copy();
+
+				stackInvCopy.stackSize = 1;
+
+				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackInvCopy);
+
+				--stackInv.stackSize;
+
+				if (stackInv.stackSize <= 0)
+				{
+					inventoryChast.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());
+				}
+				else
+				{
+					inventoryChast.setInventorySlotContents(slot, stackInv);
+				}
+
+				entityChast.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+
+				break;
+			}
+		}
+	}
+
+	@Nullable
+	private BlockPos getNearWaterBlockPos(Entity entity, int searchXYZ)
+	{
+		BlockPos blockPos = new BlockPos(entity);
 		int owerPosX = blockPos.getX();
 		int owerPosY = blockPos.getY();
 		int owerPosZ = blockPos.getZ();
@@ -190,7 +195,7 @@ public class EntityAIChastPanic extends EntityAIChast
 				for (int posZ = (owerPosZ - searchXYZ); posZ <= (owerPosZ + searchXYZ); ++posZ)
 				{
 					blockPosMutable.setPos(posX, posY, posZ);
-					Block block = owner.worldObj.getBlockState(blockPosMutable).getBlock();
+					Block block = entity.worldObj.getBlockState(blockPosMutable).getBlock();
 
 					if (block.equals(Blocks.WATER) || block.equals(Blocks.FLOWING_WATER))
 					{

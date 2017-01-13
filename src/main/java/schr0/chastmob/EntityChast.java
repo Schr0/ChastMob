@@ -17,7 +17,6 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.passive.EntityOcelot;
-import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -300,6 +299,7 @@ public class EntityChast extends EntityGolem
 		}
 
 		boolean isServerWorld = (!this.getEntityWorld().isRemote);
+		ItemStack stackMainhand = this.getHeldItemMainhand();
 
 		if (this.isOwnerTame())
 		{
@@ -312,9 +312,7 @@ public class EntityChast extends EntityGolem
 			{
 				if (stack.getItem().equals(ChastMobItems.HOME_CHEST_MAP))
 				{
-					ItemStack stackMain = this.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-
-					if (!ChastMobHelper.isNotEmptyItemStack(stackMain))
+					if (!ChastMobHelper.isNotEmptyItemStack(stackMainhand))
 					{
 						this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
 
@@ -359,14 +357,6 @@ public class EntityChast extends EntityGolem
 				{
 					for (Entity entity : this.getPassengers())
 					{
-						if (entity instanceof EntityTameable)
-						{
-							EntityTameable entityTameable = (EntityTameable) entity;
-
-							entityTameable.getAISit().setSitting(false);
-							entityTameable.setSitting(false);
-						}
-
 						entity.dismountRidingEntity();
 					}
 
@@ -378,11 +368,9 @@ public class EntityChast extends EntityGolem
 					}
 					else
 					{
-						ItemStack stackMain = this.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-
-						if (ChastMobHelper.isNotEmptyItemStack(stackMain))
+						if (ChastMobHelper.isNotEmptyItemStack(stackMainhand))
 						{
-							Block.spawnAsEntity(this.getEntityWorld(), this.getPosition(), stackMain);
+							Block.spawnAsEntity(this.getEntityWorld(), this.getPosition(), stackMainhand);
 
 							this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ChastMobHelper.getEmptyItemStack());
 						}

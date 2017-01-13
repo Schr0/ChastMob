@@ -43,14 +43,9 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.theChast.getInventoryChast();
 	}
 
-	public BlockPos getAIOwnerPosition(boolean isAIMode)
+	public BlockPos getAIOwnerPosition()
 	{
 		BlockPos blockPos = this.theChast.getPosition();
-
-		if (!isAIMode)
-		{
-			return blockPos;
-		}
 
 		if (this.theChast.isOwnerFollow())
 		{
