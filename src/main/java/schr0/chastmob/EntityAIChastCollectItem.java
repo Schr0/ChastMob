@@ -103,7 +103,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		}
 		else
 		{
-			this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.moveSpeed);
+			this.tryMoveToTargetEntity(this.targetEntityItem, this.moveSpeed);
 		}
 	}
 
@@ -122,7 +122,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private List<EntityItem> getAroundEntityItem()
 	{
-		return this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIOwnerPosition()).expandXyz(this.maxDistance));
+		return this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIPosition()).expandXyz(this.maxDistance));
 	}
 
 	private boolean canCollectEntityItem(EntityItem entityItem)

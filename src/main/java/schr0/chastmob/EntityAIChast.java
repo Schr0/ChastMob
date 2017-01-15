@@ -2,11 +2,12 @@ package schr0.chastmob;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public abstract class EntityAIChast extends EntityAIBase
@@ -38,12 +39,17 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.theChast;
 	}
 
+	public World getAIOwnerWorld()
+	{
+		return this.theChast.getEntityWorld();
+	}
+
 	public InventoryChast getAIOwnerInventory()
 	{
 		return this.theChast.getInventoryChast();
 	}
 
-	public BlockPos getAIOwnerPosition()
+	public BlockPos getAIPosition()
 	{
 		BlockPos blockPos = this.theChast.getPosition();
 
@@ -58,11 +64,11 @@ public abstract class EntityAIChast extends EntityAIBase
 		}
 		else
 		{
-			ItemStack stackMain = this.theChast.getHeldItem(EnumHand.MAIN_HAND);
+			ItemStack stackMainhand = this.theChast.getHeldItemMainhand();
 
-			if (ChastMobHelper.isNotEmptyItemStack(stackMain) && (stackMain.getItem() instanceof ItemHomeChestMap))
+			if (ChastMobHelper.isNotEmptyItemStack(stackMainhand) && (stackMainhand.getItem() instanceof ItemHomeChestMap))
 			{
-				BlockPos blockPosHome = ((ItemHomeChestMap) stackMain.getItem()).getHomeChestBlockPos(stackMain);
+				BlockPos blockPosHome = ((ItemHomeChestMap) stackMainhand.getItem()).getHomeChestBlockPos(stackMainhand);
 
 				if (blockPosHome != null)
 				{
@@ -74,16 +80,50 @@ public abstract class EntityAIChast extends EntityAIBase
 		return blockPos;
 	}
 
-	public World getAIOwnerWorld()
+	public void tryMoveToTargetBlockPos(BlockPos blockPos, double moveSpeed)
 	{
-		return this.theChast.getEntityWorld();
+		if (!this.theChast.getNavigator().tryMoveToXYZ(blockPos.getX(), blockPos.getY(), blockPos.getZ(), moveSpeed))
+		{
+			int targetPosX = MathHelper.floor_double(blockPos.getX()) - 2;
+			int targetPosY = MathHelper.floor_double(blockPos.getY());
+			int targetPosZ = MathHelper.floor_double(blockPos.getZ()) - 2;
+
+			this.teleportTargetPosition(targetPosX, targetPosY, targetPosZ);
+		}
 	}
 
-	public boolean isEmptyBlock(BlockPos pos)
+	public void tryMoveToTargetEntity(Entity entitiy, double moveSpeed)
+	{
+		if (!this.theChast.getNavigator().tryMoveToEntityLiving(entitiy, moveSpeed))
+		{
+			int targetPosX = MathHelper.floor_double(entitiy.posX) - 2;
+			int targetPosY = MathHelper.floor_double(entitiy.getEntityBoundingBox().minY);
+			int targetPosZ = MathHelper.floor_double(entitiy.posZ) - 2;
+
+			this.teleportTargetPosition(targetPosX, targetPosY, targetPosZ);
+		}
+	}
+
+	private void teleportTargetPosition(int targetPosX, int targetPosY, int targetPosZ)
+	{
+		for (int x = 0; x <= 4; ++x)
+		{
+			for (int z = 0; z <= 4; ++z)
+			{
+				if ((x < 1 || z < 1 || x > 3 || z > 3) && this.getAIOwnerWorld().getBlockState(new BlockPos(targetPosX + x, targetPosY - 1, targetPosZ + z)).isFullyOpaque() && this.isEmptyBlock(new BlockPos(targetPosX + x, targetPosY, targetPosZ + z)) && this.isEmptyBlock(new BlockPos(targetPosX + x, targetPosY + 1, targetPosZ + z)))
+				{
+					this.getAIOwnerEntity().setLocationAndAngles((double) ((float) (targetPosX + x) + 0.5F), (double) targetPosY, (double) ((float) (targetPosZ + z) + 0.5F), this.getAIOwnerEntity().rotationYaw, this.getAIOwnerEntity().rotationPitch);
+
+					return;
+				}
+			}
+		}
+	}
+
+	private boolean isEmptyBlock(BlockPos pos)
 	{
 		IBlockState state = this.getAIOwnerWorld().getBlockState(pos);
 
 		return state.getMaterial().equals(Material.AIR) ? true : !state.isFullCube();
 	}
-
 }

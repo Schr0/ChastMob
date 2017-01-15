@@ -4,8 +4,6 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 
 public class EntityAIChastFollowOwner extends EntityAIChast
 {
@@ -83,25 +81,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 		}
 		else
 		{
-			if (!this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.moveSpeed))
-			{
-				int ownerPosX = MathHelper.floor_double(this.targetOwner.posX) - 2;
-				int ownerPosY = MathHelper.floor_double(this.targetOwner.getEntityBoundingBox().minY);
-				int ownerPosZ = MathHelper.floor_double(this.targetOwner.posZ) - 2;
-
-				for (int x = 0; x <= 4; ++x)
-				{
-					for (int z = 0; z <= 4; ++z)
-					{
-						if ((x < 1 || z < 1 || x > 3 || z > 3) && this.getAIOwnerWorld().getBlockState(new BlockPos(ownerPosX + x, ownerPosY - 1, ownerPosZ + z)).isFullyOpaque() && this.isEmptyBlock(new BlockPos(ownerPosX + x, ownerPosY, ownerPosZ + z)) && this.isEmptyBlock(new BlockPos(ownerPosX + x, ownerPosY + 1, ownerPosZ + z)))
-						{
-							this.getAIOwnerEntity().setLocationAndAngles((double) ((float) (ownerPosX + x) + 0.5F), (double) ownerPosY, (double) ((float) (ownerPosZ + z) + 0.5F), this.getAIOwnerEntity().rotationYaw, this.getAIOwnerEntity().rotationPitch);
-
-							return;
-						}
-					}
-				}
-			}
+			this.tryMoveToTargetEntity(this.targetOwner, this.moveSpeed);
 		}
 	}
 

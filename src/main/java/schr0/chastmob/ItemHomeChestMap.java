@@ -14,6 +14,8 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -40,18 +42,17 @@ public class ItemHomeChestMap extends Item
 
 		if (blockPos != null)
 		{
-			tooltip.add("poxX : " + blockPos.getX());
-			tooltip.add("poxY : " + blockPos.getY());
-			tooltip.add("poxZ : " + blockPos.getZ());
+			tooltip.add("posX : " + blockPos.getX());
+			tooltip.add("posY : " + blockPos.getY());
+			tooltip.add("posZ : " + blockPos.getZ());
 		}
 		else
 		{
 			String none = "NONE";
-			tooltip.add("poxX : " + none);
-			tooltip.add("poxY : " + none);
-			tooltip.add("poxZ : " + none);
+			tooltip.add("posX : " + none);
+			tooltip.add("posY : " + none);
+			tooltip.add("posZ : " + none);
 		}
-
 	}
 
 	@Override
@@ -64,6 +65,14 @@ public class ItemHomeChestMap extends Item
 				this.setHomeChestBlockPos(stack, pos);
 
 				playerIn.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+
+				if (!worldIn.isRemote)
+				{
+					playerIn.addChatComponentMessage(new TextComponentTranslation("item.home_chest_map.save_log", new Object[]
+					{
+							(TextFormatting.ITALIC + stack.getDisplayName()), pos.getX(), pos.getY(), pos.getZ()
+					}));
+				}
 
 				return EnumActionResult.SUCCESS;
 			}

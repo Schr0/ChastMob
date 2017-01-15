@@ -18,6 +18,7 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -31,6 +32,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -286,6 +288,13 @@ public class EntityChast extends EntityGolem
 
 		if (!world.isRemote)
 		{
+			EntityPlayerMP entityPlayerMP = (EntityPlayerMP) this.getOwnerEntity();
+
+			if (world.getGameRules().getBoolean("showDeathMessages") && (entityPlayerMP instanceof EntityPlayerMP))
+			{
+				entityPlayerMP.addChatMessage(this.getCombatTracker().getDeathMessage());
+			}
+
 			InventoryHelper.dropInventoryItems(world, this, this.getInventoryChast());
 		}
 	}
@@ -298,9 +307,6 @@ public class EntityChast extends EntityGolem
 			return false;
 		}
 
-		boolean isServerWorld = (!this.getEntityWorld().isRemote);
-		ItemStack stackMainhand = this.getHeldItemMainhand();
-
 		if (this.isOwnerTame())
 		{
 			if (!this.isOwnerEntity(player))
@@ -308,21 +314,23 @@ public class EntityChast extends EntityGolem
 				return false;
 			}
 
+			boolean isServerWorld = (!this.getEntityWorld().isRemote);
+			ItemStack stackMainhand = this.getHeldItemMainhand();
+
 			if (ChastMobHelper.isNotEmptyItemStack(stack))
 			{
 				if (stack.getItem().equals(ChastMobItems.HOME_CHEST_MAP))
 				{
-					if (!ChastMobHelper.isNotEmptyItemStack(stackMainhand))
+					if ((stack.getItem() instanceof ItemHomeChestMap) && ((ItemHomeChestMap) stack.getItem()).getHomeChestBlockPos(stack) != null)
 					{
-						this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
+						if ((!this.isStateSit() && !this.isOwnerFollow()) && !ChastMobHelper.isNotEmptyItemStack(stackMainhand))
+						{
+							this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
 
-						player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ChastMobHelper.getEmptyItemStack());
+							player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ChastMobHelper.getEmptyItemStack());
 
-						this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
-
-						player.swingArm(hand);
-
-						return true;
+							return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
+						}
 					}
 				}
 
@@ -342,11 +350,7 @@ public class EntityChast extends EntityGolem
 							}
 						}
 
-						this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
-
-						player.swingArm(hand);
-
-						return true;
+						return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
 					}
 				}
 			}
@@ -377,9 +381,7 @@ public class EntityChast extends EntityGolem
 					}
 				}
 
-				this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
-
-				player.swingArm(hand);
+				return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
 			}
 			else
 			{
@@ -390,17 +392,19 @@ public class EntityChast extends EntityGolem
 						player.displayGUIChest(this.getInventoryChast());
 					}
 
-					player.swingArm(hand);
+					return this.onSuccessProcessInteract(player, null);
 				}
 			}
 		}
-		// TODO TEST
+		// TODO DEBUG
 		else
 		{
 			this.onSpawnByPlayer(player);
+
+			return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_PLAYER_LEVELUP);
 		}
 
-		return true;
+		return false;
 	}
 
 	@Override
@@ -464,17 +468,6 @@ public class EntityChast extends EntityGolem
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
-
-	public void onSpawnByPlayer(EntityPlayer player)
-	{
-		if (!player.getEntityWorld().isRemote)
-		{
-			this.setArmColor(EnumDyeColor.byDyeDamage(player.getRNG().nextInt(15)));
-			this.setOwnerTame(true);
-			this.setOwnerUUID(player.getUniqueID());
-			this.setAISitting(true);
-		}
-	}
 
 	@SideOnly(Side.CLIENT)
 	public float getAngleCoverX(float partialTickTime)
@@ -675,6 +668,28 @@ public class EntityChast extends EntityGolem
 	public void setAITrading(@Nullable EntityPlayer tradePlayer)
 	{
 		this.aiChastTrade.setTrading(tradePlayer);
+	}
+
+	public void onSpawnByPlayer(EntityPlayer player)
+	{
+		if (!player.getEntityWorld().isRemote)
+		{
+			this.setOwnerTame(true);
+			this.setOwnerUUID(player.getUniqueID());
+			this.setAISitting(true);
+		}
+	}
+
+	private boolean onSuccessProcessInteract(EntityPlayer player, @Nullable SoundEvent soundEvent)
+	{
+		if (soundEvent != null)
+		{
+			this.playSound(soundEvent, 1.0F, 1.0F);
+		}
+
+		player.swingArm(EnumHand.MAIN_HAND);
+
+		return true;
 	}
 
 	private void onUpdateOpen(EntityChast entityChast, boolean isCoverOpen)

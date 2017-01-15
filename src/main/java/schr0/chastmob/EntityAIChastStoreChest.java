@@ -10,7 +10,6 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class EntityAIChastStoreChest extends EntityAIChast
@@ -43,7 +42,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 			}
 			else
 			{
-				TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIOwnerPosition());
+				TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIPosition());
 
 				if (this.canStoringTileEntityChest(homeChest))
 				{
@@ -129,25 +128,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		}
 		else
 		{
-			if (!this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.moveSpeed))
-			{
-				int ownerPosX = MathHelper.floor_double(targetBlockPos.getX()) - 2;
-				int ownerPosY = MathHelper.floor_double(targetBlockPos.getY());
-				int ownerPosZ = MathHelper.floor_double(targetBlockPos.getZ()) - 2;
-
-				for (int x = 0; x <= 4; ++x)
-				{
-					for (int z = 0; z <= 4; ++z)
-					{
-						if ((x < 1 || z < 1 || x > 3 || z > 3) && this.getAIOwnerWorld().getBlockState(new BlockPos(ownerPosX + x, ownerPosY - 1, ownerPosZ + z)).isFullyOpaque() && this.isEmptyBlock(new BlockPos(ownerPosX + x, ownerPosY, ownerPosZ + z)) && this.isEmptyBlock(new BlockPos(ownerPosX + x, ownerPosY + 1, ownerPosZ + z)))
-						{
-							this.getAIOwnerEntity().setLocationAndAngles((double) ((float) (ownerPosX + x) + 0.5F), (double) ownerPosY, (double) ((float) (ownerPosZ + z) + 0.5F), this.getAIOwnerEntity().rotationYaw, this.getAIOwnerEntity().rotationPitch);
-
-							return;
-						}
-					}
-				}
-			}
+			this.tryMoveToTargetBlockPos(targetBlockPos, this.moveSpeed);
 		}
 	}
 
@@ -177,18 +158,18 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	private TileEntityChest getNearOpenChestTileEntity(EntityChast entityChast, int searchXYZ)
 	{
 		BlockPos blockPos = entityChast.getPosition();
-		int pX = blockPos.getX();
-		int pY = blockPos.getY();
-		int pZ = blockPos.getZ();
+		int entityPosX = blockPos.getX();
+		int entityPosY = blockPos.getY();
+		int entityPosZ = blockPos.getZ();
 		float rangeOrigin = (float) (searchXYZ * searchXYZ * searchXYZ * 2);
 		BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
 		TileEntityChest tileEntityChest = null;
 
-		for (int x = (pX - searchXYZ); x <= (pX + searchXYZ); ++x)
+		for (int x = (entityPosX - searchXYZ); x <= (entityPosX + searchXYZ); ++x)
 		{
-			for (int y = (pY - searchXYZ); y <= (pY + searchXYZ); ++y)
+			for (int y = (entityPosY - searchXYZ); y <= (entityPosY + searchXYZ); ++y)
 			{
-				for (int z = (pZ - searchXYZ); z <= (pZ + searchXYZ); ++z)
+				for (int z = (entityPosZ - searchXYZ); z <= (entityPosZ + searchXYZ); ++z)
 				{
 					blockPosMutable.setPos(x, y, z);
 					World world = entityChast.worldObj;
@@ -203,15 +184,15 @@ public class EntityAIChastStoreChest extends EntityAIChast
 							continue;
 						}
 
-						float range = (float) ((x - pX) * (x - pX) + (y - pY) * (y - pY) + (z - pZ) * (z - pZ));
+						float range = (float) ((x - entityPosX) * (x - entityPosX) + (y - entityPosY) * (y - entityPosY) + (z - entityPosZ) * (z - entityPosZ));
 
 						if (range < rangeOrigin)
 						{
 							rangeOrigin = range;
 
-							for (int slot = 0; slot < this.getAIOwnerInventory().getSizeInventory(); ++slot)
+							for (int slot = 0; slot < entityChast.getInventoryChast().getSizeInventory(); ++slot)
 							{
-								ItemStack stackInv = this.getAIOwnerInventory().getStackInSlot(slot);
+								ItemStack stackInv = entityChast.getInventoryChast().getStackInSlot(slot);
 
 								if (ChastMobHelper.canStoreInventory((IInventory) tileEntity, stackInv))
 								{

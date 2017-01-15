@@ -181,25 +181,25 @@ public class EntityAIChastPanic extends EntityAIChast
 	private BlockPos getNearWaterBlockPos(Entity entity, int searchXYZ)
 	{
 		BlockPos blockPos = new BlockPos(entity);
-		int owerPosX = blockPos.getX();
-		int owerPosY = blockPos.getY();
-		int owerPosZ = blockPos.getZ();
+		int entityPosX = blockPos.getX();
+		int entityPosY = blockPos.getY();
+		int entityPosZ = blockPos.getZ();
 		float rangeOrigin = (float) (searchXYZ * searchXYZ * searchXYZ * 2);
 		BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
 		BlockPos blockPosWater = null;
 
-		for (int posX = (owerPosX - searchXYZ); posX <= (owerPosX + searchXYZ); ++posX)
+		for (int posX = (entityPosX - searchXYZ); posX <= (entityPosX + searchXYZ); ++posX)
 		{
-			for (int posY = (owerPosY - searchXYZ); posY <= (owerPosY + searchXYZ); ++posY)
+			for (int posY = (entityPosY - searchXYZ); posY <= (entityPosY + searchXYZ); ++posY)
 			{
-				for (int posZ = (owerPosZ - searchXYZ); posZ <= (owerPosZ + searchXYZ); ++posZ)
+				for (int posZ = (entityPosZ - searchXYZ); posZ <= (entityPosZ + searchXYZ); ++posZ)
 				{
 					blockPosMutable.setPos(posX, posY, posZ);
 					Block block = entity.worldObj.getBlockState(blockPosMutable).getBlock();
 
 					if (block.equals(Blocks.WATER) || block.equals(Blocks.FLOWING_WATER))
 					{
-						float range = (float) ((posX - owerPosX) * (posX - owerPosX) + (posY - owerPosY) * (posY - owerPosY) + (posZ - owerPosZ) * (posZ - owerPosZ));
+						float range = (float) ((posX - entityPosX) * (posX - entityPosX) + (posY - entityPosY) * (posY - entityPosY) + (posZ - entityPosZ) * (posZ - entityPosZ));
 
 						if (range < rangeOrigin)
 						{
