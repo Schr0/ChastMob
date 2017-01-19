@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.entity;
 
 import java.util.UUID;
 
@@ -24,6 +24,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -37,15 +38,34 @@ import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.entity.ai.EntityAIChastCollectItem;
+import schr0.chastmob.entity.ai.EntityAIChastFollowOwner;
+import schr0.chastmob.entity.ai.EntityAIChastGoHome;
+import schr0.chastmob.entity.ai.EntityAIChastPanic;
+import schr0.chastmob.entity.ai.EntityAIChastSit;
+import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
+import schr0.chastmob.entity.ai.EntityAIChastTrade;
+import schr0.chastmob.entity.ai.EntityAIChastWander;
+import schr0.chastmob.entity.ai.EnumAIMode;
+import schr0.chastmob.init.ChastMobEntitys;
+import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.init.ChastMobNBTTags;
+import schr0.chastmob.item.ItemHomeChestMap;
 
 public class EntityChast extends EntityGolem
 {
+
+	public static void func_189790_b(DataFixer p_189790_0_)
+	{
+		EntityLiving.func_189752_a(p_189790_0_, ChastMobEntitys.NAME_CHAST);
+	}
 
 	private static final DataParameter<Integer> ARM_COLOR = EntityDataManager.<Integer> createKey(EntityChast.class, DataSerializers.VARINT);
 	private static final DataParameter<Byte> COVER_OPEN = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Optional<UUID>> OWNER_UUID = EntityDataManager.<Optional<UUID>> createKey(EntityChast.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 	private static final DataParameter<Byte> OWNER_TAME = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
-	private static final DataParameter<Byte> OWNER_FOLLOW = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+	private static final DataParameter<Integer> AI_MODE = EntityDataManager.<Integer> createKey(EntityChast.class, DataSerializers.VARINT);
 	private static final DataParameter<Byte> STATE_PANIC = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> STATE_SIT = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> STATE_TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
@@ -65,11 +85,6 @@ public class EntityChast extends EntityGolem
 		this.inventoryChast = new InventoryChast(this);
 	}
 
-	public static void func_189790_b(DataFixer p_189790_0_)
-	{
-		EntityLiving.func_189752_a(p_189790_0_, ChastMobEntitys.NAME_CHAST);
-	}
-
 	@Override
 	protected void initEntityAI()
 	{
@@ -83,7 +98,7 @@ public class EntityChast extends EntityGolem
 		this.aiChastPanic = new EntityAIChastPanic(this, (speed * 2), distance);
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
-		// Follow || Freedom
+		// Follow || Freedom (Patrol)
 		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this, speed, (double) distance);
 		EntityAIBase aiChastFollowOwner = new EntityAIChastFollowOwner(this, speed, (double) distance);
 		EntityAIBase aiChastGoHome = new EntityAIChastGoHome(this, speed, distance);
@@ -125,6 +140,7 @@ public class EntityChast extends EntityGolem
 	protected void applyEntityAttributes()
 	{
 		super.applyEntityAttributes();
+
 		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
 	}
@@ -137,7 +153,7 @@ public class EntityChast extends EntityGolem
 		this.getDataManager().register(COVER_OPEN, Byte.valueOf((byte) 0));
 		this.getDataManager().register(OWNER_UUID, Optional.<UUID> absent());
 		this.getDataManager().register(OWNER_TAME, Byte.valueOf((byte) 0));
-		this.getDataManager().register(OWNER_FOLLOW, Byte.valueOf((byte) 0));
+		this.getDataManager().register(AI_MODE, Integer.valueOf(EnumAIMode.FREEDOM.getNumber()));
 		this.getDataManager().register(STATE_PANIC, Byte.valueOf((byte) 0));
 		this.getDataManager().register(STATE_SIT, Byte.valueOf((byte) 0));
 		this.getDataManager().register(STATE_TRADE, Byte.valueOf((byte) 0));
@@ -161,11 +177,11 @@ public class EntityChast extends EntityGolem
 			compound.setString(ChastMobNBTTags.CHAST_OWNER_UUID, this.getOwnerUUID().toString());
 		}
 
-		compound.setBoolean(ChastMobNBTTags.CHAST_OWNER_FOLLOW, this.isOwnerFollow());
+		compound.setByte(ChastMobNBTTags.CHAST_AI_MODE, (byte) this.getAIMode().getNumber());
 
 		compound.setBoolean(ChastMobNBTTags.CHAST_STATE_SIT, this.isStateSit());
 
-		// TODO VANILLA BUG ?
+		// TODO VANILLA FIX
 		if (this.getRidingEntity() instanceof EntityPlayer)
 		{
 			this.dismountRidingEntity();
@@ -185,7 +201,7 @@ public class EntityChast extends EntityGolem
 
 		String ownerUUID;
 
-		if (compound.hasKey(ChastMobNBTTags.CHAST_OWNER_UUID, 8))
+		if (compound.hasKey(ChastMobNBTTags.CHAST_OWNER_UUID))
 		{
 			ownerUUID = compound.getString(ChastMobNBTTags.CHAST_OWNER_UUID);
 		}
@@ -207,7 +223,7 @@ public class EntityChast extends EntityGolem
 			}
 		}
 
-		this.setOwnerFollow(compound.getBoolean(ChastMobNBTTags.CHAST_OWNER_FOLLOW));
+		this.setAIMode(EnumAIMode.byNumber(compound.getByte(ChastMobNBTTags.CHAST_AI_MODE)));
 
 		if (this.aiChastPanic != null)
 		{
@@ -229,6 +245,7 @@ public class EntityChast extends EntityGolem
 		}
 
 		this.setStateTrade(false);
+
 	}
 
 	@Override
@@ -269,21 +286,17 @@ public class EntityChast extends EntityGolem
 			return false;
 		}
 
-		boolean attackEntityFrom = super.attackEntityFrom(source, amount);
-
 		if ((source.getSourceOfDamage() instanceof EntityLivingBase) && !this.getEntityWorld().isRemote)
 		{
 			this.setAIPanicking((int) amount);
 		}
 
-		return attackEntityFrom;
+		return super.attackEntityFrom(source, amount);
 	}
 
 	@Override
 	public void onDeath(DamageSource cause)
 	{
-		super.onDeath(cause);
-
 		World world = this.getEntityWorld();
 
 		if (!world.isRemote)
@@ -297,6 +310,8 @@ public class EntityChast extends EntityGolem
 
 			InventoryHelper.dropInventoryItems(world, this, this.getInventoryChast());
 		}
+
+		super.onDeath(cause);
 	}
 
 	@Override
@@ -315,22 +330,44 @@ public class EntityChast extends EntityGolem
 			}
 
 			boolean isServerWorld = (!this.getEntityWorld().isRemote);
-			ItemStack stackMainhand = this.getHeldItemMainhand();
+			EntityEquipmentSlot eqSlotMainhand = EntityEquipmentSlot.MAINHAND;
+			ItemStack stackMainhand = this.getItemStackFromSlot(eqSlotMainhand);
+
+			for (Entity entity : this.getPassengers())
+			{
+				if (entity.isEntityAlive())
+				{
+					if (isServerWorld)
+					{
+						entity.dismountRidingEntity();
+					}
+
+					return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
+				}
+			}
 
 			if (ChastMobHelper.isNotEmptyItemStack(stack))
 			{
 				if (stack.getItem().equals(ChastMobItems.HOME_CHEST_MAP))
 				{
-					if ((stack.getItem() instanceof ItemHomeChestMap) && ((ItemHomeChestMap) stack.getItem()).getHomeChestBlockPos(stack) != null)
+					if (((ItemHomeChestMap) stack.getItem()).getHomeChestBlockPos(stack) != null)
 					{
-						if ((!this.isStateSit() && !this.isOwnerFollow()) && !ChastMobHelper.isNotEmptyItemStack(stackMainhand))
+						if (isServerWorld)
 						{
-							this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
+							this.setAIMode(EnumAIMode.FREEDOM);
+							this.setAISitting(false);
 
-							player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ChastMobHelper.getEmptyItemStack());
+							if (ChastMobHelper.isNotEmptyItemStack(stackMainhand))
+							{
+								Block.spawnAsEntity(this.getEntityWorld(), this.getPosition(), stackMainhand);
+							}
 
-							return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
+							this.setItemStackToSlot(eqSlotMainhand, stack);
+
+							player.setItemStackToSlot(eqSlotMainhand, ChastMobHelper.getEmptyItemStack());
 						}
+
+						return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
 					}
 				}
 
@@ -359,16 +396,11 @@ public class EntityChast extends EntityGolem
 			{
 				if (isServerWorld)
 				{
-					for (Entity entity : this.getPassengers())
-					{
-						entity.dismountRidingEntity();
-					}
-
 					this.setAISitting(!this.isStateSit());
 
 					if (this.isStateSit())
 					{
-						this.setOwnerFollow(!this.isOwnerFollow());
+						this.switchAIMode();
 					}
 					else
 					{
@@ -376,7 +408,7 @@ public class EntityChast extends EntityGolem
 						{
 							Block.spawnAsEntity(this.getEntityWorld(), this.getPosition(), stackMainhand);
 
-							this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ChastMobHelper.getEmptyItemStack());
+							this.setItemStackToSlot(eqSlotMainhand, ChastMobHelper.getEmptyItemStack());
 						}
 					}
 				}
@@ -385,26 +417,21 @@ public class EntityChast extends EntityGolem
 			}
 			else
 			{
-				if (this.getPassengers().isEmpty())
+				if (isServerWorld)
 				{
-					if (isServerWorld)
-					{
-						player.displayGUIChest(this.getInventoryChast());
-					}
-
-					return this.onSuccessProcessInteract(player, null);
+					player.displayGUIChest(this.getInventoryChast());
 				}
+
+				return this.onSuccessProcessInteract(player, null);
 			}
 		}
-		// TODO DEBUG
+		// TODO VANILLA FIX
 		else
 		{
 			this.onSpawnByPlayer(player);
 
 			return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_PLAYER_LEVELUP);
 		}
-
-		return false;
 	}
 
 	@Override
@@ -464,7 +491,7 @@ public class EntityChast extends EntityGolem
 	{
 		super.onUpdate();
 
-		this.onUpdateOpen(this, this.isCoverOpen());
+		this.onUpdateCoverOpen(this, this.isCoverOpen());
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -534,23 +561,14 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public boolean isOwnerFollow()
+	public EnumAIMode getAIMode()
 	{
-		return ((((Byte) this.getDataManager().get(OWNER_FOLLOW)).byteValue() & 1) != 0);
+		return EnumAIMode.byNumber(((Integer) this.getDataManager().get(AI_MODE)).intValue());
 	}
 
-	public void setOwnerFollow(boolean isModeFollow)
+	public void setAIMode(EnumAIMode aiMode)
 	{
-		byte b0 = ((Byte) this.getDataManager().get(OWNER_FOLLOW)).byteValue();
-
-		if (isModeFollow)
-		{
-			this.getDataManager().set(OWNER_FOLLOW, Byte.valueOf((byte) (b0 | 1)));
-		}
-		else
-		{
-			this.getDataManager().set(OWNER_FOLLOW, Byte.valueOf((byte) (b0 & -2)));
-		}
+		this.getDataManager().set(AI_MODE, Integer.valueOf(aiMode.getNumber()));
 	}
 
 	public boolean isStatePanic()
@@ -649,6 +667,38 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
+	public boolean isFollowAIMode()
+	{
+		return this.getAIMode().equals(EnumAIMode.FOLLOW);
+	}
+
+	public void switchAIMode()
+	{
+		int aiNumber = this.getAIMode().getNumber();
+		int aiNumberNew;
+
+		switch (aiNumber)
+		{
+			case 0 :
+
+				aiNumberNew = 1;
+
+				break;
+
+			case 1 :
+
+				aiNumberNew = 0;
+
+				break;
+
+			default :
+
+				aiNumberNew = 0;
+		}
+
+		this.setAIMode(EnumAIMode.byNumber(aiNumberNew));
+	}
+
 	public void setAIPanicking(int panicTime)
 	{
 		this.aiChastPanic.setPanicking(panicTime);
@@ -676,8 +726,25 @@ public class EntityChast extends EntityGolem
 		{
 			this.setOwnerTame(true);
 			this.setOwnerUUID(player.getUniqueID());
+
+			this.setAIMode(EnumAIMode.FREEDOM);
 			this.setAISitting(true);
 		}
+	}
+
+	private boolean canItemDyeInteract(ItemStack stack)
+	{
+		if (!ChastMobHelper.isNotEmptyItemStack(stack))
+		{
+			return false;
+		}
+
+		if (stack.getItem() instanceof ItemDye)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	private boolean onSuccessProcessInteract(EntityPlayer player, @Nullable SoundEvent soundEvent)
@@ -692,7 +759,7 @@ public class EntityChast extends EntityGolem
 		return true;
 	}
 
-	private void onUpdateOpen(EntityChast entityChast, boolean isCoverOpen)
+	private void onUpdateCoverOpen(EntityChast entityChast, boolean isCoverOpen)
 	{
 		this.prevLidAngle = this.lidAngle;
 

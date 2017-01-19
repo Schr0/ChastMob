@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.init;
 
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -7,6 +7,10 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.ChastMob;
+import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.render.ModelChast;
+import schr0.chastmob.entity.render.RenderChast;
 
 public class ChastMobEntitys
 {

@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.ai;
 
 import javax.annotation.Nullable;
 
@@ -6,6 +6,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastGoHome extends EntityAIChast
 {
@@ -29,7 +31,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().isOwnerFollow())
+		if (this.getAIOwnerEntity().isFollowAIMode())
 		{
 			return false;
 		}

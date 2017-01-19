@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.ai;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
+import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastCollectItem extends EntityAIChast
 {

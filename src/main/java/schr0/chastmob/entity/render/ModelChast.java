@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.render;
 
 import org.lwjgl.opengl.GL11;
 
@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
+import schr0.chastmob.entity.EntityChast;
 
 public class ModelChast extends ModelBase
 {

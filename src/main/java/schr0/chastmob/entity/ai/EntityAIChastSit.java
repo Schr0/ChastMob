@@ -1,4 +1,6 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.ai;
+
+import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastSit extends EntityAIChast
 {

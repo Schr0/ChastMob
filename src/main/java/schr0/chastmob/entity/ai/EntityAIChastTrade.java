@@ -1,6 +1,7 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.ai;
 
 import net.minecraft.entity.player.EntityPlayer;
+import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastTrade extends EntityAIChast
 {

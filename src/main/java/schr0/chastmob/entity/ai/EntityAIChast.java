@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.ai;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -9,6 +9,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.InventoryChast;
+import schr0.chastmob.item.ItemHomeChestMap;
 
 public abstract class EntityAIChast extends EntityAIBase
 {
@@ -53,7 +57,7 @@ public abstract class EntityAIChast extends EntityAIBase
 	{
 		BlockPos blockPos = this.theChast.getPosition();
 
-		if (this.theChast.isOwnerFollow())
+		if (this.theChast.isFollowAIMode())
 		{
 			EntityLivingBase entityLivingBase = this.theChast.getOwnerEntity();
 

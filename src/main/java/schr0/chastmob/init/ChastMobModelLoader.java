@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.init;
 
 import java.util.ArrayList;
 

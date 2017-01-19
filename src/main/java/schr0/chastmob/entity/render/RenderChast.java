@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.render;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -6,6 +6,12 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.ChastMob;
+import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.render.layer.LayerChastArm;
+import schr0.chastmob.entity.render.layer.LayerChastCore;
+import schr0.chastmob.entity.render.layer.LayerChastHeldItem;
+import schr0.chastmob.entity.render.layer.LayerChastMode;
 
 @SideOnly(Side.CLIENT)
 public class RenderChast extends RenderLiving<EntityChast>

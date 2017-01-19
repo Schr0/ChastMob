@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.vanilla;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 {

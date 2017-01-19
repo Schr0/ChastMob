@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.init;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -7,6 +7,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
+import schr0.chastmob.ChastMob;
+import schr0.chastmob.item.ItemHomeChestMap;
 
 public class ChastMobItems
 {

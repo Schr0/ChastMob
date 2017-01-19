@@ -1,10 +1,11 @@
-package schr0.chastmob;
+package schr0.chastmob.init;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.ChastMob;
 
 public class ChastMobCreativeTabs
 {

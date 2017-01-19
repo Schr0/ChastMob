@@ -1,9 +1,10 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.ai;
 
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastFollowOwner extends EntityAIChast
 {
@@ -27,7 +28,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().isOwnerFollow())
+		if (this.getAIOwnerEntity().isFollowAIMode())
 		{
 			EntityLivingBase owner = this.getAIOwnerEntity().getOwnerEntity();
 

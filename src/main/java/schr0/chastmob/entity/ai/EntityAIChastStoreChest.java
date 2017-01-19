@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.ai;
 
 import javax.annotation.Nullable;
 
@@ -11,6 +11,8 @@ import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastStoreChest extends EntityAIChast
 {
@@ -36,7 +38,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		if (!ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), ChastMobHelper.getEmptyItemStack()))
 		{
-			if (this.getAIOwnerEntity().isOwnerFollow())
+			if (this.getAIOwnerEntity().isFollowAIMode())
 			{
 				return false;
 			}

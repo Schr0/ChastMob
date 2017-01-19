@@ -1,7 +1,8 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.ai;
 
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.util.math.Vec3d;
+import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastWander extends EntityAIChast
 {

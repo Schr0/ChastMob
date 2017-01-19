@@ -1,10 +1,11 @@
-package schr0.chastmob;
+package schr0.chastmob.entity;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import schr0.chastmob.ChastMobHelper;
 
 public class InventoryChast extends InventoryBasic
 {

@@ -1,4 +1,6 @@
-package schr0.chastmob;
+package schr0.chastmob.init;
+
+import schr0.chastmob.ChastMob;
 
 public class ChastMobNBTTags
 {
@@ -11,7 +13,7 @@ public class ChastMobNBTTags
 	public static final String CHAST_INVENTORY = ENTITY_CHAST + "inventory";
 	public static final String CHAST_ARM_COLOR = ENTITY_CHAST + "arm_color";
 	public static final String CHAST_OWNER_UUID = ENTITY_CHAST + "owner_uuid";
-	public static final String CHAST_OWNER_FOLLOW = ENTITY_CHAST + "owner_follow";
+	public static final String CHAST_AI_MODE = ENTITY_CHAST + "ai_mode";
 	public static final String CHAST_STATE_SIT = ENTITY_CHAST + "state_sit";
 
 	public static final String ITEM_HOME_CHEST_MAP = CATEGORY_ITEM + "home_chest_map";

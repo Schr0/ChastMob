@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.item;
 
 import java.util.List;
 
@@ -19,6 +19,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.init.ChastMobNBTTags;
 
 public class ItemHomeChestMap extends Item
 {

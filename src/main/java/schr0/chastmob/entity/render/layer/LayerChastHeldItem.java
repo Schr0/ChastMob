@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.render.layer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -8,6 +8,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHandSide;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.render.ModelChast;
+import schr0.chastmob.entity.render.RenderChast;
 
 @SideOnly(Side.CLIENT)
 public class LayerChastHeldItem implements LayerRenderer<EntityChast>
