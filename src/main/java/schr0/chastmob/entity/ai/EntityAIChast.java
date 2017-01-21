@@ -57,7 +57,7 @@ public abstract class EntityAIChast extends EntityAIBase
 	{
 		BlockPos blockPos = this.theChast.getPosition();
 
-		if (this.theChast.isFollowAIMode())
+		if (this.theChast.getAIMode() == EnumAIMode.FOLLOW)
 		{
 			EntityLivingBase entityLivingBase = this.theChast.getOwnerEntity();
 

@@ -28,7 +28,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().isFollowAIMode())
+		if (this.getAIOwnerEntity().getAIMode() == EnumAIMode.FOLLOW)
 		{
 			EntityLivingBase owner = this.getAIOwnerEntity().getOwnerEntity();
 

@@ -38,7 +38,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		if (!ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), ChastMobHelper.getEmptyItemStack()))
 		{
-			if (this.getAIOwnerEntity().isFollowAIMode())
+			if (this.getAIOwnerEntity().getAIMode() == EnumAIMode.FOLLOW)
 			{
 				return false;
 			}

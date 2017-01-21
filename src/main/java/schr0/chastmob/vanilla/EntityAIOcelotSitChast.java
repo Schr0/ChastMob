@@ -48,17 +48,27 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 		{
 			this.isEntityAIOcelotSitChast = false;
 
-			if (this.theOwnerEntity.isTamed() && !this.theOwnerEntity.isSitting())
+			if (this.theOwnerEntity.isTamed())
 			{
-				for (EntityChast entityChast : this.getAroundEntityChast())
+				if (this.theOwnerEntity.getRidingEntity() instanceof EntityChast)
 				{
-					if (this.canSittingEntityChast(entityChast))
+					this.isEntityAIOcelotSitChast = true;
+				}
+				else
+				{
+					if (!this.theOwnerEntity.isSitting())
 					{
-						this.isEntityAIOcelotSitChast = true;
+						for (EntityChast entityChast : this.getAroundEntityChast())
+						{
+							if (this.canSittingEntityChast(entityChast))
+							{
+								this.isEntityAIOcelotSitChast = true;
 
-						this.setSitting(TIME_LIMIT, entityChast);
+								this.setSitting(TIME_LIMIT, entityChast);
 
-						break;
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -99,8 +109,8 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		if (this.isEntityAIOcelotSitChast)
 		{
-			this.theOwnerEntity.getAISit().setSitting(true);
-			this.theOwnerEntity.setSitting(true);
+			this.theOwnerEntity.getAISit().setSitting(false);
+			this.theOwnerEntity.setSitting(false);
 
 			this.setSitting(0, null);
 		}
@@ -115,27 +125,37 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		if (this.isEntityAIOcelotSitChast)
 		{
-			--this.timeCounter;
-
-			this.theOwnerEntity.getLookHelper().setLookPositionWithEntity(this.targetEntityChast, 10.0F, this.theOwnerEntity.getVerticalFaceSpeed());
-
-			if (this.theOwnerEntity.getDistanceSqToEntity(this.targetEntityChast) < 1.5D)
+			if (this.theOwnerEntity.getRidingEntity() instanceof EntityChast)
 			{
-				for (EntityChast entityChast : this.getAroundEntityChast())
+				if (!this.theOwnerEntity.isSitting())
 				{
-					if (entityChast.equals(this.targetEntityChast) && this.canSittingEntityChast(entityChast))
-					{
-						this.theOwnerEntity.startRiding(entityChast);
-
-						this.setSitting(0, null);
-
-						return;
-					}
+					this.theOwnerEntity.setSitting(true);
 				}
 			}
 			else
 			{
-				this.theOwnerEntity.getNavigator().tryMoveToEntityLiving(this.targetEntityChast, this.moveSpeed);
+				--this.timeCounter;
+
+				this.theOwnerEntity.getLookHelper().setLookPositionWithEntity(this.targetEntityChast, 10.0F, this.theOwnerEntity.getVerticalFaceSpeed());
+
+				if (this.theOwnerEntity.getDistanceSqToEntity(this.targetEntityChast) < 1.5D)
+				{
+					for (EntityChast entityChast : this.getAroundEntityChast())
+					{
+						if (entityChast.equals(this.targetEntityChast) && this.canSittingEntityChast(entityChast))
+						{
+							this.theOwnerEntity.startRiding(entityChast);
+
+							this.setSitting(0, null);
+
+							return;
+						}
+					}
+				}
+				else
+				{
+					this.theOwnerEntity.getNavigator().tryMoveToEntityLiving(this.targetEntityChast, this.moveSpeed);
+				}
 			}
 		}
 		else
@@ -148,7 +168,14 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	public boolean isSitting()
 	{
-		return (0 < this.timeCounter) && (this.targetEntityChast != null);
+		if (this.theOwnerEntity.getRidingEntity() instanceof EntityChast)
+		{
+			return true;
+		}
+		else
+		{
+			return (0 < this.timeCounter) && (this.targetEntityChast != null);
+		}
 	}
 
 	public void setSitting(int timeCounter, @Nullable EntityChast entityChast)

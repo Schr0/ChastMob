@@ -9,6 +9,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.ai.EnumAIMode;
 import schr0.chastmob.entity.render.ModelChast;
 import schr0.chastmob.entity.render.RenderChast;
 
@@ -52,7 +53,7 @@ public class LayerChastMode implements LayerRenderer<EntityChast>
 	{
 		EnumDyeColor enumDyeColor = EnumDyeColor.BLACK;
 
-		if (entityChast.isFollowAIMode())
+		if (entityChast.getAIMode() == EnumAIMode.FOLLOW)
 		{
 			enumDyeColor = EnumDyeColor.WHITE;
 		}
