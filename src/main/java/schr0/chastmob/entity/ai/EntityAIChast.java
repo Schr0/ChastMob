@@ -53,7 +53,7 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.theChast.getInventoryChast();
 	}
 
-	public BlockPos getAIOwnerPosition()
+	public BlockPos getAIHomePosition()
 	{
 		BlockPos blockPos = this.theChast.getPosition();
 
@@ -77,11 +77,11 @@ public abstract class EntityAIChast extends EntityAIBase
 
 			case FOLLOW :
 
-				EntityLivingBase entityLivingBase = this.theChast.getOwnerEntity();
+				EntityLivingBase entityOwner = this.theChast.getOwnerEntity();
 
-				if (this.theChast.isOwnerTame() && (entityLivingBase != null))
+				if (this.theChast.isOwnerTame() && (entityOwner != null))
 				{
-					blockPos = entityLivingBase.getPosition();
+					blockPos = entityOwner.getPosition();
 				}
 
 				break;

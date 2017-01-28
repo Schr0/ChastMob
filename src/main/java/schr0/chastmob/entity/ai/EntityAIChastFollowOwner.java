@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.EnumAIMode;
 
 public class EntityAIChastFollowOwner extends EntityAIChast
 {
@@ -30,17 +31,17 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		if (this.getAIOwnerEntity().getAIMode() == EnumAIMode.FOLLOW)
 		{
-			EntityLivingBase owner = this.getAIOwnerEntity().getOwnerEntity();
+			EntityLivingBase entityOwner = this.getAIOwnerEntity().getOwnerEntity();
 
-			if (this.canFollowEntityLivingBase(owner))
+			if (this.canFollowEntityLivingBase(entityOwner))
 			{
-				if (this.getAIOwnerEntity().getDistanceSqToEntity(owner) < this.minDistance)
+				if (this.getAIOwnerEntity().getDistanceSqToEntity(entityOwner) < this.minDistance)
 				{
 					return false;
 				}
 				else
 				{
-					this.setFollowing(TIME_LIMIT, owner);
+					this.setFollowing(TIME_LIMIT, entityOwner);
 
 					return true;
 				}

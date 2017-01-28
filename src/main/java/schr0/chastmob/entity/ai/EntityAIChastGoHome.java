@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.EnumAIMode;
 
 public class EntityAIChastGoHome extends EntityAIChast
 {
@@ -33,7 +34,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		if (this.getAIOwnerEntity().getAIMode() == EnumAIMode.FREEDOM)
 		{
-			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIOwnerPosition());
+			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIHomePosition());
 
 			if (this.canGoingTileEntityChest(homeChest))
 			{
