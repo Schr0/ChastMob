@@ -53,32 +53,39 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.theChast.getInventoryChast();
 	}
 
-	public BlockPos getAIPosition()
+	public BlockPos getAIOwnerPosition()
 	{
 		BlockPos blockPos = this.theChast.getPosition();
 
-		if (this.theChast.getAIMode() == EnumAIMode.FOLLOW)
+		switch (this.theChast.getAIMode())
 		{
-			EntityLivingBase entityLivingBase = this.theChast.getOwnerEntity();
+			case FREEDOM :
 
-			if (this.theChast.isOwnerTame() && (entityLivingBase != null))
-			{
-				blockPos = entityLivingBase.getPosition();
-			}
-		}
-		else
-		{
-			ItemStack stackMainhand = this.theChast.getHeldItemMainhand();
+				ItemStack stackMainhand = this.theChast.getHeldItemMainhand();
 
-			if (ChastMobHelper.isNotEmptyItemStack(stackMainhand) && (stackMainhand.getItem() instanceof ItemHomeChestMap))
-			{
-				BlockPos blockPosHome = ((ItemHomeChestMap) stackMainhand.getItem()).getHomeChestBlockPos(stackMainhand);
-
-				if (blockPosHome != null)
+				if (ChastMobHelper.isNotEmptyItemStack(stackMainhand) && (stackMainhand.getItem() instanceof ItemHomeChestMap))
 				{
-					blockPos = blockPosHome;
+					BlockPos blockPosHome = ((ItemHomeChestMap) stackMainhand.getItem()).getHomeChestBlockPos(stackMainhand);
+
+					if (blockPosHome != null)
+					{
+						blockPos = blockPosHome;
+					}
 				}
-			}
+
+				break;
+
+			case FOLLOW :
+
+				EntityLivingBase entityLivingBase = this.theChast.getOwnerEntity();
+
+				if (this.theChast.isOwnerTame() && (entityLivingBase != null))
+				{
+					blockPos = entityLivingBase.getPosition();
+				}
+
+				break;
+
 		}
 
 		return blockPos;

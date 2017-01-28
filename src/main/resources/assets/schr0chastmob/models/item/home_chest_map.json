@@ -3,5 +3,17 @@
 	"textures":
 	{
 		"layer0": "schr0chastmob:items/home_chest_map"
-	}
+	},
+
+	"overrides":
+	[
+	        {
+			"predicate":
+			{
+				"empty": 1
+			},
+				"model": "schr0chastmob:item/home_chest_map_empty"
+	        }
+	]
+
 }

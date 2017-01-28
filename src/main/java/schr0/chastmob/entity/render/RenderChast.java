@@ -11,7 +11,6 @@ import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.render.layer.LayerChastArm;
 import schr0.chastmob.entity.render.layer.LayerChastCore;
 import schr0.chastmob.entity.render.layer.LayerChastHeldItem;
-import schr0.chastmob.entity.render.layer.LayerChastMode;
 
 @SideOnly(Side.CLIENT)
 public class RenderChast extends RenderLiving<EntityChast>
@@ -24,7 +23,6 @@ public class RenderChast extends RenderLiving<EntityChast>
 		super(renderManagerIn, modelBaseIn, shadowSizeIn);
 		this.addLayer(new LayerChastCore(this));
 		this.addLayer(new LayerChastArm(this));
-		this.addLayer(new LayerChastMode(this));
 		this.addLayer(new LayerChastHeldItem(this));
 	}
 

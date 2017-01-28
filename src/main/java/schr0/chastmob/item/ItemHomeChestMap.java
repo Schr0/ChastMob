@@ -4,8 +4,10 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,12 +15,14 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobNBTTags;
 
 public class ItemHomeChestMap extends Item
@@ -27,13 +31,32 @@ public class ItemHomeChestMap extends Item
 	public ItemHomeChestMap()
 	{
 		this.setMaxStackSize(1);
+
+		this.addPropertyOverride(new ResourceLocation("empty"), new IItemPropertyGetter()
+		{
+			@SideOnly(Side.CLIENT)
+			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
+			{
+				Item item = stack.getItem();
+
+				if (ChastMobHelper.isNotEmptyItemStack(stack) && item instanceof ItemHomeChestMap)
+				{
+					if (!((ItemHomeChestMap) item).hasHomeChest(stack))
+					{
+						return 1.0F;
+					}
+				}
+
+				return 0.0F;
+			}
+		});
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean hasEffect(ItemStack stack)
 	{
-		return (this.getHomeChestBlockPos(stack) != null);
+		return this.hasHomeChest(stack);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -59,7 +82,7 @@ public class ItemHomeChestMap extends Item
 	@Override
 	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
-		if (this.getHomeChestBlockPos(stack) == null)
+		if (!this.hasHomeChest(stack))
 		{
 			if (worldIn.getTileEntity(pos) instanceof TileEntityChest)
 			{
@@ -123,6 +146,11 @@ public class ItemHomeChestMap extends Item
 		}
 
 		stack.setTagCompound(nbttagStack);
+	}
+
+	public boolean hasHomeChest(ItemStack stack)
+	{
+		return (this.getHomeChestBlockPos(stack) != null);
 	}
 
 }

@@ -8,7 +8,7 @@ import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import schr0.chastmob.vanilla.EntityAIOcelotSitChast;
+import schr0.chastmob.EntityAIOcelotSitChast;
 
 public class ChastMobEvent
 {
