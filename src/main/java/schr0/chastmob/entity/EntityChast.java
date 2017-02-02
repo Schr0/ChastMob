@@ -34,6 +34,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -207,7 +209,7 @@ public class EntityChast extends EntityGolem
 				this.setOwnerUUID(UUID.fromString(ownerUUID));
 				this.setOwnerTame(true);
 			}
-			catch (Throwable var4)
+			catch (Throwable throwable)
 			{
 				this.setOwnerTame(false);
 			}
@@ -324,17 +326,16 @@ public class EntityChast extends EntityGolem
 			}
 
 			boolean isServerWorld = (!this.getEntityWorld().isRemote);
-			boolean isNotCreativeMode = (!player.capabilities.isCreativeMode);
 			EntityEquipmentSlot eqSlotMainhand = EntityEquipmentSlot.MAINHAND;
 			ItemStack stackMainhand = this.getItemStackFromSlot(eqSlotMainhand);
 
-			for (Entity entity : this.getPassengers())
+			for (Entity passenger : this.getPassengers())
 			{
-				if (entity.isEntityAlive())
+				if (passenger.isEntityAlive())
 				{
 					if (isServerWorld)
 					{
-						entity.dismountRidingEntity();
+						passenger.dismountRidingEntity();
 					}
 
 					return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
@@ -353,7 +354,7 @@ public class EntityChast extends EntityGolem
 						{
 							this.setArmColor(enumDyeColor);
 
-							if (isNotCreativeMode)
+							if (!player.capabilities.isCreativeMode)
 							{
 								--stack.stackSize;
 							}
@@ -367,8 +368,8 @@ public class EntityChast extends EntityGolem
 				{
 					if (isServerWorld)
 					{
-						this.setAIMode(EnumAIMode.FREEDOM);
 						this.setAISitting(false);
+						this.setAIMode(EnumAIMode.FREEDOM);
 
 						if (ChastMobHelper.isNotEmptyItemStack(stackMainhand))
 						{
@@ -388,8 +389,8 @@ public class EntityChast extends EntityGolem
 			{
 				if (isServerWorld)
 				{
-					this.setAIMode(EnumAIMode.FOLLOW);
 					this.setAISitting(!this.isStateSit());
+					this.setAIMode(EnumAIMode.FOLLOW);
 
 					if (ChastMobHelper.isNotEmptyItemStack(stackMainhand))
 					{
@@ -463,6 +464,16 @@ public class EntityChast extends EntityGolem
 		super.onUpdate();
 
 		this.onUpdateCoverOpen();
+
+		if (this.ticksExisted < (20 * 5))
+		{
+			EntityLivingBase owner = this.getOwnerEntity();
+
+			if ((owner != null) && (owner.getDistanceToEntity(this) < 16.0D))
+			{
+				this.getLookHelper().setLookPositionWithEntity(owner, 10.0F, this.getVerticalFaceSpeed());
+			}
+		}
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -647,17 +658,13 @@ public class EntityChast extends EntityGolem
 
 			this.setAIMode(EnumAIMode.FOLLOW);
 			this.setAISitting(false);
-			/*
-						TextFormatting italic = TextFormatting.ITALIC;
-						player.addChatComponentMessage(new TextComponentTranslation("entity.schr0chastmob.chast.spawn_by_player", new Object[]
-						{
-								(italic + player.getDisplayNameString()), (italic + this.getName())
-						}));
-			//*/
-		}
 
-		this.rotationYawHead = this.rotationYaw;
-		this.renderYawOffset = this.rotationYaw;
+			TextFormatting italic = TextFormatting.ITALIC;
+			player.addChatComponentMessage(new TextComponentTranslation("entity.schr0chastmob.chast.spawn_by_player", new Object[]
+			{
+					(italic + player.getDisplayNameString()), (italic + this.getName())
+			}));
+		}
 	}
 
 	public void setAIPanicking(int panicTime)

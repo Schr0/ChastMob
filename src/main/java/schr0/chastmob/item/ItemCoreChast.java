@@ -14,10 +14,10 @@ import net.minecraft.world.World;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 
-public class ItemChastCore extends Item
+public class ItemCoreChast extends Item
 {
 
-	public ItemChastCore()
+	public ItemCoreChast()
 	{
 		this.setMaxStackSize(1);
 	}
@@ -32,7 +32,7 @@ public class ItemChastCore extends Item
 			EntityChast entityChast = new EntityChast(worldIn);
 			IInventory inventoryTileChest = (IInventory) tileEntity;
 
-			entityChast.setPosition(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+			entityChast.setPositionAndRotation(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0F, 0.0F);
 			entityChast.onSpawnByPlayer(playerIn);
 
 			for (int slot = 0; slot < inventoryTileChest.getSizeInventory(); ++slot)

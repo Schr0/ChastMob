@@ -2,7 +2,7 @@
 itemGroup.schr0chastmob.item=ChastMob : Items
 
 // ======================================== ITEM ===================================== //
-item.chast_core.name=Chast Core
+item.core_chast.name=Core Chast
 item.home_chest_map.name=Home Chest Map
 item.home_chest_map.save_log=%s : Saved Position (%s, %s, %s).
 
