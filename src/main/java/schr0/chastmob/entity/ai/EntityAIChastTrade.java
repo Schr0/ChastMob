@@ -44,7 +44,7 @@ public class EntityAIChastTrade extends EntityAIChast
 	@Override
 	public void updateTask()
 	{
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.tradePlayer, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.tradePlayer, this.getAIOwnerEntity().getHorizontalFaceSpeed(), this.getAIOwnerEntity().getVerticalFaceSpeed());
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

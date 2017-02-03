@@ -48,6 +48,7 @@ import schr0.chastmob.entity.ai.EntityAIChastSit;
 import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
 import schr0.chastmob.entity.ai.EntityAIChastTrade;
 import schr0.chastmob.entity.ai.EntityAIChastWander;
+import schr0.chastmob.entity.ai.EnumAIMode;
 import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobNBTTags;
@@ -88,7 +89,6 @@ public class EntityChast extends EntityGolem
 	protected void initEntityAI()
 	{
 		super.initEntityAI();
-
 		double speed = 1.25D;
 		int distance = 5;
 
@@ -431,6 +431,11 @@ public class EntityChast extends EntityGolem
 		if (ridingEntity instanceof EntityLivingBase)
 		{
 			this.renderYawOffset = ((EntityLivingBase) ridingEntity).renderYawOffset;
+
+			if (ridingEntity.isSneaking())
+			{
+				this.dismountRidingEntity();
+			}
 		}
 	}
 
@@ -471,7 +476,7 @@ public class EntityChast extends EntityGolem
 
 			if ((owner != null) && (owner.getDistanceToEntity(this) < 16.0D))
 			{
-				this.getLookHelper().setLookPositionWithEntity(owner, 10.0F, this.getVerticalFaceSpeed());
+				this.getLookHelper().setLookPositionWithEntity(owner, this.getHorizontalFaceSpeed(), this.getVerticalFaceSpeed());
 			}
 		}
 	}

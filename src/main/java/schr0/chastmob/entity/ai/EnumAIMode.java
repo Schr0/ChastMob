@@ -1,4 +1,4 @@
-package schr0.chastmob.entity;
+package schr0.chastmob.entity.ai;
 
 import net.minecraft.util.IStringSerializable;
 

@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.EnumAIMode;
 
 public class EntityAIChastFollowOwner extends EntityAIChast
 {
@@ -75,7 +74,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		--this.timeCounter;
 
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, this.getAIOwnerEntity().getHorizontalFaceSpeed(), this.getAIOwnerEntity().getVerticalFaceSpeed());
 
 		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.minDistance)
 		{
@@ -83,7 +82,14 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 		}
 		else
 		{
-			this.tryMoveToTargetEntity(this.targetOwner, this.moveSpeed);
+			if (this.timeCounter < 20)
+			{
+				this.tryMoveToTargetEntity(this.targetOwner, this.moveSpeed);
+			}
+			else
+			{
+				this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.moveSpeed);
+			}
 		}
 	}
 

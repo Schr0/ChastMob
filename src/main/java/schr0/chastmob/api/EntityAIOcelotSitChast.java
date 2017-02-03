@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.api;
 
 import java.util.List;
 
@@ -136,7 +136,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 			{
 				--this.timeCounter;
 
-				this.theOwnerEntity.getLookHelper().setLookPositionWithEntity(this.targetEntityChast, 10.0F, this.theOwnerEntity.getVerticalFaceSpeed());
+				this.theOwnerEntity.getLookHelper().setLookPositionWithEntity(this.targetEntityChast, this.theOwnerEntity.getHorizontalFaceSpeed(), this.theOwnerEntity.getVerticalFaceSpeed());
 
 				if (this.theOwnerEntity.getDistanceSqToEntity(this.targetEntityChast) < 1.5D)
 				{

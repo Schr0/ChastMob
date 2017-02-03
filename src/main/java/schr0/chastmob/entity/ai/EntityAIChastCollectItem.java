@@ -84,7 +84,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		--this.timeCounter;
 
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, this.getAIOwnerEntity().getHorizontalFaceSpeed(), this.getAIOwnerEntity().getVerticalFaceSpeed());
 
 		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
 		{
@@ -104,7 +104,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		}
 		else
 		{
-			this.tryMoveToTargetEntity(this.targetEntityItem, this.moveSpeed);
+			this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.moveSpeed);
 		}
 	}
 

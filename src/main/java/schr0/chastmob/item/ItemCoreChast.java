@@ -1,6 +1,7 @@
 package schr0.chastmob.item;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,12 +28,13 @@ public class ItemCoreChast extends Item
 	{
 		TileEntity tileEntity = worldIn.getTileEntity(pos);
 
-		if (tileEntity instanceof TileEntityChest)
+		if (worldIn.getBlockState(pos).getBlock().equals(Blocks.CHEST) && (tileEntity instanceof TileEntityChest))
 		{
 			EntityChast entityChast = new EntityChast(worldIn);
 			IInventory inventoryTileChest = (IInventory) tileEntity;
 
 			entityChast.setPositionAndRotation(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0F, 0.0F);
+
 			entityChast.onSpawnByPlayer(playerIn);
 
 			for (int slot = 0; slot < inventoryTileChest.getSizeInventory(); ++slot)

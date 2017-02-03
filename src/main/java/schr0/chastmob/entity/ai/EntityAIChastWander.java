@@ -7,7 +7,7 @@ import schr0.chastmob.entity.EntityChast;
 public class EntityAIChastWander extends EntityAIChast
 {
 
-	private static final int CHANCE_WONDER = (5 * 20);
+	private static final int CHANCE_WONDER = 100;
 
 	private double moveSpeed;
 	private int maxDistance;
