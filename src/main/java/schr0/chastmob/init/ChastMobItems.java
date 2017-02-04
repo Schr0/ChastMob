@@ -10,29 +10,41 @@ import net.minecraftforge.oredict.OreDictionary;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.item.ItemCoreChast;
 import schr0.chastmob.item.ItemHomeChestMap;
+import schr0.chastmob.item.ItemSoulBottle;
+import schr0.chastmob.item.ItemSoulBottleFull;
 
 public class ChastMobItems
 {
 
 	public static final Item CHAST_CORE;
 	public static final Item HOME_CHEST_MAP;
+	public static final Item SOUL_BOTTLE;
+	public static final Item SOUL_BOTTLE_FULL;
 
 	public static final String NAME_CORE_CHAST = "core_chast";
 	public static final String NAME_HOME_CHEST_MAP = "home_chest_map";
+	public static final String NAME_SOUL_BOTTLE = "soul_bottle";
+	public static final String NAME_SOUL_BOTTLE_FULL = "soul_bottle_full";
 
 	public static final int META_CORE_CHAST = 0;
 	public static final int META_HOME_CHEST_MAP = 0;
+	public static final int META_SOUL_BOTTLE = 0;
+	public static final int META_SOUL_BOTTLE_FULL = 0;
 
 	static
 	{
 		CHAST_CORE = new ItemCoreChast().setUnlocalizedName(NAME_CORE_CHAST).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		HOME_CHEST_MAP = new ItemHomeChestMap().setUnlocalizedName(NAME_HOME_CHEST_MAP).setCreativeTab(ChastMobCreativeTabs.ITEM);
+		SOUL_BOTTLE = new ItemSoulBottle().setUnlocalizedName(NAME_SOUL_BOTTLE).setCreativeTab(ChastMobCreativeTabs.ITEM);
+		SOUL_BOTTLE_FULL = new ItemSoulBottleFull().setUnlocalizedName(NAME_SOUL_BOTTLE_FULL).setCreativeTab(ChastMobCreativeTabs.ITEM);
 	}
 
 	public void init()
 	{
 		registerItem(CHAST_CORE, NAME_CORE_CHAST, META_CORE_CHAST);
 		registerItem(HOME_CHEST_MAP, NAME_HOME_CHEST_MAP, META_HOME_CHEST_MAP);
+		registerItem(SOUL_BOTTLE, NAME_SOUL_BOTTLE, META_SOUL_BOTTLE);
+		registerItem(SOUL_BOTTLE_FULL, NAME_SOUL_BOTTLE_FULL, META_SOUL_BOTTLE_FULL);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -40,6 +52,8 @@ public class ChastMobItems
 	{
 		ChastMobModelLoader.registerModel(CHAST_CORE, META_CORE_CHAST);
 		ChastMobModelLoader.registerModel(HOME_CHEST_MAP, META_HOME_CHEST_MAP);
+		ChastMobModelLoader.registerModel(SOUL_BOTTLE, META_SOUL_BOTTLE);
+		ChastMobModelLoader.registerModel(SOUL_BOTTLE_FULL, META_SOUL_BOTTLE_FULL);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

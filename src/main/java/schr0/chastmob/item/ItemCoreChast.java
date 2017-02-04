@@ -35,6 +35,12 @@ public class ItemCoreChast extends Item
 
 			entityChast.setPositionAndRotation(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0F, 0.0F);
 
+			if (stack.hasDisplayName())
+			{
+				entityChast.setCustomNameTag(stack.getDisplayName());
+				entityChast.enablePersistence();
+			}
+
 			entityChast.onSpawnByPlayer(playerIn);
 
 			for (int slot = 0; slot < inventoryTileChest.getSizeInventory(); ++slot)
