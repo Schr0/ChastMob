@@ -32,6 +32,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -656,7 +657,9 @@ public class EntityChast extends EntityGolem
 
 	public void onSpawnByPlayer(EntityPlayer player)
 	{
-		if (!player.getEntityWorld().isRemote)
+		World world = player.getEntityWorld();
+
+		if (!world.isRemote)
 		{
 			this.setOwnerTame(true);
 			this.setOwnerUUID(player.getUniqueID());
@@ -669,6 +672,14 @@ public class EntityChast extends EntityGolem
 			{
 					(italic + player.getDisplayNameString()), (italic + this.getName())
 			}));
+		}
+
+		for (int i = 0; i < 7; ++i)
+		{
+			double randX = world.rand.nextGaussian() * 0.02D;
+			double randY = world.rand.nextGaussian() * 0.02D;
+			double randZ = world.rand.nextGaussian() * 0.02D;
+			world.spawnParticle(EnumParticleTypes.HEART, this.posX + (double) (world.rand.nextFloat() * this.width * 2.0F) - (double) this.width, this.posY + 0.5D + (double) (world.rand.nextFloat() * this.height), this.posZ + (double) (world.rand.nextFloat() * this.width * 2.0F) - (double) this.width, randX, randY, randZ, new int[0]);
 		}
 	}
 

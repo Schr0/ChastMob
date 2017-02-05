@@ -32,6 +32,7 @@ public class ItemSoulBottleFull extends Item
 
 		this.addPropertyOverride(new ResourceLocation("friendly"), new IItemPropertyGetter()
 		{
+			@Override
 			@SideOnly(Side.CLIENT)
 			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
 			{
@@ -45,6 +46,7 @@ public class ItemSoulBottleFull extends Item
 		});
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
 	{
@@ -64,11 +66,19 @@ public class ItemSoulBottleFull extends Item
 
 		EntityPlayer entityPlayer = (EntityPlayer) entityIn;
 
-		worldIn.tick();
-
 		if (entityPlayer.ticksExisted % 20 == 0)
 		{
-			int healAmount = isSelected ? (2) : (1);
+			int healAmount = 1;
+
+			if (itemSlot < entityPlayer.inventory.getHotbarSize())
+			{
+				healAmount = 2;
+			}
+
+			if (isSelected)
+			{
+				healAmount = 4;
+			}
 
 			if (entityPlayer.isPlayerSleeping())
 			{
@@ -80,7 +90,7 @@ public class ItemSoulBottleFull extends Item
 
 		if (stack.getItemDamage() == 0)
 		{
-			worldIn.playEvent(2005, entityPlayer.getPosition(), 0);
+			worldIn.playEvent(2005, entityPlayer.getPosition(), 30);
 
 			entityPlayer.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 		}

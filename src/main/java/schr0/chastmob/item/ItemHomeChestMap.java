@@ -34,6 +34,7 @@ public class ItemHomeChestMap extends Item
 
 		this.addPropertyOverride(new ResourceLocation("empty"), new IItemPropertyGetter()
 		{
+			@Override
 			@SideOnly(Side.CLIENT)
 			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
 			{
@@ -59,6 +60,7 @@ public class ItemHomeChestMap extends Item
 		return this.hasHomeChest(stack);
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
