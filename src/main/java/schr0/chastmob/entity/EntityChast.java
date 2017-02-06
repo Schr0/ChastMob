@@ -19,6 +19,7 @@ import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -293,19 +294,21 @@ public class EntityChast extends EntityGolem
 				((EntityPlayerMP) entityOwner).addChatMessage(this.getCombatTracker().getDeathMessage());
 			}
 
+			Block.spawnAsEntity(world, this.getPosition(), new ItemStack(Blocks.CHEST));
+
+			InventoryHelper.dropInventoryItems(world, this, this.getInventoryChast());
+
 			for (EntityEquipmentSlot eqSlot : EntityEquipmentSlot.values())
 			{
 				ItemStack stackEq = this.getItemStackFromSlot(eqSlot);
 
 				if (ChastMobHelper.isNotEmptyItemStack(stackEq))
 				{
-					Block.spawnAsEntity(this.getEntityWorld(), this.getPosition(), stackEq);
+					Block.spawnAsEntity(world, this.getPosition(), stackEq);
 				}
 
 				this.setItemStackToSlot(eqSlot, ChastMobHelper.getEmptyItemStack());
 			}
-
-			InventoryHelper.dropInventoryItems(world, this, this.getInventoryChast());
 		}
 
 		super.onDeath(cause);
@@ -433,7 +436,7 @@ public class EntityChast extends EntityGolem
 		{
 			this.renderYawOffset = ((EntityLivingBase) ridingEntity).renderYawOffset;
 
-			if (ridingEntity.isSneaking())
+			if (ridingEntity.isSneaking() && !this.getEntityWorld().isRemote)
 			{
 				this.dismountRidingEntity();
 			}
@@ -470,6 +473,11 @@ public class EntityChast extends EntityGolem
 		super.onUpdate();
 
 		this.onUpdateCoverOpen();
+
+		if (this.isStatePanic())
+		{
+			return;
+		}
 
 		if (this.ticksExisted < (20 * 5))
 		{

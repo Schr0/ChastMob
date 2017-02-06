@@ -90,8 +90,6 @@ public class ItemHomeChestMap extends Item
 			{
 				this.setHomeChestBlockPos(stack, pos);
 
-				playerIn.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
-
 				if (!worldIn.isRemote)
 				{
 					playerIn.addChatComponentMessage(new TextComponentTranslation("item.home_chest_map.save_log", new Object[]
@@ -99,6 +97,8 @@ public class ItemHomeChestMap extends Item
 							(TextFormatting.ITALIC + stack.getDisplayName()), pos.getX(), pos.getY(), pos.getZ()
 					}));
 				}
+
+				playerIn.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 
 				return EnumActionResult.SUCCESS;
 			}

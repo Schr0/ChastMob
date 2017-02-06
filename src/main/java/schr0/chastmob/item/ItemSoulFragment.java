@@ -1,5 +1,7 @@
 package schr0.chastmob.item;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -34,16 +36,9 @@ public class ItemSoulFragment extends Item
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public static void healLivingBase(ItemStack stack, World world, EntityLivingBase target, EntityPlayer owner)
+	public static void healLivingBase(ItemStack stack, World world, EntityLivingBase target, @Nullable EntityPlayer player)
 	{
 		target.heal(2.0F);
-
-		owner.getCooldownTracker().setCooldown(stack.getItem(), 20);
-
-		if (!owner.capabilities.isCreativeMode)
-		{
-			--stack.stackSize;
-		}
 
 		for (int i = 0; i < 4; ++i)
 		{
@@ -55,5 +50,15 @@ public class ItemSoulFragment extends Item
 
 		target.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 
+		if (player != null)
+		{
+			player.getCooldownTracker().setCooldown(stack.getItem(), 20);
+
+			if (!player.capabilities.isCreativeMode)
+			{
+				--stack.stackSize;
+			}
+		}
 	}
+
 }
