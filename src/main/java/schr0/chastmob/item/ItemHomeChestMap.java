@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMobHelper;
-import schr0.chastmob.init.ChastMobNBTTags;
+import schr0.chastmob.init.ChastMobNBTs;
 
 public class ItemHomeChestMap extends Item
 {
@@ -112,18 +112,18 @@ public class ItemHomeChestMap extends Item
 	@Nullable
 	public BlockPos getHomeChestBlockPos(ItemStack stack)
 	{
-		NBTTagCompound nbttagStack = stack.getTagCompound();
+		NBTTagCompound nbtItemStack = stack.getTagCompound();
 
-		if (nbttagStack == null)
+		if (nbtItemStack == null)
 		{
 			return (BlockPos) null;
 		}
 
-		if (nbttagStack.hasKey(ChastMobNBTTags.HOME_CHEST_MAP_POS_X) && nbttagStack.hasKey(ChastMobNBTTags.HOME_CHEST_MAP_POS_Y) && nbttagStack.hasKey(ChastMobNBTTags.HOME_CHEST_MAP_POS_Z))
+		if (nbtItemStack.hasKey(ChastMobNBTs.HOME_CHEST_MAP_POS_X) && nbtItemStack.hasKey(ChastMobNBTs.HOME_CHEST_MAP_POS_Y) && nbtItemStack.hasKey(ChastMobNBTs.HOME_CHEST_MAP_POS_Z))
 		{
-			int posX = nbttagStack.getInteger(ChastMobNBTTags.HOME_CHEST_MAP_POS_X);
-			int posY = nbttagStack.getInteger(ChastMobNBTTags.HOME_CHEST_MAP_POS_Y);
-			int posZ = nbttagStack.getInteger(ChastMobNBTTags.HOME_CHEST_MAP_POS_Z);
+			int posX = nbtItemStack.getInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_X);
+			int posY = nbtItemStack.getInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_Y);
+			int posZ = nbtItemStack.getInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_Z);
 
 			return new BlockPos(posX, posY, posZ);
 		}
@@ -133,21 +133,21 @@ public class ItemHomeChestMap extends Item
 
 	public void setHomeChestBlockPos(ItemStack stack, BlockPos blockPos)
 	{
-		NBTTagCompound nbttagStack = stack.getTagCompound();
+		NBTTagCompound nbtItemStack = stack.getTagCompound();
 
-		if (nbttagStack == null)
+		if (nbtItemStack == null)
 		{
-			nbttagStack = new NBTTagCompound();
+			nbtItemStack = new NBTTagCompound();
 		}
 
 		if (blockPos != null)
 		{
-			nbttagStack.setInteger(ChastMobNBTTags.HOME_CHEST_MAP_POS_X, blockPos.getX());
-			nbttagStack.setInteger(ChastMobNBTTags.HOME_CHEST_MAP_POS_Y, blockPos.getY());
-			nbttagStack.setInteger(ChastMobNBTTags.HOME_CHEST_MAP_POS_Z, blockPos.getZ());
+			nbtItemStack.setInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_X, blockPos.getX());
+			nbtItemStack.setInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_Y, blockPos.getY());
+			nbtItemStack.setInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_Z, blockPos.getZ());
 		}
 
-		stack.setTagCompound(nbttagStack);
+		stack.setTagCompound(nbtItemStack);
 	}
 
 	public boolean hasHomeChest(ItemStack stack)

@@ -53,7 +53,7 @@ import schr0.chastmob.entity.ai.EntityAIChastWander;
 import schr0.chastmob.entity.ai.EnumAIMode;
 import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.init.ChastMobNBTTags;
+import schr0.chastmob.init.ChastMobNBTs;
 
 public class EntityChast extends EntityGolem
 {
@@ -101,7 +101,7 @@ public class EntityChast extends EntityGolem
 		this.aiChastTrade = new EntityAIChastTrade(this);
 		// Follow || Freedom
 		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this, speed, (double) distance);
-		EntityAIBase aiChastFollowOwner = new EntityAIChastFollowOwner(this, speed, (double) distance);
+		EntityAIBase aiChastFollowOwner = new EntityAIChastFollowOwner(this, speed, (double) distance / 2.0D);
 		EntityAIBase aiChastGoHome = new EntityAIChastGoHome(this, speed, distance);
 		EntityAIBase aiChastStoreChest = new EntityAIChastStoreChest(this, speed, distance);
 		// Wander
@@ -164,22 +164,22 @@ public class EntityChast extends EntityGolem
 	{
 		super.writeEntityToNBT(compound);
 
-		compound.setTag(ChastMobNBTTags.CHAST_INVENTORY, this.getInventoryChast().writeInventoryToNBT());
+		compound.setTag(ChastMobNBTs.CHAST_INVENTORY, this.getInventoryChast().writeInventoryToNBT());
 
-		compound.setByte(ChastMobNBTTags.CHAST_ARM_COLOR, (byte) this.getArmColor().getDyeDamage());
+		compound.setByte(ChastMobNBTs.CHAST_ARM_COLOR, (byte) this.getArmColor().getDyeDamage());
 
 		if (this.getOwnerUUID() == null)
 		{
-			compound.setString(ChastMobNBTTags.CHAST_OWNER_UUID, "");
+			compound.setString(ChastMobNBTs.CHAST_OWNER_UUID, "");
 		}
 		else
 		{
-			compound.setString(ChastMobNBTTags.CHAST_OWNER_UUID, this.getOwnerUUID().toString());
+			compound.setString(ChastMobNBTs.CHAST_OWNER_UUID, this.getOwnerUUID().toString());
 		}
 
-		compound.setByte(ChastMobNBTTags.CHAST_AI_MODE, (byte) this.getAIMode().getNumber());
+		compound.setByte(ChastMobNBTs.CHAST_AI_MODE, (byte) this.getAIMode().getNumber());
 
-		compound.setBoolean(ChastMobNBTTags.CHAST_STATE_SIT, this.isStateSit());
+		compound.setBoolean(ChastMobNBTs.CHAST_STATE_SIT, this.isStateSit());
 	}
 
 	@Override
@@ -187,17 +187,17 @@ public class EntityChast extends EntityGolem
 	{
 		super.readEntityFromNBT(compound);
 
-		this.getInventoryChast().readInventoryFromNBT(compound.getTagList(ChastMobNBTTags.CHAST_INVENTORY, 10));
+		this.getInventoryChast().readInventoryFromNBT(compound.getTagList(ChastMobNBTs.CHAST_INVENTORY, 10));
 
-		this.setArmColor(EnumDyeColor.byDyeDamage(compound.getByte(ChastMobNBTTags.CHAST_ARM_COLOR)));
+		this.setArmColor(EnumDyeColor.byDyeDamage(compound.getByte(ChastMobNBTs.CHAST_ARM_COLOR)));
 
 		this.setCoverOpen(false);
 
 		String ownerUUID;
 
-		if (compound.hasKey(ChastMobNBTTags.CHAST_OWNER_UUID))
+		if (compound.hasKey(ChastMobNBTs.CHAST_OWNER_UUID))
 		{
-			ownerUUID = compound.getString(ChastMobNBTTags.CHAST_OWNER_UUID);
+			ownerUUID = compound.getString(ChastMobNBTs.CHAST_OWNER_UUID);
 		}
 		else
 		{
@@ -217,19 +217,26 @@ public class EntityChast extends EntityGolem
 			}
 		}
 
-		this.setAIMode(EnumAIMode.byNumber(compound.getByte(ChastMobNBTTags.CHAST_AI_MODE)));
+		this.setAIMode(EnumAIMode.byNumber(compound.getByte(ChastMobNBTs.CHAST_AI_MODE)));
 
 		this.setAIPanicking(0);
 
 		this.setStatePanic(false);
 
-		this.setAISitting(compound.getBoolean(ChastMobNBTTags.CHAST_STATE_SIT));
+		this.setAISitting(compound.getBoolean(ChastMobNBTs.CHAST_STATE_SIT));
 
-		this.setStateSit(compound.getBoolean(ChastMobNBTTags.CHAST_STATE_SIT));
+		this.setStateSit(compound.getBoolean(ChastMobNBTs.CHAST_STATE_SIT));
 
 		this.setAITrading(null);
 
 		this.setStateTrade(false);
+	}
+
+	@Override
+	@Nullable
+	protected SoundEvent getDeathSound()
+	{
+		return SoundEvents.ENTITY_ITEM_BREAK;
 	}
 
 	@Override
@@ -413,7 +420,7 @@ public class EntityChast extends EntityGolem
 					player.displayGUIChest(this.getInventoryChast());
 				}
 
-				return this.onSuccessProcessInteract(player, null);
+				return this.onSuccessProcessInteract(player, (SoundEvent) null);
 			}
 		}
 		// TODO VANILLA FIX
@@ -421,7 +428,7 @@ public class EntityChast extends EntityGolem
 		{
 			this.onSpawnByPlayer(player);
 
-			return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_PLAYER_LEVELUP);
+			return this.onSuccessProcessInteract(player, (SoundEvent) null);
 		}
 	}
 
@@ -436,7 +443,7 @@ public class EntityChast extends EntityGolem
 		{
 			this.renderYawOffset = ((EntityLivingBase) ridingEntity).renderYawOffset;
 
-			if (ridingEntity.isSneaking() && !this.getEntityWorld().isRemote)
+			if (ridingEntity.isSneaking())
 			{
 				this.dismountRidingEntity();
 			}
@@ -689,6 +696,8 @@ public class EntityChast extends EntityGolem
 			double randZ = world.rand.nextGaussian() * 0.02D;
 			world.spawnParticle(EnumParticleTypes.HEART, this.posX + (double) (world.rand.nextFloat() * this.width * 2.0F) - (double) this.width, this.posY + 0.5D + (double) (world.rand.nextFloat() * this.height), this.posZ + (double) (world.rand.nextFloat() * this.width * 2.0F) - (double) this.width, randX, randY, randZ, new int[0]);
 		}
+
+		this.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 	}
 
 	public void setAIPanicking(int panicTime)
@@ -723,12 +732,12 @@ public class EntityChast extends EntityGolem
 
 	private boolean onSuccessProcessInteract(EntityPlayer player, @Nullable SoundEvent soundEvent)
 	{
+		player.swingArm(EnumHand.MAIN_HAND);
+
 		if (soundEvent != null)
 		{
 			this.playSound(soundEvent, 1.0F, 1.0F);
 		}
-
-		player.swingArm(EnumHand.MAIN_HAND);
 
 		return true;
 	}

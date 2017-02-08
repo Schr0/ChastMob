@@ -18,7 +18,7 @@ public class ItemSoulFragment extends Item
 
 	public ItemSoulFragment()
 	{
-		// none
+		this.setMaxStackSize(16);
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ItemSoulFragment extends Item
 	{
 		target.heal(2.0F);
 
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 7; ++i)
 		{
 			double randX = world.rand.nextGaussian() * 0.02D;
 			double randY = world.rand.nextGaussian() * 0.02D;

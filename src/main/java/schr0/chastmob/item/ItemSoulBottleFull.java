@@ -12,6 +12,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -22,7 +23,7 @@ import schr0.chastmob.init.ChastMobItems;
 public class ItemSoulBottleFull extends Item
 {
 
-	public static final int MAX_DAMAGE = (5 * 60);
+	public static final int MAX_DAMAGE = (20 * 60);
 
 	public ItemSoulBottleFull()
 	{
@@ -68,16 +69,16 @@ public class ItemSoulBottleFull extends Item
 
 		if (entityPlayer.ticksExisted % 20 == 0)
 		{
-			int healAmount = 1;
+			int healAmount = 1;// 20min
 
 			if (itemSlot < entityPlayer.inventory.getHotbarSize())
 			{
-				healAmount = 2;
+				healAmount = 2;// 10min
 			}
 
 			if (isSelected)
 			{
-				healAmount = 4;
+				healAmount = 4;// 5min
 			}
 
 			if (entityPlayer.isPlayerSleeping())
@@ -90,7 +91,13 @@ public class ItemSoulBottleFull extends Item
 
 		if (stack.getItemDamage() == 0)
 		{
-			worldIn.playEvent(2005, entityPlayer.getPosition(), 30);
+			for (int i = 0; i < 14; ++i)
+			{
+				double randX = worldIn.rand.nextGaussian() * 0.02D;
+				double randY = worldIn.rand.nextGaussian() * 0.02D;
+				double randZ = worldIn.rand.nextGaussian() * 0.02D;
+				worldIn.spawnParticle(EnumParticleTypes.HEART, entityPlayer.posX + (double) (worldIn.rand.nextFloat() * entityPlayer.width * 2.0F) - (double) entityPlayer.width, entityPlayer.posY + 0.5D + (double) (worldIn.rand.nextFloat() * entityPlayer.height), entityPlayer.posZ + (double) (worldIn.rand.nextFloat() * entityPlayer.width * 2.0F) - (double) entityPlayer.width, randX, randY, randZ, new int[0]);
+			}
 
 			entityPlayer.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 		}

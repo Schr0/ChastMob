@@ -55,40 +55,40 @@ public class InventoryChast extends InventoryBasic
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public void readInventoryFromNBT(NBTTagList nbtlist)
+	public void readInventoryFromNBT(NBTTagList nbtList)
 	{
 		this.clear();
 
-		for (int slot = 0; slot < nbtlist.tagCount(); ++slot)
+		for (int slot = 0; slot < nbtList.tagCount(); ++slot)
 		{
-			NBTTagCompound nbttagCompound = nbtlist.getCompoundTagAt(slot);
-			slot = nbttagCompound.getByte("Slot") & 255;
+			NBTTagCompound nbt = nbtList.getCompoundTagAt(slot);
+			slot = nbt.getByte("Slot") & 255;
 
 			if ((0 <= slot) && (slot < this.getSizeInventory()))
 			{
-				this.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(nbttagCompound));
+				this.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(nbt));
 			}
 		}
 	}
 
 	public NBTTagList writeInventoryToNBT()
 	{
-		NBTTagList nbttagList = new NBTTagList();
+		NBTTagList nbtList = new NBTTagList();
 
 		for (int slot = 0; slot < this.getSizeInventory(); ++slot)
 		{
-			ItemStack stack = this.getStackInSlot(slot);
+			ItemStack stackSlot = this.getStackInSlot(slot);
 
-			if (ChastMobHelper.isNotEmptyItemStack(stack))
+			if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
 			{
-				NBTTagCompound nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte("Slot", (byte) slot);
-				stack.writeToNBT(nbttagcompound);
-				nbttagList.appendTag(nbttagcompound);
+				NBTTagCompound nbt = new NBTTagCompound();
+				nbt.setByte("Slot", (byte) slot);
+				stackSlot.writeToNBT(nbt);
+				nbtList.appendTag(nbt);
 			}
 		}
 
-		return nbttagList;
+		return nbtList;
 	}
 
 }

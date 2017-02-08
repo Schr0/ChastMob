@@ -1,7 +1,9 @@
 package schr0.chastmob.item;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
@@ -26,6 +28,8 @@ public class ItemSoulBottle extends Item
 		{
 			worldIn.destroyBlock(pos, false);
 
+			Block.spawnAsEntity(worldIn, pos, new ItemStack(Blocks.SAND));
+
 			ItemStack stackSoulBottleFull = new ItemStack(ChastMobItems.SOUL_BOTTLE_FULL, 1, ItemSoulBottleFull.MAX_DAMAGE);
 
 			if (!playerIn.inventory.addItemStackToInventory(stackSoulBottleFull))
@@ -37,6 +41,8 @@ public class ItemSoulBottle extends Item
 			{
 				--stack.stackSize;
 			}
+
+			playerIn.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 1.0F, 1.0F);
 
 			return EnumActionResult.SUCCESS;
 		}
