@@ -3,13 +3,24 @@ itemGroup.schr0chastmob.item=ChastMob : Items
 
 // ======================================== ITEM ===================================== //
 item.soul_bottle.name=Soul Bottle
-item.soul_bottle_full.name=Full Soul Bottle
+item.soul_bottle.tips=Let's right click on the "Soul Sand".
+
+item.soul_bottle_full.name=Lonely Soul Bottle
+item.soul_bottle_full.tips=Let's stay together.
+
+item.soul_bottle_full.friendly.name=Friendly Soul Bottle
+item.soul_bottle_full.friendly.tips="Thanks!"
+
 item.soul_fragment.name=Soul Fragment
+item.soul_fragment.tips=Can heal Life.
+
 item.core_chast.name=Core Chast
+item.core_chast.tips=Let's right click on the "Chest".
+
 item.home_chest_map.name=Home Chest Map
+item.home_chest_map.tips=Let's right click on the "Chest".
 item.home_chest_map.save_log=%s : Saved Position (%s, %s, %s).
 
 // ======================================== ENTITY ===================================== //
 entity.schr0chastmob.chast.name=Chast
-entity.schr0chastmob.chast.spawn_by_player=%s became the owner of %s !!!
-
+entity.schr0chastmob.chast.inventory=Inventory

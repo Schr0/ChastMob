@@ -64,6 +64,8 @@ public class ItemHomeChestMap extends Item
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.home_chest_map.tips", new Object[0]).getFormattedText());
+
 		BlockPos blockPos = this.getHomeChestBlockPos(stack);
 
 		if (blockPos != null)

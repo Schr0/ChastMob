@@ -77,11 +77,11 @@ public abstract class EntityAIChast extends EntityAIBase
 
 			case FOLLOW :
 
-				EntityLivingBase entityOwner = this.theChast.getOwnerEntity();
+				EntityLivingBase ownerEntity = this.theChast.getOwnerEntity();
 
-				if (this.theChast.isOwnerTame() && (entityOwner != null))
+				if (this.theChast.isOwnerTame() && (ownerEntity != null))
 				{
-					blockPos = entityOwner.getPosition();
+					blockPos = ownerEntity.getPosition();
 				}
 
 				break;
@@ -91,7 +91,7 @@ public abstract class EntityAIChast extends EntityAIBase
 		return blockPos;
 	}
 
-	public void tryMoveToTargetBlockPos(BlockPos blockPos, double moveSpeed)
+	public void forceMoveToTargetBlockPos(BlockPos blockPos, double moveSpeed)
 	{
 		if (!this.theChast.getNavigator().tryMoveToXYZ(blockPos.getX(), blockPos.getY(), blockPos.getZ(), moveSpeed))
 		{
@@ -99,11 +99,14 @@ public abstract class EntityAIChast extends EntityAIBase
 			int targetPosY = MathHelper.floor_double(blockPos.getY());
 			int targetPosZ = MathHelper.floor_double(blockPos.getZ()) - 2;
 
-			this.teleportTargetPosition(targetPosX, targetPosY, targetPosZ);
+			if (!this.teleportTargetPosition(targetPosX, targetPosY, targetPosZ))
+			{
+				// none
+			}
 		}
 	}
 
-	public void tryMoveToTargetEntity(Entity entitiy, double moveSpeed)
+	public void forceMoveToTargetEntity(Entity entitiy, double moveSpeed)
 	{
 		if (!this.theChast.getNavigator().tryMoveToEntityLiving(entitiy, moveSpeed))
 		{
@@ -111,29 +114,36 @@ public abstract class EntityAIChast extends EntityAIBase
 			int targetPosY = MathHelper.floor_double(entitiy.getEntityBoundingBox().minY);
 			int targetPosZ = MathHelper.floor_double(entitiy.posZ) - 2;
 
-			this.teleportTargetPosition(targetPosX, targetPosY, targetPosZ);
-		}
-	}
-
-	private void teleportTargetPosition(int targetPosX, int targetPosY, int targetPosZ)
-	{
-		for (int x = 0; x <= 4; ++x)
-		{
-			for (int z = 0; z <= 4; ++z)
+			if (!this.teleportTargetPosition(targetPosX, targetPosY, targetPosZ))
 			{
-				if ((x < 1 || z < 1 || x > 3 || z > 3) && this.getAIOwnerWorld().getBlockState(new BlockPos(targetPosX + x, targetPosY - 1, targetPosZ + z)).isFullyOpaque() && this.isEmptyBlock(new BlockPos(targetPosX + x, targetPosY, targetPosZ + z)) && this.isEmptyBlock(new BlockPos(targetPosX + x, targetPosY + 1, targetPosZ + z)))
-				{
-					this.getAIOwnerEntity().setLocationAndAngles((double) ((float) (targetPosX + x) + 0.5F), (double) targetPosY, (double) ((float) (targetPosZ + z) + 0.5F), this.getAIOwnerEntity().rotationYaw, this.getAIOwnerEntity().rotationPitch);
-
-					return;
-				}
+				// none
 			}
 		}
 	}
 
+	private boolean teleportTargetPosition(int targetPosX, int targetPosY, int targetPosZ)
+	{
+		World world = this.theChast.getEntityWorld();
+
+		for (int x = 0; x <= 4; ++x)
+		{
+			for (int z = 0; z <= 4; ++z)
+			{
+				if ((x < 1 || z < 1 || x > 3 || z > 3) && world.getBlockState(new BlockPos(targetPosX + x, targetPosY - 1, targetPosZ + z)).isFullyOpaque() && this.isEmptyBlock(new BlockPos(targetPosX + x, targetPosY, targetPosZ + z)) && this.isEmptyBlock(new BlockPos(targetPosX + x, targetPosY + 1, targetPosZ + z)))
+				{
+					this.theChast.setLocationAndAngles((double) ((float) (targetPosX + x) + 0.5F), (double) targetPosY, (double) ((float) (targetPosZ + z) + 0.5F), this.theChast.rotationYaw, this.theChast.rotationPitch);
+
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	private boolean isEmptyBlock(BlockPos pos)
 	{
-		IBlockState state = this.getAIOwnerWorld().getBlockState(pos);
+		IBlockState state = this.theChast.getEntityWorld().getBlockState(pos);
 
 		return state.getMaterial().equals(Material.AIR) ? true : !state.isFullCube();
 	}

@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobEvent;
 import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.init.ChastMobRecipe;
 import schr0.chastmob.proxy.ProxyServer;
 
 @Mod(modid = ChastMob.MOD_ID, name = ChastMob.MOD_NAME, version = ChastMob.MOD_VERSION, dependencies = ChastMob.MOD_DEPENDENCIES)
@@ -65,6 +66,8 @@ public class ChastMob
 	@Mod.EventHandler
 	public void initEvent(FMLInitializationEvent event)
 	{
+		(new ChastMobRecipe()).init();
+
 		(new ChastMobEvent()).init();
 
 		this.proxy.initEventProxy(event);

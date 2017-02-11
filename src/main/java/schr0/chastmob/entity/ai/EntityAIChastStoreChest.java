@@ -18,10 +18,10 @@ public class EntityAIChastStoreChest extends EntityAIChast
 {
 
 	private static final int TIME_LIMIT = (5 * 20);
-
-	private double moveSpeed;
-	private int maxDistance;
 	private int timeCounter;
+
+	private double speed;
+	private int distance;
 	private TileEntityChest targetChest;
 
 	public EntityAIChastStoreChest(EntityChast entityChast, double speed, int distance)
@@ -29,8 +29,8 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		super(entityChast);
 		this.setMutexBits(1);
 
-		this.moveSpeed = speed;
-		this.maxDistance = distance;
+		this.speed = speed;
+		this.distance = distance;
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 			}
 			else
 			{
-				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
+				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.distance);
 
 				if (this.canStoringTileEntityChest(nearOpenChest))
 				{
@@ -107,7 +107,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		if (this.getAIOwnerEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
 		{
-			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.maxDistance);
+			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.distance);
 
 			if ((nearChest != null) && nearChest.equals(this.targetChest))
 			{
@@ -128,7 +128,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		}
 		else
 		{
-			this.tryMoveToTargetBlockPos(targetBlockPos, this.moveSpeed);
+			this.forceMoveToTargetBlockPos(targetBlockPos, this.speed);
 		}
 	}
 

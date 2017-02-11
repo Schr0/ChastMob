@@ -8,14 +8,20 @@ import net.minecraft.entity.ai.EntityAIOcelotSit;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.api.EntityAIOcelotSitChast;
+import schr0.chastmob.item.ItemSoulBottleFull;
 import schr0.chastmob.item.ItemSoulFragment;
+import schr0.chastmob.packet.MessageParticleEntity;
 
 public class ChastMobEvent
 {
@@ -28,9 +34,11 @@ public class ChastMobEvent
 	@SubscribeEvent
 	public void onLivingUpdateEvent(LivingUpdateEvent event)
 	{
-		if ((event.getEntityLiving().ticksExisted < 5) && (event.getEntityLiving() instanceof EntityOcelot))
+		EntityLivingBase entityLivingBase = event.getEntityLiving();
+
+		if ((entityLivingBase instanceof EntityOcelot) && (entityLivingBase.ticksExisted < 5))
 		{
-			EntityOcelot entityOcelot = (EntityOcelot) event.getEntityLiving();
+			EntityOcelot entityOcelot = (EntityOcelot) entityLivingBase;
 			HashSet<EntityAITaskEntry> hashSetEntityAITaskEntry = new HashSet<EntityAITaskEntry>();
 
 			for (EntityAITaskEntry taskEntry : entityOcelot.tasks.taskEntries)
@@ -52,22 +60,70 @@ public class ChastMobEvent
 	@SubscribeEvent
 	public void onEntityInteractEvent(PlayerInteractEvent.EntityInteract event)
 	{
-		EntityPlayer player = event.getEntityPlayer();
-		ItemStack stackHand = event.getItemStack();
-		Entity targetEntity = event.getTarget();
-		World world = player.getEntityWorld();
+		EntityPlayer entityPlayer = event.getEntityPlayer();
+		Entity entityTarget = event.getTarget();
+		ItemStack itemStack = event.getItemStack();
+		World world = entityPlayer.getEntityWorld();
 
-		if ((stackHand != null) && stackHand.getItem().equals(ChastMobItems.SOUL_FRAGMENT) && (targetEntity instanceof EntityLivingBase))
+		if (ChastMobHelper.isNotEmptyItemStack(itemStack) && (itemStack.getItem() instanceof ItemSoulFragment) && (entityTarget instanceof EntityLivingBase))
 		{
-			EntityLivingBase targetLivingBase = (EntityLivingBase) targetEntity;
+			EntityLivingBase targetLivingBase = (EntityLivingBase) entityTarget;
 
 			if ((0.0F < targetLivingBase.getHealth()) && (targetLivingBase.getHealth() < targetLivingBase.getMaxHealth()))
 			{
-				ItemSoulFragment.healLivingBase(stackHand, world, targetLivingBase, player);
+				ItemSoulFragment.healLivingBase(itemStack, world, targetLivingBase, entityPlayer);
 
 				event.setCanceled(true);
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void onLivingDeathEvent(LivingDeathEvent event)
+	{
+		EntityLivingBase entityLivingBase = event.getEntityLiving();
+		EnumHand handhHasItemSoulBottleFullFriendly = this.getHandHasItemSoulBottleFullFriendly(entityLivingBase);
+		ItemStack stackHeldItem = entityLivingBase.getHeldItem(handhHasItemSoulBottleFullFriendly);
+
+		if (this.isItemSoulBottleFullFriendly(stackHeldItem))
+		{
+			entityLivingBase.setHealth(entityLivingBase.getMaxHealth());
+
+			entityLivingBase.setHeldItem(handhHasItemSoulBottleFullFriendly, new ItemStack(ChastMobItems.SOUL_BOTTLE));
+
+			ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(entityLivingBase, 0));
+
+			entityLivingBase.getEntityWorld().playSound((EntityPlayer) null, entityLivingBase.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, entityLivingBase.getSoundCategory(), 1.0F, 1.0F);
+
+			event.setCanceled(true);
+		}
+	}
+
+	// TODO /* ======================================== MOD START =====================================*/
+
+	private EnumHand getHandHasItemSoulBottleFullFriendly(EntityLivingBase entityLivingBase)
+	{
+		if (this.isItemSoulBottleFullFriendly(entityLivingBase.getHeldItemMainhand()))
+		{
+			return EnumHand.MAIN_HAND;
+		}
+
+		if (this.isItemSoulBottleFullFriendly(entityLivingBase.getHeldItemOffhand()))
+		{
+			return EnumHand.OFF_HAND;
+		}
+
+		return EnumHand.MAIN_HAND;
+	}
+
+	private boolean isItemSoulBottleFullFriendly(ItemStack stack)
+	{
+		if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem() instanceof ItemSoulBottleFull) && (stack.getItemDamage() == 0))
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 }

@@ -12,13 +12,16 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.init.ChastMobPacket;
+import schr0.chastmob.packet.MessageParticleEntity;
 
 public class ItemSoulBottleFull extends Item
 {
@@ -53,6 +56,33 @@ public class ItemSoulBottleFull extends Item
 	{
 		subItems.add(new ItemStack(itemIn, 1, MAX_DAMAGE));
 		subItems.add(new ItemStack(itemIn, 1));
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
+	{
+		if (stack.getItemDamage() == 0)
+		{
+			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.soul_bottle_full.friendly.tips", new Object[0]).getFormattedText());
+		}
+		else
+		{
+			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.soul_bottle_full.tips", new Object[0]).getFormattedText());
+		}
+	}
+
+	@Override
+	public String getUnlocalizedName(ItemStack stack)
+	{
+		String nameOriginal = super.getUnlocalizedName();
+
+		if (stack.getItemDamage() == 0)
+		{
+			return nameOriginal + "." + "friendly";
+		}
+
+		return nameOriginal;
 	}
 
 	@Override
@@ -91,13 +121,7 @@ public class ItemSoulBottleFull extends Item
 
 		if (stack.getItemDamage() == 0)
 		{
-			for (int i = 0; i < 14; ++i)
-			{
-				double randX = worldIn.rand.nextGaussian() * 0.02D;
-				double randY = worldIn.rand.nextGaussian() * 0.02D;
-				double randZ = worldIn.rand.nextGaussian() * 0.02D;
-				worldIn.spawnParticle(EnumParticleTypes.HEART, entityPlayer.posX + (double) (worldIn.rand.nextFloat() * entityPlayer.width * 2.0F) - (double) entityPlayer.width, entityPlayer.posY + 0.5D + (double) (worldIn.rand.nextFloat() * entityPlayer.height), entityPlayer.posZ + (double) (worldIn.rand.nextFloat() * entityPlayer.width * 2.0F) - (double) entityPlayer.width, randX, randY, randZ, new int[0]);
-			}
+			ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(entityIn, 0));
 
 			entityPlayer.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 		}

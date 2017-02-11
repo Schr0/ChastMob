@@ -13,10 +13,10 @@ public class EntityAIChastCollectItem extends EntityAIChast
 {
 
 	private static final int TIME_LIMIT = (5 * 20);
-
-	private double moveSpeed;
-	private double maxDistance;
 	private int timeCounter;
+
+	private double speed;
+	private double distance;
 	private EntityItem targetEntityItem;
 
 	public EntityAIChastCollectItem(EntityChast entityChast, double speed, double distance)
@@ -24,14 +24,14 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		super(entityChast);
 		this.setMutexBits(1);
 
-		this.moveSpeed = speed;
-		this.maxDistance = distance;
+		this.speed = speed;
+		this.distance = distance;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		float rangeOrigin = (float) (this.maxDistance * this.maxDistance * this.maxDistance * 2);
+		float rangeOrigin = (float) (this.distance * this.distance * this.distance * 2);
 
 		for (EntityItem entityItem : this.getAroundEntityItem())
 		{
@@ -104,7 +104,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		}
 		else
 		{
-			this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.moveSpeed);
+			this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.speed);
 		}
 	}
 
@@ -123,7 +123,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private List<EntityItem> getAroundEntityItem()
 	{
-		return this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIHomePosition()).expandXyz(this.maxDistance));
+		return this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIHomePosition()).expandXyz(this.distance));
 	}
 
 	private boolean canCollectEntityItem(EntityItem entityItem)

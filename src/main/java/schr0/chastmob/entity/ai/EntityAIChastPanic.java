@@ -18,10 +18,10 @@ public class EntityAIChastPanic extends EntityAIChast
 {
 
 	private static final int IDEL_TIME = (3 * 20);
-
-	private double moveSpeed;
-	private int maxDistance;
 	private int timeCounter;
+
+	private double speed;
+	private int distance;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
@@ -31,8 +31,8 @@ public class EntityAIChastPanic extends EntityAIChast
 		super(entityChast);
 		this.setMutexBits(1);
 
-		this.moveSpeed = speed;
-		this.maxDistance = distance;
+		this.speed = speed;
+		this.distance = distance;
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class EntityAIChastPanic extends EntityAIChast
 
 		if (this.getAIOwnerEntity().isBurning())
 		{
-			BlockPos blockPos = this.getNearWaterBlockPos(this.getAIOwnerEntity(), this.maxDistance);
+			BlockPos blockPos = this.getNearWaterBlockPos(this.getAIOwnerEntity(), this.distance);
 
 			if (blockPos == null)
 			{
@@ -97,7 +97,7 @@ public class EntityAIChastPanic extends EntityAIChast
 		}
 		else
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getAIOwnerEntity(), this.maxDistance, this.maxDistance);
+			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getAIOwnerEntity(), this.distance, this.distance);
 
 			if (vec3d == null)
 			{
@@ -111,7 +111,7 @@ public class EntityAIChastPanic extends EntityAIChast
 			}
 		}
 
-		this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.moveSpeed);
+		this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

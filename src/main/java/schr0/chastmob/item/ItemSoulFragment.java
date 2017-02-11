@@ -1,6 +1,6 @@
 package schr0.chastmob.item;
 
-import javax.annotation.Nullable;
+import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,15 +10,27 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.init.ChastMobPacket;
+import schr0.chastmob.packet.MessageParticleEntity;
 
 public class ItemSoulFragment extends Item
 {
 
 	public ItemSoulFragment()
 	{
-		this.setMaxStackSize(16);
+		// none
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
+	{
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.soul_fragment.tips", new Object[0]).getFormattedText());
 	}
 
 	@Override
@@ -36,29 +48,20 @@ public class ItemSoulFragment extends Item
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public static void healLivingBase(ItemStack stack, World world, EntityLivingBase target, @Nullable EntityPlayer player)
+	public static void healLivingBase(ItemStack stack, World world, EntityLivingBase target, EntityPlayer player)
 	{
 		target.heal(2.0F);
 
-		for (int i = 0; i < 7; ++i)
+		player.getCooldownTracker().setCooldown(stack.getItem(), 10);
+
+		if (!player.capabilities.isCreativeMode)
 		{
-			double randX = world.rand.nextGaussian() * 0.02D;
-			double randY = world.rand.nextGaussian() * 0.02D;
-			double randZ = world.rand.nextGaussian() * 0.02D;
-			world.spawnParticle(EnumParticleTypes.HEART, target.posX + (double) (world.rand.nextFloat() * target.width * 2.0F) - (double) target.width, target.posY + 0.5D + (double) (world.rand.nextFloat() * target.height), target.posZ + (double) (world.rand.nextFloat() * target.width * 2.0F) - (double) target.width, randX, randY, randZ, new int[0]);
+			--stack.stackSize;
 		}
+
+		ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(target, 0));
 
 		target.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
-
-		if (player != null)
-		{
-			player.getCooldownTracker().setCooldown(stack.getItem(), 20);
-
-			if (!player.capabilities.isCreativeMode)
-			{
-				--stack.stackSize;
-			}
-		}
 	}
 
 }

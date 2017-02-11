@@ -13,10 +13,10 @@ public class EntityAIChastGoHome extends EntityAIChast
 {
 
 	private static final int TIME_LIMIT = (5 * 20);
-
-	private double moveSpeed;
-	private int minDistance;
 	private int timeCounter;
+
+	private double speed;
+	private int distance;
 	private TileEntityChest targetChest;
 
 	public EntityAIChastGoHome(EntityChast entityChast, double speed, int distance)
@@ -24,8 +24,8 @@ public class EntityAIChastGoHome extends EntityAIChast
 		super(entityChast);
 		this.setMutexBits(1);
 
-		this.moveSpeed = speed;
-		this.minDistance = distance;
+		this.speed = speed;
+		this.distance = distance;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 
 		this.getAIOwnerEntity().getLookHelper().setLookPosition(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getAIOwnerEntity().getDistanceSqToCenter(targetBlockPos) < (this.minDistance * this.minDistance))
+		if (this.getAIOwnerEntity().getDistanceSqToCenter(targetBlockPos) < (this.distance * this.distance))
 		{
 			this.setGoing(0, null);
 		}
@@ -92,11 +92,11 @@ public class EntityAIChastGoHome extends EntityAIChast
 		{
 			if (this.timeCounter < 20)
 			{
-				this.tryMoveToTargetBlockPos(targetBlockPos, this.moveSpeed);
+				this.forceMoveToTargetBlockPos(targetBlockPos, this.speed);
 			}
 			else
 			{
-				this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.moveSpeed);
+				this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.speed);
 			}
 		}
 	}
@@ -118,7 +118,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		if (tileEntityChest != null)
 		{
-			TileEntityChest nearChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.minDistance);
+			TileEntityChest nearChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.distance);
 
 			if (nearChest != null && nearChest.equals(tileEntityChest))
 			{

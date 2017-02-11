@@ -19,22 +19,22 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	private EntityOcelot theOwnerEntity;
 	private World theOwnerWorld;
 	private BlockPos theOwnerBlockPos;
+	private int timeCounter;
 
 	private boolean isEntityAIOcelotSitChast;
-	private float moveSpeed;
-	private double maxDistance;
-	private int timeCounter;
+	private float speed;
+	private double distance;
 	private EntityChast targetEntityChast;
 
-	public EntityAIOcelotSitChast(EntityOcelot owner, float speed, double distance)
+	public EntityAIOcelotSitChast(EntityOcelot entityOcelot, float speed, double distance)
 	{
-		super(owner, speed);
+		super(entityOcelot, speed);
 
-		this.theOwnerEntity = owner;
-		this.theOwnerWorld = owner.worldObj;
-		this.theOwnerBlockPos = owner.getPosition();
-		this.moveSpeed = speed;
-		this.maxDistance = distance;
+		this.theOwnerEntity = entityOcelot;
+		this.theOwnerWorld = entityOcelot.getEntityWorld();
+		this.theOwnerBlockPos = entityOcelot.getPosition();
+		this.speed = speed;
+		this.distance = distance;
 	}
 
 	@Override
@@ -154,7 +154,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 				}
 				else
 				{
-					this.theOwnerEntity.getNavigator().tryMoveToEntityLiving(this.targetEntityChast, this.moveSpeed);
+					this.theOwnerEntity.getNavigator().tryMoveToEntityLiving(this.targetEntityChast, this.speed);
 				}
 			}
 		}
@@ -186,7 +186,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	private List<EntityChast> getAroundEntityChast()
 	{
-		return this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(this.maxDistance));
+		return this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(this.distance));
 	}
 
 	private boolean canSittingEntityChast(EntityChast entityChast)

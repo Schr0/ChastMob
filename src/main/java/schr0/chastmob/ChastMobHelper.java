@@ -83,7 +83,7 @@ public class ChastMobHelper
 
 	public static boolean canBlockBeSeen(Entity entity, BlockPos blockPos)
 	{
-		World world = entity.worldObj;
+		World world = entity.getEntityWorld();
 		IBlockState state = world.getBlockState(blockPos);
 
 		if (state == null)

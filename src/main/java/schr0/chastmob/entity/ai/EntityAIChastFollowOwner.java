@@ -10,10 +10,10 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 {
 
 	private static final int TIME_LIMIT = (5 * 20);
-
-	private double moveSpeed;
-	private double minDistance;
 	private int timeCounter;
+
+	private double speed;
+	private double distance;
 	private EntityLivingBase targetOwner;
 
 	public EntityAIChastFollowOwner(EntityChast entityChast, double speed, double distance)
@@ -21,8 +21,8 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 		super(entityChast);
 		this.setMutexBits(1);
 
-		this.moveSpeed = speed;
-		this.minDistance = (distance * distance);
+		this.speed = speed;
+		this.distance = (distance * distance);
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 			if (this.canFollowEntityLivingBase(entityOwner))
 			{
-				if (this.getAIOwnerEntity().getDistanceSqToEntity(entityOwner) < this.minDistance)
+				if (this.getAIOwnerEntity().getDistanceSqToEntity(entityOwner) < this.distance)
 				{
 					return false;
 				}
@@ -76,7 +76,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, this.getAIOwnerEntity().getHorizontalFaceSpeed(), this.getAIOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.minDistance)
+		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.distance)
 		{
 			this.setFollowing(0, null);
 		}
@@ -84,11 +84,11 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 		{
 			if (this.timeCounter < 20)
 			{
-				this.tryMoveToTargetEntity(this.targetOwner, this.moveSpeed);
+				this.forceMoveToTargetEntity(this.targetOwner, this.speed);
 			}
 			else
 			{
-				this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.moveSpeed);
+				this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.speed);
 			}
 		}
 	}

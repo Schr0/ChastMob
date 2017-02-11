@@ -9,8 +9,6 @@ import schr0.chastmob.ChastMob;
 public class ChastMobCreativeTabs
 {
 
-	private static final String TAB = ChastMob.MOD_ID + "." + "creativetabs";
-
 	public static final CreativeTabs ITEM = new CreativeTabs(ChastMob.MOD_ID + "." + "item")
 	{
 
