@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.InventoryChast;
-import schr0.chastmob.item.ItemHomeChestMap;
+import schr0.chastmob.item.ItemMapHomeChest;
 
 public abstract class EntityAIChast extends EntityAIBase
 {
@@ -63,9 +63,9 @@ public abstract class EntityAIChast extends EntityAIBase
 
 				ItemStack stackMainhand = this.theChast.getHeldItemMainhand();
 
-				if (ChastMobHelper.isNotEmptyItemStack(stackMainhand) && (stackMainhand.getItem() instanceof ItemHomeChestMap))
+				if (ChastMobHelper.isNotEmptyItemStack(stackMainhand) && (stackMainhand.getItem() instanceof ItemMapHomeChest))
 				{
-					BlockPos blockPosHome = ((ItemHomeChestMap) stackMainhand.getItem()).getHomeChestBlockPos(stackMainhand);
+					BlockPos blockPosHome = ((ItemMapHomeChest) stackMainhand.getItem()).getHomeChestPosition(stackMainhand);
 
 					if (blockPosHome != null)
 					{

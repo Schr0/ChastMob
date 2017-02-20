@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.item.ItemCoreChast;
-import schr0.chastmob.item.ItemHomeChestMap;
+import schr0.chastmob.item.ItemMapHomeChest;
 import schr0.chastmob.item.ItemSoulBottle;
 import schr0.chastmob.item.ItemSoulBottleFull;
 import schr0.chastmob.item.ItemSoulFragment;
@@ -21,19 +21,19 @@ public class ChastMobItems
 	public static final Item SOUL_BOTTLE_FULL;
 	public static final Item SOUL_FRAGMENT;
 	public static final Item CORE_CHAST;
-	public static final Item HOME_CHEST_MAP;
+	public static final Item MAP_HOME_CHEST;
 
 	public static final String NAME_SOUL_BOTTLE = "soul_bottle";
 	public static final String NAME_SOUL_BOTTLE_FULL = "soul_bottle_full";
 	public static final String NAME_SOUL_FRAGMENT = "soul_fragment";
 	public static final String NAME_CORE_CHAST = "core_chast";
-	public static final String NAME_HOME_CHEST_MAP = "home_chest_map";
+	public static final String NAME_MAP_HOME_CHEST = "map_home_chest";
 
 	public static final int META_SOUL_BOTTLE = 0;
 	public static final int META_SOUL_BOTTLE_FULL = 0;
 	public static final int META_SOUL_FRAGMENT = 0;
 	public static final int META_CORE_CHAST = 0;
-	public static final int META_HOME_CHEST_MAP = 0;
+	public static final int META_MAP_HOME_CHEST = 0;
 
 	static
 	{
@@ -41,7 +41,7 @@ public class ChastMobItems
 		SOUL_BOTTLE_FULL = new ItemSoulBottleFull().setUnlocalizedName(NAME_SOUL_BOTTLE_FULL).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		SOUL_FRAGMENT = new ItemSoulFragment().setUnlocalizedName(NAME_SOUL_FRAGMENT).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		CORE_CHAST = new ItemCoreChast().setUnlocalizedName(NAME_CORE_CHAST).setCreativeTab(ChastMobCreativeTabs.ITEM);
-		HOME_CHEST_MAP = new ItemHomeChestMap().setUnlocalizedName(NAME_HOME_CHEST_MAP).setCreativeTab(ChastMobCreativeTabs.ITEM);
+		MAP_HOME_CHEST = new ItemMapHomeChest().setUnlocalizedName(NAME_MAP_HOME_CHEST).setCreativeTab(ChastMobCreativeTabs.ITEM);
 	}
 
 	public void init()
@@ -50,7 +50,7 @@ public class ChastMobItems
 		registerItem(SOUL_BOTTLE_FULL, NAME_SOUL_BOTTLE_FULL, META_SOUL_BOTTLE_FULL);
 		registerItem(SOUL_FRAGMENT, NAME_SOUL_FRAGMENT, META_SOUL_FRAGMENT);
 		registerItem(CORE_CHAST, NAME_CORE_CHAST, META_CORE_CHAST);
-		registerItem(HOME_CHEST_MAP, NAME_HOME_CHEST_MAP, META_HOME_CHEST_MAP);
+		registerItem(MAP_HOME_CHEST, NAME_MAP_HOME_CHEST, META_MAP_HOME_CHEST);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -60,7 +60,7 @@ public class ChastMobItems
 		ChastMobModelLoader.registerModel(SOUL_BOTTLE_FULL, META_SOUL_BOTTLE_FULL);
 		ChastMobModelLoader.registerModel(SOUL_FRAGMENT, META_SOUL_FRAGMENT);
 		ChastMobModelLoader.registerModel(CORE_CHAST, META_CORE_CHAST);
-		ChastMobModelLoader.registerModel(HOME_CHEST_MAP, META_HOME_CHEST_MAP);
+		ChastMobModelLoader.registerModel(MAP_HOME_CHEST, META_MAP_HOME_CHEST);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

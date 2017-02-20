@@ -25,10 +25,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobNBTs;
 
-public class ItemHomeChestMap extends Item
+public class ItemMapHomeChest extends Item
 {
 
-	public ItemHomeChestMap()
+	public ItemMapHomeChest()
 	{
 		this.setMaxStackSize(1);
 
@@ -40,9 +40,9 @@ public class ItemHomeChestMap extends Item
 			{
 				Item item = stack.getItem();
 
-				if (ChastMobHelper.isNotEmptyItemStack(stack) && item instanceof ItemHomeChestMap)
+				if (ChastMobHelper.isNotEmptyItemStack(stack) && item instanceof ItemMapHomeChest)
 				{
-					if (!((ItemHomeChestMap) item).hasHomeChest(stack))
+					if (!((ItemMapHomeChest) item).hasHomeChest(stack))
 					{
 						return 1.0F;
 					}
@@ -64,9 +64,9 @@ public class ItemHomeChestMap extends Item
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.home_chest_map.tips", new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.map_home_chest.tips", new Object[0]).getFormattedText());
 
-		BlockPos blockPos = this.getHomeChestBlockPos(stack);
+		BlockPos blockPos = this.getHomeChestPosition(stack);
 
 		if (blockPos != null)
 		{
@@ -90,11 +90,11 @@ public class ItemHomeChestMap extends Item
 		{
 			if (worldIn.getTileEntity(pos) instanceof TileEntityChest)
 			{
-				this.setHomeChestBlockPos(stack, pos);
+				this.setHomeChestPosition(stack, pos);
 
 				if (!worldIn.isRemote)
 				{
-					playerIn.addChatComponentMessage(new TextComponentTranslation("item.home_chest_map.save_log", new Object[]
+					playerIn.addChatComponentMessage(new TextComponentTranslation("item.map_home_chest.save_log", new Object[]
 					{
 							(TextFormatting.ITALIC + stack.getDisplayName()), pos.getX(), pos.getY(), pos.getZ()
 					}));
@@ -112,7 +112,7 @@ public class ItemHomeChestMap extends Item
 	// TODO /* ======================================== MOD START =====================================*/
 
 	@Nullable
-	public BlockPos getHomeChestBlockPos(ItemStack stack)
+	public BlockPos getHomeChestPosition(ItemStack stack)
 	{
 		NBTTagCompound nbtItemStack = stack.getTagCompound();
 
@@ -133,7 +133,7 @@ public class ItemHomeChestMap extends Item
 		return (BlockPos) null;
 	}
 
-	public void setHomeChestBlockPos(ItemStack stack, BlockPos blockPos)
+	public void setHomeChestPosition(ItemStack stack, BlockPos blockPos)
 	{
 		NBTTagCompound nbtItemStack = stack.getTagCompound();
 
@@ -154,7 +154,7 @@ public class ItemHomeChestMap extends Item
 
 	public boolean hasHomeChest(ItemStack stack)
 	{
-		return (this.getHomeChestBlockPos(stack) != null);
+		return (this.getHomeChestPosition(stack) != null);
 	}
 
 }

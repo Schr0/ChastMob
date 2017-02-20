@@ -2,7 +2,7 @@
 	"parent": "item/generated",
 	"textures":
 	{
-		"layer0": "schr0chastmob:items/home_chest_map"
+		"layer0": "schr0chastmob:items/map_home_chest"
 	},
 
 	"overrides":
@@ -12,7 +12,7 @@
 			{
 				"empty": 1
 			},
-				"model": "schr0chastmob:item/home_chest_map_empty"
+				"model": "schr0chastmob:item/map_home_chest_empty"
 	        }
 	]
 

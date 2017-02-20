@@ -1,7 +1,0 @@
-{
-	"parent": "item/generated",
-	"textures":
-	{
-		"layer0": "schr0chastmob:items/home_chest_map_empty"
-	}
-}

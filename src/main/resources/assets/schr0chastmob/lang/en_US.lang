@@ -14,12 +14,12 @@ item.soul_bottle_full.friendly.tips="Thanks!"
 item.soul_fragment.name=Soul Fragment
 item.soul_fragment.tips=Can heal Life.
 
-item.core_chast.name=Core Chast
+item.core_chast.name=Chast Core
 item.core_chast.tips=Let's right click on the "Chest".
 
-item.home_chest_map.name=Home Chest Map
-item.home_chest_map.tips=Let's right click on the "Chest".
-item.home_chest_map.save_log=%s : Saved Position (%s, %s, %s).
+item.map_home_chest.name=Home Chest Map
+item.map_home_chest.tips=Let's right click on the "Chest".
+item.map_home_chest.save_log=%s : Saved Position (%s, %s, %s).
 
 // ======================================== ENTITY ===================================== //
 entity.schr0chastmob.chast.name=Chast

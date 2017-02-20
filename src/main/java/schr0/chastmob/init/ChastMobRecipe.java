@@ -37,15 +37,15 @@ public class ChastMobRecipe
 				new ItemStack(ChastMobItems.SOUL_BOTTLE_FULL),
 		}));
 
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(ChastMobItems.HOME_CHEST_MAP), new Object[]
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(ChastMobItems.MAP_HOME_CHEST), new Object[]
 		{
 				new ItemStack(Items.PAPER),
 				new ItemStack(ChastMobItems.SOUL_FRAGMENT),
 		}));
 
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(ChastMobItems.HOME_CHEST_MAP), new Object[]
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(ChastMobItems.MAP_HOME_CHEST), new Object[]
 		{
-				new ItemStack(ChastMobItems.HOME_CHEST_MAP),
+				new ItemStack(ChastMobItems.MAP_HOME_CHEST),
 		}));
 	}
 

@@ -98,7 +98,7 @@ public class EntityChast extends EntityGolem
 		this.aiChastPanic = new EntityAIChastPanic(this, (speed * 2), distance);
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
-		// Follow || Freedom
+		// Follow || Freedom || Patrol
 		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this, speed, (double) distance);
 		EntityAIBase aiChastFollowOwner = new EntityAIChastFollowOwner(this, speed, (double) distance / 2.0D);
 		EntityAIBase aiChastGoHome = new EntityAIChastGoHome(this, speed, distance);
@@ -328,7 +328,7 @@ public class EntityChast extends EntityGolem
 			return false;
 		}
 
-		if (hand != EnumHand.MAIN_HAND)
+		if (hand == EnumHand.OFF_HAND)
 		{
 			return true;
 		}
@@ -379,7 +379,7 @@ public class EntityChast extends EntityGolem
 					}
 				}
 
-				if (stack.getItem().equals(ChastMobItems.HOME_CHEST_MAP))
+				if (stack.getItem().equals(ChastMobItems.MAP_HOME_CHEST))
 				{
 					if (isServerWorld)
 					{
