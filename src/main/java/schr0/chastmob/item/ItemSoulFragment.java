@@ -38,7 +38,7 @@ public class ItemSoulFragment extends Item
 	{
 		if (playerIn.shouldHeal())
 		{
-			healLivingBase(itemStackIn, worldIn, playerIn, playerIn);
+			this.healLivingBase(itemStackIn, worldIn, playerIn, playerIn);
 
 			return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
 		}
@@ -48,7 +48,7 @@ public class ItemSoulFragment extends Item
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public static void healLivingBase(ItemStack stack, World world, EntityLivingBase target, EntityPlayer player)
+	public void healLivingBase(ItemStack stack, World world, EntityLivingBase target, EntityPlayer player)
 	{
 		target.heal(2.0F);
 

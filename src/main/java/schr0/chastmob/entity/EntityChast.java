@@ -340,7 +340,7 @@ public class EntityChast extends EntityGolem
 				return false;
 			}
 
-			boolean isServerWorld = (!this.getEntityWorld().isRemote);
+			boolean isServerWorld = !this.getEntityWorld().isRemote;
 			EntityEquipmentSlot eqSlotMainhand = EntityEquipmentSlot.MAINHAND;
 			ItemStack stackMainhand = this.getItemStackFromSlot(eqSlotMainhand);
 

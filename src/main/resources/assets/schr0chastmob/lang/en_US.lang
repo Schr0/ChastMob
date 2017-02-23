@@ -8,8 +8,8 @@ item.soul_bottle.tips=Let's right click on the "Soul Sand".
 item.soul_bottle_full.name=Lonely Soul Bottle
 item.soul_bottle_full.tips=Let's stay together.
 
-item.soul_bottle_full.friendly.name=Friendly Soul Bottle
-item.soul_bottle_full.friendly.tips="Thanks!"
+item.soul_bottle_full_friendly.name=Friendly Soul Bottle
+item.soul_bottle_full_friendly.tips="Thanks!"
 
 item.soul_fragment.name=Soul Fragment
 item.soul_fragment.tips=Can heal Life.
@@ -19,7 +19,7 @@ item.core_chast.tips=Let's right click on the "Chest".
 
 item.map_home_chest.name=Home Chest Map
 item.map_home_chest.tips=Let's right click on the "Chest".
-item.map_home_chest.save_log=%s : Saved Position (%s, %s, %s).
+item.map_home_chest.save=%s : Saved Position (%s, %s, %s).
 
 // ======================================== ENTITY ===================================== //
 entity.schr0chastmob.chast.name=Chast

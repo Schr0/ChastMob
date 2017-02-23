@@ -8,7 +8,6 @@ import net.minecraft.entity.ai.EntityAIOcelotSit;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
@@ -21,7 +20,6 @@ import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.api.EntityAIOcelotSitChast;
 import schr0.chastmob.item.ItemSoulBottleFull;
 import schr0.chastmob.item.ItemSoulFragment;
-import schr0.chastmob.packet.MessageParticleEntity;
 
 public class ChastMobEvent
 {
@@ -71,7 +69,7 @@ public class ChastMobEvent
 
 			if ((0.0F < targetLivingBase.getHealth()) && (targetLivingBase.getHealth() < targetLivingBase.getMaxHealth()))
 			{
-				ItemSoulFragment.healLivingBase(itemStack, world, targetLivingBase, entityPlayer);
+				((ItemSoulFragment) (itemStack.getItem())).healLivingBase(itemStack, world, targetLivingBase, entityPlayer);
 
 				event.setCanceled(true);
 			}
@@ -87,13 +85,7 @@ public class ChastMobEvent
 
 		if (this.isItemSoulBottleFullFriendly(stackHeldItem))
 		{
-			entityLivingBase.setHealth(entityLivingBase.getMaxHealth());
-
-			entityLivingBase.setHeldItem(handhHasItemSoulBottleFullFriendly, new ItemStack(ChastMobItems.SOUL_BOTTLE));
-
-			ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(entityLivingBase, 0));
-
-			entityLivingBase.getEntityWorld().playSound((EntityPlayer) null, entityLivingBase.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, entityLivingBase.getSoundCategory(), 1.0F, 1.0F);
+			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handhHasItemSoulBottleFullFriendly, entityLivingBase);
 
 			event.setCanceled(true);
 		}

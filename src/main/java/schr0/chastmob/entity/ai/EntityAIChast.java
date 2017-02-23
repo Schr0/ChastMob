@@ -65,11 +65,11 @@ public abstract class EntityAIChast extends EntityAIBase
 
 				if (ChastMobHelper.isNotEmptyItemStack(stackMainhand) && (stackMainhand.getItem() instanceof ItemMapHomeChest))
 				{
-					BlockPos blockPosHome = ((ItemMapHomeChest) stackMainhand.getItem()).getHomeChestPosition(stackMainhand);
+					BlockPos homeChestPosition = ((ItemMapHomeChest) stackMainhand.getItem()).getHomeChestPosition(stackMainhand);
 
-					if (blockPosHome != null)
+					if (homeChestPosition != null)
 					{
-						blockPos = blockPosHome;
+						blockPos = homeChestPosition;
 					}
 				}
 

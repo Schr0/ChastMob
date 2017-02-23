@@ -66,13 +66,13 @@ public class ItemMapHomeChest extends Item
 	{
 		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.map_home_chest.tips", new Object[0]).getFormattedText());
 
-		BlockPos blockPos = this.getHomeChestPosition(stack);
+		BlockPos homeChestPosition = this.getHomeChestPosition(stack);
 
-		if (blockPos != null)
+		if (homeChestPosition != null)
 		{
-			tooltip.add("posX : " + blockPos.getX());
-			tooltip.add("posY : " + blockPos.getY());
-			tooltip.add("posZ : " + blockPos.getZ());
+			tooltip.add("posX : " + homeChestPosition.getX());
+			tooltip.add("posY : " + homeChestPosition.getY());
+			tooltip.add("posZ : " + homeChestPosition.getZ());
 		}
 		else
 		{
@@ -94,7 +94,7 @@ public class ItemMapHomeChest extends Item
 
 				if (!worldIn.isRemote)
 				{
-					playerIn.addChatComponentMessage(new TextComponentTranslation("item.map_home_chest.save_log", new Object[]
+					playerIn.addChatMessage(new TextComponentTranslation("item.map_home_chest.save", new Object[]
 					{
 							(TextFormatting.ITALIC + stack.getDisplayName()), pos.getX(), pos.getY(), pos.getZ()
 					}));

@@ -12,6 +12,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -64,7 +65,7 @@ public class ItemSoulBottleFull extends Item
 	{
 		if (stack.getItemDamage() == 0)
 		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.soul_bottle_full.friendly.tips", new Object[0]).getFormattedText());
+			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.soul_bottle_full_friendly.tips", new Object[0]).getFormattedText());
 		}
 		else
 		{
@@ -79,7 +80,7 @@ public class ItemSoulBottleFull extends Item
 
 		if (stack.getItemDamage() == 0)
 		{
-			return nameOriginal + "." + "friendly";
+			return nameOriginal + "_" + "friendly";
 		}
 
 		return nameOriginal;
@@ -125,6 +126,24 @@ public class ItemSoulBottleFull extends Item
 
 			entityPlayer.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 		}
+	}
+
+	// TODO /* ======================================== MOD START =====================================*/
+
+	public void resurrectionOwner(ItemStack stack, EnumHand hand, EntityLivingBase owner)
+	{
+		if (stack.getItemDamage() != 0)
+		{
+			return;
+		}
+
+		owner.setHealth(owner.getMaxHealth());
+
+		owner.setHeldItem(hand, new ItemStack(ChastMobItems.SOUL_BOTTLE));
+
+		ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(owner, 0));
+
+		owner.getEntityWorld().playSound((EntityPlayer) null, owner.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, owner.getSoundCategory(), 1.0F, 1.0F);
 	}
 
 }
