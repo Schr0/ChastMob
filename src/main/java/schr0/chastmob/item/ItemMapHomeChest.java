@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 
 public class ItemMapHomeChest extends Item
@@ -64,7 +65,7 @@ public class ItemMapHomeChest extends Item
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.map_home_chest.tips", new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_MAP_HOME_CHEST_TIPS, new Object[0]).getFormattedText());
 
 		BlockPos homeChestPosition = this.getHomeChestPosition(stack);
 
@@ -92,14 +93,6 @@ public class ItemMapHomeChest extends Item
 			{
 				this.setHomeChestPosition(stack, pos);
 
-				if (!worldIn.isRemote)
-				{
-					playerIn.addChatMessage(new TextComponentTranslation("item.map_home_chest.save", new Object[]
-					{
-							(TextFormatting.ITALIC + stack.getDisplayName()), pos.getX(), pos.getY(), pos.getZ()
-					}));
-				}
-
 				playerIn.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 
 				return EnumActionResult.SUCCESS;
@@ -121,11 +114,11 @@ public class ItemMapHomeChest extends Item
 			return (BlockPos) null;
 		}
 
-		if (nbtItemStack.hasKey(ChastMobNBTs.HOME_CHEST_MAP_POS_X) && nbtItemStack.hasKey(ChastMobNBTs.HOME_CHEST_MAP_POS_Y) && nbtItemStack.hasKey(ChastMobNBTs.HOME_CHEST_MAP_POS_Z))
+		if (nbtItemStack.hasKey(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_X) && nbtItemStack.hasKey(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Y) && nbtItemStack.hasKey(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Z))
 		{
-			int posX = nbtItemStack.getInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_X);
-			int posY = nbtItemStack.getInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_Y);
-			int posZ = nbtItemStack.getInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_Z);
+			int posX = nbtItemStack.getInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_X);
+			int posY = nbtItemStack.getInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Y);
+			int posZ = nbtItemStack.getInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Z);
 
 			return new BlockPos(posX, posY, posZ);
 		}
@@ -144,9 +137,9 @@ public class ItemMapHomeChest extends Item
 
 		if (blockPos != null)
 		{
-			nbtItemStack.setInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_X, blockPos.getX());
-			nbtItemStack.setInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_Y, blockPos.getY());
-			nbtItemStack.setInteger(ChastMobNBTs.HOME_CHEST_MAP_POS_Z, blockPos.getZ());
+			nbtItemStack.setInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_X, blockPos.getX());
+			nbtItemStack.setInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Y, blockPos.getY());
+			nbtItemStack.setInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Z, blockPos.getZ());
 		}
 
 		stack.setTagCompound(nbtItemStack);

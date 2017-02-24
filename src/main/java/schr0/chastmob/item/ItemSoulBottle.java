@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.init.ChastMobLang;
 
 public class ItemSoulBottle extends Item
 {
@@ -31,7 +32,7 @@ public class ItemSoulBottle extends Item
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.soul_bottle.tips", new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_SOUL_BOTTLE_TIPS, new Object[0]).getFormattedText());
 	}
 
 	@Override

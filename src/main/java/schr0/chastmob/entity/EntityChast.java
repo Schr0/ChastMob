@@ -35,6 +35,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -50,6 +52,7 @@ import schr0.chastmob.entity.ai.EntityAIChastWander;
 import schr0.chastmob.entity.ai.EnumAIMode;
 import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 import schr0.chastmob.init.ChastMobPacket;
 import schr0.chastmob.packet.MessageParticleEntity;
@@ -163,22 +166,22 @@ public class EntityChast extends EntityGolem
 	{
 		super.writeEntityToNBT(compound);
 
-		compound.setTag(ChastMobNBTs.CHAST_INVENTORY, this.getInventoryChast().writeInventoryToNBT());
+		compound.setTag(ChastMobNBTs.ENTITY_CHAST_INVENTORY, this.getInventoryChast().writeInventoryToNBT());
 
-		compound.setByte(ChastMobNBTs.CHAST_ARM_COLOR, (byte) this.getArmColor().getDyeDamage());
+		compound.setByte(ChastMobNBTs.ENTITY_CHAST_ARM_COLOR, (byte) this.getArmColor().getDyeDamage());
 
 		if (this.getOwnerUUID() == null)
 		{
-			compound.setString(ChastMobNBTs.CHAST_OWNER_UUID, "");
+			compound.setString(ChastMobNBTs.ENTITY_CHAST_OWNER_UUID, "");
 		}
 		else
 		{
-			compound.setString(ChastMobNBTs.CHAST_OWNER_UUID, this.getOwnerUUID().toString());
+			compound.setString(ChastMobNBTs.ENTITY_CHAST_OWNER_UUID, this.getOwnerUUID().toString());
 		}
 
-		compound.setByte(ChastMobNBTs.CHAST_AI_MODE, (byte) this.getAIMode().getNumber());
+		compound.setByte(ChastMobNBTs.ENTITY_CHAST_AI_MODE, (byte) this.getAIMode().getNumber());
 
-		compound.setBoolean(ChastMobNBTs.CHAST_STATE_SIT, this.isStateSit());
+		compound.setBoolean(ChastMobNBTs.ENTITY_CHAST_STATE_SIT, this.isStateSit());
 	}
 
 	@Override
@@ -186,17 +189,17 @@ public class EntityChast extends EntityGolem
 	{
 		super.readEntityFromNBT(compound);
 
-		this.getInventoryChast().readInventoryFromNBT(compound.getTagList(ChastMobNBTs.CHAST_INVENTORY, 10));
+		this.getInventoryChast().readInventoryFromNBT(compound.getTagList(ChastMobNBTs.ENTITY_CHAST_INVENTORY, 10));
 
-		this.setArmColor(EnumDyeColor.byDyeDamage(compound.getByte(ChastMobNBTs.CHAST_ARM_COLOR)));
+		this.setArmColor(EnumDyeColor.byDyeDamage(compound.getByte(ChastMobNBTs.ENTITY_CHAST_ARM_COLOR)));
 
 		this.setCoverOpen(false);
 
 		String ownerUUID;
 
-		if (compound.hasKey(ChastMobNBTs.CHAST_OWNER_UUID))
+		if (compound.hasKey(ChastMobNBTs.ENTITY_CHAST_OWNER_UUID))
 		{
-			ownerUUID = compound.getString(ChastMobNBTs.CHAST_OWNER_UUID);
+			ownerUUID = compound.getString(ChastMobNBTs.ENTITY_CHAST_OWNER_UUID);
 		}
 		else
 		{
@@ -216,15 +219,15 @@ public class EntityChast extends EntityGolem
 			}
 		}
 
-		this.setAIMode(EnumAIMode.byNumber(compound.getByte(ChastMobNBTs.CHAST_AI_MODE)));
+		this.setAIMode(EnumAIMode.byNumber(compound.getByte(ChastMobNBTs.ENTITY_CHAST_AI_MODE)));
 
 		this.setAIPanicking(0);
 
 		this.setStatePanic(false);
 
-		this.setAISitting(compound.getBoolean(ChastMobNBTs.CHAST_STATE_SIT));
+		this.setAISitting(compound.getBoolean(ChastMobNBTs.ENTITY_CHAST_STATE_SIT));
 
-		this.setStateSit(compound.getBoolean(ChastMobNBTs.CHAST_STATE_SIT));
+		this.setStateSit(compound.getBoolean(ChastMobNBTs.ENTITY_CHAST_STATE_SIT));
 
 		this.setAITrading(null);
 
@@ -295,9 +298,13 @@ public class EntityChast extends EntityGolem
 		{
 			EntityLivingBase ownerEntity = this.getOwnerEntity();
 
-			if ((ownerEntity instanceof EntityPlayerMP) && world.getGameRules().getBoolean("showDeathMessages"))
+			if (ownerEntity instanceof EntityPlayerMP)
 			{
-				((EntityPlayerMP) ownerEntity).addChatMessage(this.getCombatTracker().getDeathMessage());
+				((EntityPlayerMP) ownerEntity).addChatMessage(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_GOODBYE, new Object[]
+				{
+						TextFormatting.ITALIC.BOLD + this.getName(),
+						TextFormatting.ITALIC.BOLD + ownerEntity.getName(),
+				}));
 			}
 
 			Block.spawnAsEntity(world, this.getPosition(), new ItemStack(Blocks.CHEST));
@@ -328,14 +335,9 @@ public class EntityChast extends EntityGolem
 			return false;
 		}
 
-		if (hand == EnumHand.OFF_HAND)
-		{
-			return true;
-		}
-
 		if (this.isOwnerTame())
 		{
-			if (!this.isOwnerEntity(player))
+			if (!this.isOwnerEntity(player) || (hand == EnumHand.OFF_HAND))
 			{
 				return false;
 			}
@@ -397,6 +399,11 @@ public class EntityChast extends EntityGolem
 					}
 
 					return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
+				}
+
+				if (stack.interactWithEntity(player, this, hand))
+				{
+					return this.onSuccessProcessInteract(player, (SoundEvent) null);
 				}
 			}
 
@@ -475,16 +482,13 @@ public class EntityChast extends EntityGolem
 
 		this.onUpdateCoverOpen();
 
-		if (!this.isStatePanic())
+		if (this.ticksExisted < (20 * 5))
 		{
-			if (this.ticksExisted < (20 * 5))
-			{
-				EntityLivingBase owner = this.getOwnerEntity();
+			EntityLivingBase ownerEntity = this.getOwnerEntity();
 
-				if ((owner != null) && (owner.getDistanceToEntity(this) < 16.0D))
-				{
-					this.getLookHelper().setLookPositionWithEntity(owner, this.getHorizontalFaceSpeed(), this.getVerticalFaceSpeed());
-				}
+			if ((ownerEntity != null) && (ownerEntity.getDistanceToEntity(this) < 16.0D))
+			{
+				this.getLookHelper().setLookPositionWithEntity(ownerEntity, this.getHorizontalFaceSpeed(), this.getVerticalFaceSpeed());
 			}
 		}
 	}
@@ -671,6 +675,12 @@ public class EntityChast extends EntityGolem
 
 			this.setAIMode(EnumAIMode.FOLLOW);
 			this.setAISitting(false);
+
+			player.addChatMessage(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_THANKS, new Object[]
+			{
+					TextFormatting.ITALIC.BOLD + this.getName(),
+					TextFormatting.ITALIC.BOLD + player.getName(),
+			}));
 		}
 
 		ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(this, 0));

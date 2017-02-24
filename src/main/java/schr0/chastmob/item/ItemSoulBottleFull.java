@@ -21,12 +21,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobPacket;
 import schr0.chastmob.packet.MessageParticleEntity;
 
 public class ItemSoulBottleFull extends Item
 {
 
+	private static String NAME_FRIENDLY = "friendly";
 	public static final int MAX_DAMAGE = (20 * 60);
 
 	public ItemSoulBottleFull()
@@ -35,7 +37,7 @@ public class ItemSoulBottleFull extends Item
 		this.setMaxDamage(MAX_DAMAGE);
 		this.setContainerItem(ChastMobItems.SOUL_BOTTLE);
 
-		this.addPropertyOverride(new ResourceLocation("friendly"), new IItemPropertyGetter()
+		this.addPropertyOverride(new ResourceLocation(NAME_FRIENDLY), new IItemPropertyGetter()
 		{
 			@Override
 			@SideOnly(Side.CLIENT)
@@ -65,11 +67,11 @@ public class ItemSoulBottleFull extends Item
 	{
 		if (stack.getItemDamage() == 0)
 		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.soul_bottle_full_friendly.tips", new Object[0]).getFormattedText());
+			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_SOUL_BOTTLE_FULL_FRIENDLY_TIPS, new Object[0]).getFormattedText());
 		}
 		else
 		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.soul_bottle_full.tips", new Object[0]).getFormattedText());
+			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_SOUL_BOTTLE_FULL_TIPS, new Object[0]).getFormattedText());
 		}
 	}
 
@@ -80,7 +82,7 @@ public class ItemSoulBottleFull extends Item
 
 		if (stack.getItemDamage() == 0)
 		{
-			return nameOriginal + "_" + "friendly";
+			return nameOriginal + "_" + NAME_FRIENDLY;
 		}
 
 		return nameOriginal;

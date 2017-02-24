@@ -15,6 +15,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobPacket;
 import schr0.chastmob.packet.MessageParticleEntity;
 
@@ -30,7 +31,7 @@ public class ItemSoulFragment extends Item
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation("item.soul_fragment.tips", new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_SOUL_FRAGMENT_TIPS, new Object[0]).getFormattedText());
 	}
 
 	@Override
