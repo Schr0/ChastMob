@@ -1,4 +1,4 @@
-package schr0.chastmob;
+package schr0.chastmob.entity.render;
 
 import org.lwjgl.opengl.GL11;
 
@@ -6,13 +6,16 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
+import schr0.chastmob.entity.EntityChast;
 
 public class ModelChast extends ModelBase
 {
 
 	public static final int WIDTH = 64;
 	public static final int HEIGHT = 64;
+
 	public ModelRenderer body;
 	public ModelRenderer core;
 	public ModelRenderer coverMain;
@@ -78,9 +81,10 @@ public class ModelChast extends ModelBase
 
 		if (this.isChild)
 		{
-			float scaleChild = 2.0F;
 			GL11.glPushMatrix();
-			GL11.glScalef(1.0F / scaleChild, 1.0F / scaleChild, 1.0F / scaleChild);
+
+			float scaleHalf = (1.0F / 2.0F);
+			GL11.glScalef(scaleHalf, scaleHalf, scaleHalf);
 			GL11.glTranslatef(0.0F, 24.0F * scale, 0.0F);
 
 			this.body.render(scale);
@@ -104,37 +108,111 @@ public class ModelChast extends ModelBase
 	@Override
 	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
 	{
+		if (!(entityIn instanceof EntityChast))
+		{
+			return;
+		}
+
 		EntityChast entityChast = (EntityChast) entityIn;
 
-		if (!entityChast.isRiding())
+		if (entityChast.isRiding() || !entityChast.getPassengers().isEmpty())
+		{
+			this.body.rotateAngleX = 0.0F;
+		}
+		else
 		{
 			this.body.rotateAngleX = (headPitch / (180F / (float) Math.PI));
 		}
 
 		this.body.rotateAngleY = (netHeadYaw / (180F / (float) Math.PI));
+		this.core.rotateAngleZ = (ageInTicks * (entityChast.getHealth() / 50F));
+
+		if (entityChast.isStateSit() || entityChast.isRiding())
+		{
+			float pointSitY = 8.0F;
+			this.body.setRotationPoint(0F, (10F + pointSitY), 0F);
+			this.armRight.setRotationPoint(-7F, (8F + pointSitY), 0F);
+			this.armLeft.setRotationPoint(7F, (8F + pointSitY), 0F);
+			this.legRight.setRotationPoint(-3F, (15F + pointSitY), 0F);
+			this.legLeft.setRotationPoint(3F, (15F + pointSitY), 0F);
+
+			float angleSitArmX = -0.95F;
+			this.armRight.rotateAngleX = angleSitArmX;
+			this.armLeft.rotateAngleX = angleSitArmX;
+
+			float angleSitLegX = -1.55F;
+			this.legRight.rotateAngleX = angleSitLegX;
+			this.legLeft.rotateAngleX = angleSitLegX;
+		}
+		else
+		{
+			this.body.setRotationPoint(0F, 10F, 0F);
+			this.armRight.setRotationPoint(-7F, 8F, 0F);
+			this.armLeft.setRotationPoint(7F, 8F, 0F);
+			this.legRight.setRotationPoint(-3F, 15F, 0F);
+			this.legLeft.setRotationPoint(3F, 15F, 0F);
+
+			float angleSwingArmRightLegLeftX = (MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount);
+			float angleSwingArmLeftLegRightX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount);
+
+			if (entityChast.isStatePanic())
+			{
+				this.armRight.rotateAngleX = 0.0F;
+				this.armLeft.rotateAngleX = 0.0F;
+			}
+			else
+			{
+				this.armRight.rotateAngleX = angleSwingArmRightLegLeftX;
+				this.armLeft.rotateAngleX = angleSwingArmLeftLegRightX;
+			}
+
+			this.legLeft.rotateAngleX = angleSwingArmRightLegLeftX;
+			this.legRight.rotateAngleX = angleSwingArmLeftLegRightX;
+		}
+
+		float angleArmX = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F);
+		this.armRight.rotateAngleX += angleArmX;
+		this.armLeft.rotateAngleX -= angleArmX;
+
+		if (entityChast.isStatePanic())
+		{
+			float anglePanicArmZ = 2.5F;
+			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + anglePanicArmZ;
+			this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - anglePanicArmZ;
+		}
+		else
+		{
+			float angleArmZ = 0.35F;
+			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + angleArmZ;
+			this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmZ;
+		}
+
 		this.body.rotateAngleY = this.armRight.rotateAngleY = this.armLeft.rotateAngleY = this.legRight.rotateAngleY = this.legLeft.rotateAngleY;
-
-		this.core.rotateAngleZ = (ageInTicks * 0.2F);
-
-		this.armRight.rotateAngleX += (MathHelper.sin(ageInTicks * 0.05F) * 0.05F);
-		this.armLeft.rotateAngleX -= (MathHelper.sin(ageInTicks * 0.05F) * 0.05F);
-
-		float angleArmX = 0.36F;
-		this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + angleArmX;
-		this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmX;
-
-		this.armRight.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-		this.armLeft.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
-		this.legRight.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
-		this.legLeft.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
 	}
 
 	@Override
 	public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime)
 	{
+		if (!(entitylivingbaseIn instanceof EntityChast))
+		{
+			return;
+		}
+
 		EntityChast entityChast = (EntityChast) entitylivingbaseIn;
 
-		this.coverMain.rotateAngleX = -entityChast.getCoverAngle(partialTickTime);
+		this.coverMain.rotateAngleX = -(entityChast.getAngleCoverX(partialTickTime));
+	}
+
+	// TODO /* ======================================== MOD START =====================================*/
+
+	public void postRenderArm(float scale, EnumHandSide side)
+	{
+		this.getArmForSide(side).postRender(scale);
+	}
+
+	private ModelRenderer getArmForSide(EnumHandSide side)
+	{
+		return (side == EnumHandSide.LEFT) ? this.armLeft : this.armRight;
 	}
 
 }

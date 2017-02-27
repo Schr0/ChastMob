@@ -1,0 +1,19 @@
+{
+	"parent": "item/generated",
+	"textures":
+	{
+		"layer0": "schr0chastmob:items/soul_bottle_full"
+	},
+
+	"overrides":
+	[
+	        {
+			"predicate":
+			{
+				"friendly": 1
+			},
+				"model": "schr0chastmob:item/soul_bottle_full_friendly"
+	        }
+	]
+
+}

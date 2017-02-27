@@ -1,15 +1,21 @@
 package schr0.chastmob;
 
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import schr0.chastmob.init.ChastMobEntitys;
+import schr0.chastmob.init.ChastMobEvent;
+import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.init.ChastMobRecipe;
 import schr0.chastmob.proxy.ProxyServer;
 
 @Mod(modid = ChastMob.MOD_ID, name = ChastMob.MOD_NAME, version = ChastMob.MOD_VERSION, dependencies = ChastMob.MOD_DEPENDENCIES)
 public class ChastMob
 {
+
 	/**
 	 * ModのID.
 	 */
@@ -47,6 +53,8 @@ public class ChastMob
 	@Mod.EventHandler
 	public void preInitEvent(FMLPreInitializationEvent event)
 	{
+		(new ChastMobItems()).init();
+
 		(new ChastMobEntitys()).init();
 
 		this.proxy.preInitEventProxy(event);
@@ -58,6 +66,10 @@ public class ChastMob
 	@Mod.EventHandler
 	public void initEvent(FMLInitializationEvent event)
 	{
+		(new ChastMobRecipe()).init();
+
+		(new ChastMobEvent()).init();
+
 		this.proxy.initEventProxy(event);
 	}
 
@@ -68,6 +80,13 @@ public class ChastMob
 	public void postInitEvent(FMLPostInitializationEvent event)
 	{
 		this.proxy.postInitEventProxy(event);
+	}
+
+	// TODO /* ======================================== MOD START =====================================*/
+
+	public void logInfo(String format, Object... data)
+	{
+		FMLLog.info(format, data);
 	}
 
 }

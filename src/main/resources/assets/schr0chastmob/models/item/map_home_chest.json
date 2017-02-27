@@ -1,0 +1,19 @@
+{
+	"parent": "item/generated",
+	"textures":
+	{
+		"layer0": "schr0chastmob:items/map_home_chest"
+	},
+
+	"overrides":
+	[
+	        {
+			"predicate":
+			{
+				"empty": 1
+			},
+				"model": "schr0chastmob:item/map_home_chest_empty"
+	        }
+	]
+
+}
