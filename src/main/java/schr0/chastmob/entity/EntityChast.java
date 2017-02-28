@@ -74,10 +74,10 @@ public class EntityChast extends EntityGolem
 	private static final DataParameter<Byte> STATE_SIT = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> STATE_TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 
-	private InventoryChast inventoryChast;
 	private EntityAIChastPanic aiChastPanic;
 	private EntityAIChastSit aiChastSit;
 	private EntityAIChastTrade aiChastTrade;
+	private InventoryChast inventoryChast;
 	private float lidAngle;
 	private float prevLidAngle;
 
@@ -85,8 +85,6 @@ public class EntityChast extends EntityGolem
 	{
 		super(worldIn);
 		this.setSize(0.9F, 1.5F);
-
-		this.inventoryChast = new InventoryChast(this);
 	}
 
 	@Override
@@ -232,6 +230,14 @@ public class EntityChast extends EntityGolem
 		this.setAITrading(null);
 
 		this.setStateTrade(false);
+	}
+
+	@Override
+	public void setCustomNameTag(String name)
+	{
+		super.setCustomNameTag(name);
+
+		this.getInventoryChast().setCustomName(this.getInventoryChast().getInventoryName(this));
 	}
 
 	@Override
@@ -629,6 +635,11 @@ public class EntityChast extends EntityGolem
 
 	public InventoryChast getInventoryChast()
 	{
+		if (this.inventoryChast == null)
+		{
+			this.inventoryChast = new InventoryChast(this);
+		}
+
 		return this.inventoryChast;
 	}
 

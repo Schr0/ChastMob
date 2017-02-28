@@ -18,7 +18,7 @@ public class InventoryChast extends InventoryBasic
 
 	public InventoryChast(EntityChast entityChast)
 	{
-		super(getInventoryName(entityChast), false, INVENTORY_SIZE);
+		super(getInventoryName(entityChast), true, INVENTORY_SIZE);
 
 		this.entityChast = entityChast;
 	}
@@ -57,6 +57,11 @@ public class InventoryChast extends InventoryBasic
 
 	// TODO /* ======================================== MOD START =====================================*/
 
+	public static String getInventoryName(EntityChast entityChast)
+	{
+		return entityChast.getName() + " " + new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_INVENTORY, new Object[0]).getFormattedText();
+	}
+
 	public void readInventoryFromNBT(NBTTagList nbtList)
 	{
 		this.clear();
@@ -91,11 +96,6 @@ public class InventoryChast extends InventoryBasic
 		}
 
 		return nbtList;
-	}
-
-	private static String getInventoryName(EntityChast entityChast)
-	{
-		return entityChast.getName() + " " + new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_INVENTORY, new Object[0]).getFormattedText();
 	}
 
 }
