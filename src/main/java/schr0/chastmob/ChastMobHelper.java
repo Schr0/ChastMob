@@ -81,9 +81,9 @@ public class ChastMobHelper
 		return -1;
 	}
 
-	public static boolean canBlockBeSeen(Entity entity, BlockPos blockPos)
+	public static boolean canBlockBeSeen(Entity owner, BlockPos blockPos)
 	{
-		World world = entity.getEntityWorld();
+		World world = owner.getEntityWorld();
 		IBlockState state = world.getBlockState(blockPos);
 
 		if (state == null)
@@ -91,7 +91,7 @@ public class ChastMobHelper
 			return false;
 		}
 
-		Vec3d entityVec3d = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
+		Vec3d entityVec3d = new Vec3d(owner.posX, owner.posY + owner.getEyeHeight(), owner.posZ);
 		Vec3d targetVec3d = new Vec3d(((double) blockPos.getX() + 0.5D), ((double) blockPos.getY() + (state.getCollisionBoundingBox(world, blockPos).minY + state.getCollisionBoundingBox(world, blockPos).maxY) * 0.9D), ((double) blockPos.getZ() + 0.5D));
 		RayTraceResult rayTraceResult = world.rayTraceBlocks(entityVec3d, targetVec3d);
 
