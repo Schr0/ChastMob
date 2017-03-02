@@ -25,3 +25,6 @@ entity.schr0chastmob.chast.name=Chast
 entity.schr0chastmob.chast.inventory=Inventory
 entity.schr0chastmob.chast.thanks=%s " Thanks, %s ! "
 entity.schr0chastmob.chast.goodbye=%s " Goodbye, %s ... "
+entity.schr0chastmob.chast.mode.freedom=FREEDOM
+entity.schr0chastmob.chast.mode.follow=FOLLOW
+entity.schr0chastmob.chast.mode.patrol=PATROL

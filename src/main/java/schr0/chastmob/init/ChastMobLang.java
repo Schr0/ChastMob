@@ -13,5 +13,8 @@ public class ChastMobLang
 	public static final String ENTITY_CHAST_INVENTORY = "entity.schr0chastmob.chast.inventory";
 	public static final String ENTITY_CHAST_THANKS = "entity.schr0chastmob.chast.thanks";
 	public static final String ENTITY_CHAST_GOODBYE = "entity.schr0chastmob.chast.goodbye";
+	public static final String ENTITY_CHAST_MODE_FREEDOM = "entity.schr0chastmob.chast.mode.freedom";
+	public static final String ENTITY_CHAST_MODE_FOLLOW = "entity.schr0chastmob.chast.mode.follow";
+	public static final String ENTITY_CHAST_MODE_PATROL = "entity.schr0chastmob.chast.mode.patrol";
 
 }
