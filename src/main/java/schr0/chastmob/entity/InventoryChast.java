@@ -5,9 +5,7 @@ import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.text.TextComponentTranslation;
 import schr0.chastmob.ChastMobHelper;
-import schr0.chastmob.init.ChastMobLang;
 
 public class InventoryChast extends InventoryBasic
 {
@@ -18,7 +16,7 @@ public class InventoryChast extends InventoryBasic
 
 	public InventoryChast(EntityChast entityChast)
 	{
-		super(getInventoryName(entityChast), true, INVENTORY_SIZE);
+		super(entityChast.getName(), true, INVENTORY_SIZE);
 
 		this.entityChast = entityChast;
 	}
@@ -56,11 +54,6 @@ public class InventoryChast extends InventoryBasic
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
-
-	public static String getInventoryName(EntityChast entityChast)
-	{
-		return entityChast.getName() + " " + new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_INVENTORY, new Object[0]).getFormattedText();
-	}
 
 	public void readInventoryFromNBT(NBTTagList nbtList)
 	{

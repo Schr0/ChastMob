@@ -41,26 +41,23 @@ public class EntityAIChastStoreChest extends EntityAIChast
 			return false;
 		}
 
-		if (this.getAIOwnerEntity().getAIMode() == EnumAIMode.FREEDOM)
-		{
-			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIHomePosition());
+		TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIHomePosition());
 
-			if (this.canStoringTileEntityChest(homeChest))
+		if (this.canStoringTileEntityChest(homeChest))
+		{
+			this.setStoring(TIME_LIMIT, homeChest);
+
+			return true;
+		}
+		else
+		{
+			TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.distance);
+
+			if (this.canStoringTileEntityChest(nearOpenChest))
 			{
-				this.setStoring(TIME_LIMIT, homeChest);
+				this.setStoring(TIME_LIMIT, nearOpenChest);
 
 				return true;
-			}
-			else
-			{
-				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.distance);
-
-				if (this.canStoringTileEntityChest(nearOpenChest))
-				{
-					this.setStoring(TIME_LIMIT, nearOpenChest);
-
-					return true;
-				}
 			}
 		}
 
@@ -145,7 +142,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		this.targetChest = tileEntityChest;
 	}
 
-	private boolean canStoringTileEntityChest(TileEntityChest tileEntityChest)
+	private boolean canStoringTileEntityChest(@Nullable TileEntityChest tileEntityChest)
 	{
 		if (tileEntityChest != null)
 		{

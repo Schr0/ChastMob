@@ -99,38 +99,44 @@ public class EntityChast extends EntityGolem
 		this.aiChastPanic = new EntityAIChastPanic(this, (speed * 2), distance);
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
-		// Follow || Freedom || Patrol
+		// Freedom || Follow
+		EntityAIBase aiChastStoreChest = new EntityAIChastStoreChest(this, speed, distance);
 		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this, speed, (double) distance);
 		EntityAIBase aiChastFollowOwner = new EntityAIChastFollowOwner(this, speed, (double) distance / 2.0D);
 		EntityAIBase aiChastGoHome = new EntityAIChastGoHome(this, speed, distance);
-		EntityAIBase aiChastStoreChest = new EntityAIChastStoreChest(this, speed, distance);
 		// Wander
 		EntityAIBase aiChastWander = new EntityAIChastWander(this, speed, distance);
 		EntityAIBase aiWatchClosestPlayer = new EntityAIWatchClosest(this, EntityPlayer.class, (float) distance);
 		EntityAIBase aiWatchClosestGolem = new EntityAIWatchClosest(this, EntityGolem.class, (float) distance);
 		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
 
+		// Base
 		aiSwimming.setMutexBits(0);
 		this.aiChastPanic.setMutexBits(1);
 		this.aiChastSit.setMutexBits(1);
 		this.aiChastTrade.setMutexBits(1);
+		// Freedom || Follow
+		aiChastStoreChest.setMutexBits(1);
 		aiChastCollectItem.setMutexBits(1);
 		aiChastFollowOwner.setMutexBits(1);
 		aiChastGoHome.setMutexBits(1);
-		aiChastStoreChest.setMutexBits(1);
+		// Wander
 		aiChastWander.setMutexBits(1);
 		aiWatchClosestPlayer.setMutexBits(2);
 		aiWatchClosestGolem.setMutexBits(2);
 		aiLookIdle.setMutexBits(2);
 
+		// Base
 		this.tasks.addTask(0, aiSwimming);
 		this.tasks.addTask(1, this.aiChastPanic);
 		this.tasks.addTask(2, this.aiChastSit);
 		this.tasks.addTask(3, this.aiChastTrade);
-		this.tasks.addTask(4, aiChastCollectItem);
-		this.tasks.addTask(5, aiChastFollowOwner);
-		this.tasks.addTask(5, aiChastGoHome);
-		this.tasks.addTask(6, aiChastStoreChest);
+		// Freedom || Follow
+		this.tasks.addTask(4, aiChastStoreChest);
+		this.tasks.addTask(5, aiChastCollectItem);
+		this.tasks.addTask(6, aiChastFollowOwner);
+		this.tasks.addTask(6, aiChastGoHome);
+		// Wander
 		this.tasks.addTask(7, aiChastWander);
 		this.tasks.addTask(8, aiWatchClosestPlayer);
 		this.tasks.addTask(8, aiWatchClosestGolem);
@@ -237,7 +243,7 @@ public class EntityChast extends EntityGolem
 	{
 		super.setCustomNameTag(name);
 
-		this.getInventoryChast().setCustomName(this.getInventoryChast().getInventoryName(this));
+		this.getInventoryChast().setCustomName(name);
 	}
 
 	@Override

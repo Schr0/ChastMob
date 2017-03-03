@@ -16,7 +16,6 @@ import schr0.chastmob.item.ItemMapHomeChest;
 
 public abstract class EntityAIChast extends EntityAIBase
 {
-
 	private EntityChast theChast;
 
 	public EntityAIChast(EntityChast entityChast)
