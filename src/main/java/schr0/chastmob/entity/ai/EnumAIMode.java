@@ -6,8 +6,11 @@ import schr0.chastmob.init.ChastMobLang;
 
 public enum EnumAIMode implements IStringSerializable
 {
-	FREEDOM("freedom", 0, new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_MODE_FREEDOM, new Object[0]).getFormattedText()),
-	FOLLOW("follow", 1, new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_MODE_FOLLOW, new Object[0]).getFormattedText());
+
+	FREEDOM("freedom", 0, new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_FREEDOM, new Object[0]).getFormattedText()),
+	FOLLOW("follow", 1, new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_FOLLOW, new Object[0]).getFormattedText()),
+	PATROL("patrol", 2, new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_PATROL, new Object[0]).getFormattedText()),
+	SUPPLY("supply", 3, new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_SUPPLY, new Object[0]).getFormattedText());
 
 	private static final EnumAIMode[] AIMODE_LOOKUP = new EnumAIMode[values().length];
 	private final String name;

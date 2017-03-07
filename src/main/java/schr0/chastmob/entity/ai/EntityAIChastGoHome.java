@@ -31,7 +31,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().getAIMode() == EnumAIMode.FREEDOM)
+		if (this.getAIOwnerEntity().getAIState() == EnumAIState.FREEDOM)
 		{
 			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIHomePosition());
 

@@ -41,23 +41,26 @@ public class EntityAIChastStoreChest extends EntityAIChast
 			return false;
 		}
 
-		TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIHomePosition());
-
-		if (this.canStoringTileEntityChest(homeChest))
+		if (this.getAIOwnerEntity().getAIState() == EnumAIState.FREEDOM)
 		{
-			this.setStoring(TIME_LIMIT, homeChest);
+			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIHomePosition());
 
-			return true;
-		}
-		else
-		{
-			TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.distance);
-
-			if (this.canStoringTileEntityChest(nearOpenChest))
+			if (this.canStoringTileEntityChest(homeChest))
 			{
-				this.setStoring(TIME_LIMIT, nearOpenChest);
+				this.setStoring(TIME_LIMIT, homeChest);
 
 				return true;
+			}
+			else
+			{
+				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.distance);
+
+				if (this.canStoringTileEntityChest(nearOpenChest))
+				{
+					this.setStoring(TIME_LIMIT, nearOpenChest);
+
+					return true;
+				}
 			}
 		}
 

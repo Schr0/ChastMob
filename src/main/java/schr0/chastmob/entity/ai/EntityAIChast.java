@@ -16,6 +16,7 @@ import schr0.chastmob.item.ItemMapHomeChest;
 
 public abstract class EntityAIChast extends EntityAIBase
 {
+
 	private EntityChast theChast;
 
 	public EntityAIChast(EntityChast entityChast)
@@ -56,7 +57,7 @@ public abstract class EntityAIChast extends EntityAIBase
 	{
 		BlockPos blockPos = this.theChast.getPosition();
 
-		switch (this.theChast.getAIMode())
+		switch (this.theChast.getAIState())
 		{
 			case FREEDOM :
 
