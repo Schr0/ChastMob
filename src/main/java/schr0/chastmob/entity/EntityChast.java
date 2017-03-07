@@ -93,6 +93,7 @@ public class EntityChast extends EntityGolem
 	protected void initEntityAI()
 	{
 		super.initEntityAI();
+
 		double speed = 1.25D;
 		int distance = 5;
 
@@ -112,33 +113,27 @@ public class EntityChast extends EntityGolem
 		EntityAIBase aiWatchClosestEntityGolem = new EntityAIWatchClosest(this, EntityGolem.class, (float) distance);
 		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
 
-		// BASE
 		aiSwimming.setMutexBits(0);
 		this.aiChastPanic.setMutexBits(1);
 		this.aiChastSit.setMutexBits(1);
 		this.aiChastTrade.setMutexBits(1);
-		// FREEDOM (PATROL) || FOLLOW
 		aiChastStoreChest.setMutexBits(1);
 		aiChastCollectItem.setMutexBits(1);
 		aiChastGoHome.setMutexBits(1);
 		aiChastFollowOwner.setMutexBits(1);
-		// WONDER
 		aiChastWander.setMutexBits(1);
 		aiWatchClosestEntityPlayer.setMutexBits(2);
 		aiWatchClosestEntityGolem.setMutexBits(2);
 		aiLookIdle.setMutexBits(2);
 
-		// BASE
 		this.tasks.addTask(0, aiSwimming);
 		this.tasks.addTask(1, this.aiChastPanic);
 		this.tasks.addTask(2, this.aiChastSit);
 		this.tasks.addTask(3, this.aiChastTrade);
-		// FREEDOM (PATROL) || FOLLOW
 		this.tasks.addTask(4, aiChastStoreChest);
 		this.tasks.addTask(5, aiChastCollectItem);
 		this.tasks.addTask(6, aiChastGoHome);
 		this.tasks.addTask(6, aiChastFollowOwner);
-		// WONDER
 		this.tasks.addTask(7, aiChastWander);
 		this.tasks.addTask(8, aiWatchClosestEntityPlayer);
 		this.tasks.addTask(8, aiWatchClosestEntityGolem);

@@ -32,10 +32,7 @@ public class GuiChastInventory extends GuiContainer
 	protected void drawGuiContainerForegroundLayer(int xMouse, int yMouse)
 	{
 		this.fontRendererObj.drawString(this.theChast.getName(), 8, 6, 4210752);
-		this.fontRendererObj.drawString(this.thePlayer.inventory.getDisplayName().getUnformattedText(), 8, 134, 4210752);
-
-		String name = "FOLLOW";
-		this.fontRendererObj.drawString(name, 104, 39, 4210752);
+		this.fontRendererObj.drawString(this.thePlayer.inventory.getDisplayName().getUnformattedText(), 8, 130, 4210752);
 	}
 
 	@Override
@@ -45,12 +42,28 @@ public class GuiChastInventory extends GuiContainer
 
 		this.mc.getTextureManager().bindTexture(RES_CHAST_STATUS);
 
-		int oX = (this.width - this.xSize) / 2;
-		int oY = (this.height - this.ySize) / 2;
-		this.drawTexturedModalRect(oX, oY, 0, 0, this.xSize, this.ySize);
+		int originPosX = (this.width - this.xSize) / 2;
+		int originPosY = (this.height - this.ySize) / 2;
+		this.drawTexturedModalRect(originPosX, originPosY, 0, 0, this.xSize, this.ySize);
 
-		int gX = (oX + 51);
-		int gY = (oY + 60);
+		int health = (int) this.theChast.getHealth();
+		int healthMax = (int) this.theChast.getMaxHealth();
+		int healthPosY = 8;
+
+		if (health < (healthMax / 2))
+		{
+			healthPosY = 24;
+
+			if (health < (healthMax / 4))
+			{
+				healthPosY = 40;
+			}
+		}
+
+		this.drawTexturedModalRect((originPosX + 116), (originPosY + 21), 184, healthPosY, (40 - ((healthMax * 2) - (health * 2))), 10);
+
+		int gX = (originPosX + 64);
+		int gY = (originPosY + 60);
 		GuiInventory.drawEntityOnScreen(gX, gY, 25, (float) (gX - xMouse), (float) ((gY / 2) - yMouse), this.theChast);
 	}
 
