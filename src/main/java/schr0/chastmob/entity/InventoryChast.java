@@ -12,26 +12,26 @@ public class InventoryChast extends InventoryBasic
 
 	private static final int INVENTORY_SIZE = (3 * 9);
 
-	private EntityChast entityChast;
+	private EntityChast theChast;
 
 	public InventoryChast(EntityChast entityChast)
 	{
 		super(entityChast.getName(), true, INVENTORY_SIZE);
 
-		this.entityChast = entityChast;
+		this.theChast = entityChast;
 	}
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer player)
 	{
-		if (this.entityChast.isEntityAlive())
+		if (this.theChast.isEntityAlive())
 		{
-			if (this.entityChast.isStatePanic())
+			if (this.theChast.isStatePanic())
 			{
 				return false;
 			}
 
-			return (player.getDistanceSqToEntity(this.entityChast) <= 64.0D);
+			return (player.getDistanceSqToEntity(this.theChast) <= 64.0D);
 		}
 
 		return false;
@@ -41,16 +41,16 @@ public class InventoryChast extends InventoryBasic
 	public void openInventory(EntityPlayer player)
 	{
 		super.markDirty();
-		this.entityChast.setCoverOpen(true);
-		this.entityChast.setAITrading(player);
+		this.theChast.setAITrading(player);
+		// this.theChast.setCoverOpen(true);
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player)
 	{
 		super.markDirty();
-		this.entityChast.setCoverOpen(false);
-		this.entityChast.setAITrading(null);
+		this.theChast.setAITrading(null);
+		// this.theChast.setCoverOpen(false);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

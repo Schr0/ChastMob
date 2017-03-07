@@ -40,6 +40,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.ChastMob;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.ai.EntityAIChastCollectItem;
 import schr0.chastmob.entity.ai.EntityAIChastFollowOwner;
@@ -51,6 +52,7 @@ import schr0.chastmob.entity.ai.EntityAIChastTrade;
 import schr0.chastmob.entity.ai.EntityAIChastWander;
 import schr0.chastmob.entity.ai.EnumAIState;
 import schr0.chastmob.init.ChastMobEntitys;
+import schr0.chastmob.init.ChastMobGui;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
@@ -116,15 +118,15 @@ public class EntityChast extends EntityGolem
 		this.aiChastSit.setMutexBits(1);
 		this.aiChastTrade.setMutexBits(1);
 		// FREEDOM (PATROL) || FOLLOW
-		aiChastStoreChest.setMutexBits(2);
-		aiChastCollectItem.setMutexBits(2);
-		aiChastGoHome.setMutexBits(2);
-		aiChastFollowOwner.setMutexBits(2);
+		aiChastStoreChest.setMutexBits(1);
+		aiChastCollectItem.setMutexBits(1);
+		aiChastGoHome.setMutexBits(1);
+		aiChastFollowOwner.setMutexBits(1);
 		// WONDER
-		aiChastWander.setMutexBits(3);
-		aiWatchClosestEntityPlayer.setMutexBits(3);
-		aiWatchClosestEntityGolem.setMutexBits(3);
-		aiLookIdle.setMutexBits(3);
+		aiChastWander.setMutexBits(1);
+		aiWatchClosestEntityPlayer.setMutexBits(2);
+		aiWatchClosestEntityGolem.setMutexBits(2);
+		aiLookIdle.setMutexBits(2);
 
 		// BASE
 		this.tasks.addTask(0, aiSwimming);
@@ -440,7 +442,8 @@ public class EntityChast extends EntityGolem
 			{
 				if (isServerWorld)
 				{
-					player.displayGUIChest(this.getInventoryChast());
+					player.openGui(ChastMob.instance, ChastMobGui.ID_CHAST_INVENTORY, this.getEntityWorld(), this.getEntityId(), 0, 0);
+					// player.displayGUIChest(this.getInventoryChast());
 				}
 
 				return this.onSuccessProcessInteract(player, (SoundEvent) null);
