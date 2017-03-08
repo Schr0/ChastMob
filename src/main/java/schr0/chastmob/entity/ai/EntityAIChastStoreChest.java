@@ -190,9 +190,9 @@ public class EntityAIChastStoreChest extends EntityAIChast
 						{
 							rangeOrigin = range;
 
-							for (int slot = 0; slot < entityChast.getInventoryChast().getSizeInventory(); ++slot)
+							for (int slot = 0; slot < entityChast.getInventoryChastMain().getSizeInventory(); ++slot)
 							{
-								ItemStack stackInv = entityChast.getInventoryChast().getStackInSlot(slot);
+								ItemStack stackInv = entityChast.getInventoryChastMain().getStackInSlot(slot);
 
 								if (ChastMobHelper.canStoreInventory((IInventory) tileEntity, stackInv))
 								{

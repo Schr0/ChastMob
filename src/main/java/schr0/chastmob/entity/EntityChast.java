@@ -79,7 +79,8 @@ public class EntityChast extends EntityGolem
 	private EntityAIChastPanic aiChastPanic;
 	private EntityAIChastSit aiChastSit;
 	private EntityAIChastTrade aiChastTrade;
-	private InventoryChast inventoryChast;
+	private InventoryChastMain inventoryChastMain;
+	private InventoryChastEquipment inventoryChastEquipment;
 	private float lidAngle;
 	private float prevLidAngle;
 
@@ -167,7 +168,9 @@ public class EntityChast extends EntityGolem
 	{
 		super.writeEntityToNBT(compound);
 
-		compound.setTag(ChastMobNBTs.ENTITY_CHAST_INVENTORY, this.getInventoryChast().writeInventoryToNBT());
+		compound.setTag(ChastMobNBTs.ENTITY_CHAST_INVENTORY, this.getInventoryChastMain().writeInventoryToNBT());
+
+		compound.setTag(ChastMobNBTs.ENTITY_CHAST_EQUIPMENT, this.getInventoryChastEquipment().writeInventoryToNBT());
 
 		compound.setByte(ChastMobNBTs.ENTITY_CHAST_ARM_COLOR, (byte) this.getArmColor().getDyeDamage());
 
@@ -190,7 +193,9 @@ public class EntityChast extends EntityGolem
 	{
 		super.readEntityFromNBT(compound);
 
-		this.getInventoryChast().readInventoryFromNBT(compound.getTagList(ChastMobNBTs.ENTITY_CHAST_INVENTORY, 10));
+		this.getInventoryChastMain().readInventoryFromNBT(compound.getTagList(ChastMobNBTs.ENTITY_CHAST_INVENTORY, 10));
+
+		this.getInventoryChastEquipment().readInventoryFromNBT(compound.getTagList(ChastMobNBTs.ENTITY_CHAST_EQUIPMENT, 10));
 
 		this.setArmColor(EnumDyeColor.byDyeDamage(compound.getByte(ChastMobNBTs.ENTITY_CHAST_ARM_COLOR)));
 
@@ -240,7 +245,7 @@ public class EntityChast extends EntityGolem
 	{
 		super.setCustomNameTag(name);
 
-		this.getInventoryChast().setCustomName(name);
+		this.getInventoryChastMain().setCustomName(name);
 	}
 
 	@Override
@@ -318,7 +323,7 @@ public class EntityChast extends EntityGolem
 
 			Block.spawnAsEntity(world, this.getPosition(), new ItemStack(Blocks.CHEST));
 
-			InventoryHelper.dropInventoryItems(world, this, this.getInventoryChast());
+			InventoryHelper.dropInventoryItems(world, this, this.getInventoryChastMain());
 
 			for (EntityEquipmentSlot eqSlot : EntityEquipmentSlot.values())
 			{
@@ -637,33 +642,34 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public EnumHealthState getHealthState()
+	public void setAIPanicking(int panicTime)
 	{
-		EnumHealthState enumHealthState = EnumHealthState.FINE;
-		int health = (int) this.getHealth();
-		int healthMax = (int) this.getMaxHealth();
-
-		if (health < (healthMax / 2))
+		if (this.aiChastPanic != null)
 		{
-			enumHealthState = EnumHealthState.HURT;
+			this.aiChastPanic.setPanicking(panicTime);
 
-			if (health < (healthMax / 4))
+			if (0 < panicTime)
 			{
-				enumHealthState = EnumHealthState.DYING;
+				this.aiChastSit.setSitting(false);
+				this.aiChastTrade.setTrading(null);
 			}
 		}
-
-		return enumHealthState;
 	}
 
-	public InventoryChast getInventoryChast()
+	public void setAISitting(boolean isSitting)
 	{
-		if (this.inventoryChast == null)
+		if (this.aiChastSit != null)
 		{
-			this.inventoryChast = new InventoryChast(this);
+			this.aiChastSit.setSitting(isSitting);
 		}
+	}
 
-		return this.inventoryChast;
+	public void setAITrading(@Nullable EntityPlayer tradePlayer)
+	{
+		if (this.aiChastTrade != null)
+		{
+			this.aiChastTrade.setTrading(tradePlayer);
+		}
 	}
 
 	public boolean isOwnerEntity(EntityLivingBase owner)
@@ -744,34 +750,43 @@ public class EntityChast extends EntityGolem
 		this.setAIState(enumAIState);
 	}
 
-	public void setAIPanicking(int panicTime)
+	public EnumHealthState getHealthState()
 	{
-		if (this.aiChastPanic != null)
-		{
-			this.aiChastPanic.setPanicking(panicTime);
+		EnumHealthState enumHealthState = EnumHealthState.FINE;
+		int health = (int) this.getHealth();
+		int healthMax = (int) this.getMaxHealth();
 
-			if (0 < panicTime)
+		if (health < (healthMax / 2))
+		{
+			enumHealthState = EnumHealthState.HURT;
+
+			if (health < (healthMax / 4))
 			{
-				this.aiChastSit.setSitting(false);
-				this.aiChastTrade.setTrading(null);
+				enumHealthState = EnumHealthState.DYING;
 			}
 		}
+
+		return enumHealthState;
 	}
 
-	public void setAISitting(boolean isSitting)
+	public InventoryChastMain getInventoryChastMain()
 	{
-		if (this.aiChastSit != null)
+		if (this.inventoryChastMain == null)
 		{
-			this.aiChastSit.setSitting(isSitting);
+			this.inventoryChastMain = new InventoryChastMain(this);
 		}
+
+		return this.inventoryChastMain;
 	}
 
-	public void setAITrading(@Nullable EntityPlayer tradePlayer)
+	public InventoryChastEquipment getInventoryChastEquipment()
 	{
-		if (this.aiChastTrade != null)
+		if (this.inventoryChastEquipment == null)
 		{
-			this.aiChastTrade.setTrading(tradePlayer);
+			this.inventoryChastEquipment = new InventoryChastEquipment(this);
 		}
+
+		return this.inventoryChastEquipment;
 	}
 
 	private boolean onSuccessProcessInteract(EntityPlayer player, @Nullable SoundEvent soundEvent)

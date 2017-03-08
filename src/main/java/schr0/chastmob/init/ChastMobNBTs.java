@@ -9,6 +9,7 @@ public class ChastMobNBTs
 
 	private static final String ENTITY_CHAST = TAG + "entity.chast" + ".";
 	public static final String ENTITY_CHAST_INVENTORY = ENTITY_CHAST + "inventory";
+	public static final String ENTITY_CHAST_EQUIPMENT = ENTITY_CHAST + "equipment";
 	public static final String ENTITY_CHAST_ARM_COLOR = ENTITY_CHAST + "arm_color";
 	public static final String ENTITY_CHAST_OWNER_UUID = ENTITY_CHAST + "owner_uuid";
 	public static final String ENTITY_CHAST_AI_MODE = ENTITY_CHAST + "ai_mode";

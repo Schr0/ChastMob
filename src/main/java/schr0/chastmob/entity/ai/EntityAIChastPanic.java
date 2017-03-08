@@ -143,7 +143,7 @@ public class EntityAIChastPanic extends EntityAIChast
 
 	private void onPanicDropItem(EntityChast entityChast)
 	{
-		InventoryChast inventoryChast = entityChast.getInventoryChast();
+		InventoryChast inventoryChast = entityChast.getInventoryChastMain();
 
 		for (int slot = 0; slot < inventoryChast.getSizeInventory(); ++slot)
 		{

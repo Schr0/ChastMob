@@ -63,7 +63,7 @@ public class ItemCoreChast extends Item
 
 				if (ChastMobHelper.isNotEmptyItemStack(stackTileChest))
 				{
-					entityChast.getInventoryChast().setInventorySlotContents(slot, stackTileChest);
+					entityChast.getInventoryChastMain().setInventorySlotContents(slot, stackTileChest);
 				}
 
 				inventoryTileChest.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());

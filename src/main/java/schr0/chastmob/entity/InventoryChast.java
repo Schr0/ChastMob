@@ -7,14 +7,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import schr0.chastmob.ChastMobHelper;
 
-public class InventoryChast extends InventoryBasic
+public abstract class InventoryChast extends InventoryBasic
 {
 
 	private EntityChast theChast;
 
-	public InventoryChast(EntityChast entityChast)
+	public InventoryChast(EntityChast entityChast, int slotCount)
 	{
-		super(entityChast.getName(), true, (9 * 3));
+		super(entityChast.getName(), true, slotCount);
 
 		this.theChast = entityChast;
 	}

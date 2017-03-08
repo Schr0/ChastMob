@@ -18,15 +18,29 @@ public class ContainerChastInventory extends Container
 		int column;
 		int row;
 
-		entityChast.getInventoryChast().openInventory(entityPlayer);
+		entityChast.getInventoryChastEquipment().openInventory(entityPlayer);
+
+		for (column = 0; column < 3; ++column)
+		{
+			this.addSlotToContainer(new Slot(entityChast.getInventoryChastEquipment(), column, 8, (column * 18) + 18));
+		}
+
+		for (column = 0; column < 2; ++column)
+		{
+			this.addSlotToContainer(new Slot(entityChast.getInventoryChastEquipment(), (column + 3), 80, (column * 18) + 36));
+		}
+
+		entityChast.getInventoryChastMain().openInventory(entityPlayer);
 
 		for (column = 0; column < 3; ++column)
 		{
 			for (row = 0; row < 9; ++row)
 			{
-				this.addSlotToContainer(new Slot(entityChast.getInventoryChast(), (row + column * 9), (row * 18) + 8, (column * 18) + 74));
+				this.addSlotToContainer(new Slot(entityChast.getInventoryChastMain(), (row + column * 9), (row * 18) + 8, (column * 18) + 74));
 			}
 		}
+
+		entityPlayer.inventory.openInventory(entityPlayer);
 
 		for (column = 0; column < 3; ++column)
 		{
@@ -48,7 +62,7 @@ public class ContainerChastInventory extends Container
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn)
 	{
-		return this.theChast.getInventoryChast().isUseableByPlayer(playerIn);
+		return this.theChast.getInventoryChastMain().isUseableByPlayer(playerIn);
 	}
 
 	@Override
@@ -66,16 +80,16 @@ public class ContainerChastInventory extends Container
 
 		// mergeItemStack(移動するItemStack, 移動先の最小スロット番号, 移動先の最大スロット番号, 昇順or降順)
 
-		if (index < 27)
+		if (index < 32)
 		{
-			if (!this.mergeItemStack(dstItemStack, 27, this.inventorySlots.size(), true))
+			if (!this.mergeItemStack(dstItemStack, 32, this.inventorySlots.size(), true))
 			{
 				return null;
 			}
 		}
 		else
 		{
-			if (!this.mergeItemStack(dstItemStack, 0, 27, false))
+			if (!this.mergeItemStack(dstItemStack, 5, 32, false))
 			{
 				return null;
 			}
@@ -103,7 +117,7 @@ public class ContainerChastInventory extends Container
 	@Override
 	public void onContainerClosed(EntityPlayer playerIn)
 	{
-		this.theChast.getInventoryChast().closeInventory(playerIn);
+		this.theChast.getInventoryChastMain().closeInventory(playerIn);
 
 		super.onContainerClosed(playerIn);
 	}
