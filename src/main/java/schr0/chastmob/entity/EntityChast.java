@@ -637,6 +637,25 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
+	public EnumHealthState getHealthState()
+	{
+		EnumHealthState enumHealthState = EnumHealthState.FINE;
+		int health = (int) this.getHealth();
+		int healthMax = (int) this.getMaxHealth();
+
+		if (health < (healthMax / 2))
+		{
+			enumHealthState = EnumHealthState.HURT;
+
+			if (health < (healthMax / 4))
+			{
+				enumHealthState = EnumHealthState.DYING;
+			}
+		}
+
+		return enumHealthState;
+	}
+
 	public InventoryChast getInventoryChast()
 	{
 		if (this.inventoryChast == null)
@@ -701,6 +720,28 @@ public class EntityChast extends EntityGolem
 		ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(this, 0));
 
 		this.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
+	}
+
+	public void changeAIState()
+	{
+		EnumAIState enumAIState = this.getAIState();
+
+		switch (this.getAIState())
+		{
+			case FREEDOM :
+
+				enumAIState = EnumAIState.FOLLOW;
+
+				break;
+
+			case FOLLOW :
+
+				enumAIState = EnumAIState.FREEDOM;
+
+				break;
+		}
+
+		this.setAIState(enumAIState);
 	}
 
 	public void setAIPanicking(int panicTime)

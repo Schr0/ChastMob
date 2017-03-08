@@ -28,3 +28,4 @@ entity.schr0chastmob.chast.aimode.freedom=FREEDOM
 entity.schr0chastmob.chast.aimode.follow=FOLLOW
 entity.schr0chastmob.chast.aimode.patrol=PATROL
 entity.schr0chastmob.chast.aimode.supply=SUPPLY
+entity.schr0chastmob.chast.gui.button=Change AI

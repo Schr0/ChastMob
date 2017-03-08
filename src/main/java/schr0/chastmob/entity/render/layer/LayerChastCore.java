@@ -9,6 +9,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.EnumHealthState;
 import schr0.chastmob.entity.render.ModelChast;
 import schr0.chastmob.entity.render.RenderChast;
 
@@ -54,11 +55,11 @@ public class LayerChastCore implements LayerRenderer<EntityChast>
 		int health = (int) entityChast.getHealth();
 		int healthMax = (int) entityChast.getMaxHealth();
 
-		if (health < (healthMax / 2))
+		if (entityChast.getHealthState() == EnumHealthState.HURT)
 		{
 			enumDyeColor = EnumDyeColor.YELLOW;
 
-			if (health < (healthMax / 4))
+			if (entityChast.getHealthState() == EnumHealthState.DYING)
 			{
 				enumDyeColor = EnumDyeColor.RED;
 			}

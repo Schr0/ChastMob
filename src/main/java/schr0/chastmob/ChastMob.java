@@ -10,6 +10,7 @@ import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobEvent;
 import schr0.chastmob.init.ChastMobGui;
 import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.init.ChastMobPacket;
 import schr0.chastmob.init.ChastMobRecipe;
 import schr0.chastmob.proxy.ProxyServer;
 
@@ -69,9 +70,11 @@ public class ChastMob
 	{
 		(new ChastMobRecipe()).init();
 
-		(new ChastMobEvent()).init();
+		(new ChastMobPacket()).init();
 
 		(new ChastMobGui()).init();
+
+		(new ChastMobEvent()).init();
 
 		this.proxy.initEventProxy(event);
 	}

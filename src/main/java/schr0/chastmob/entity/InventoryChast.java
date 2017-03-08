@@ -10,13 +10,11 @@ import schr0.chastmob.ChastMobHelper;
 public class InventoryChast extends InventoryBasic
 {
 
-	private static final int INVENTORY_SIZE = (3 * 9);
-
 	private EntityChast theChast;
 
 	public InventoryChast(EntityChast entityChast)
 	{
-		super(entityChast.getName(), true, INVENTORY_SIZE);
+		super(entityChast.getName(), true, (9 * 3));
 
 		this.theChast = entityChast;
 	}
@@ -41,16 +39,16 @@ public class InventoryChast extends InventoryBasic
 	public void openInventory(EntityPlayer player)
 	{
 		super.markDirty();
+
 		this.theChast.setAITrading(player);
-		// this.theChast.setCoverOpen(true);
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player)
 	{
 		super.markDirty();
+
 		this.theChast.setAITrading(null);
-		// this.theChast.setCoverOpen(false);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

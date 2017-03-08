@@ -2,7 +2,6 @@ package schr0.chastmob.packet;
 
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
@@ -20,8 +19,7 @@ public class MessageHandlerParticleEntity implements IMessageHandler<MessagePart
 	@Override
 	public IMessage onMessage(MessageParticleEntity message, MessageContext ctx)
 	{
-		Minecraft mc = FMLClientHandler.instance().getClient();
-		World world = mc.theWorld;
+		World world = FMLClientHandler.instance().getClient().theWorld;
 		Entity entity = message.getEntity(world);
 
 		if (entity != null)
