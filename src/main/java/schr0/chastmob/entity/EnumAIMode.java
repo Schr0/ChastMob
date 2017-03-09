@@ -1,4 +1,4 @@
-package schr0.chastmob.entity.ai;
+package schr0.chastmob.entity;
 
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.text.TextComponentTranslation;

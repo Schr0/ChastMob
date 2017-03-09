@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.EnumAIState;
 
 public class EntityAIChastStoreChest extends EntityAIChast
 {

@@ -50,13 +50,15 @@ import schr0.chastmob.entity.ai.EntityAIChastSit;
 import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
 import schr0.chastmob.entity.ai.EntityAIChastTrade;
 import schr0.chastmob.entity.ai.EntityAIChastWander;
-import schr0.chastmob.entity.ai.EnumAIState;
+import schr0.chastmob.entity.inventory.InventoryChastEquipment;
+import schr0.chastmob.entity.inventory.InventoryChastMain;
 import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobGui;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 import schr0.chastmob.init.ChastMobPacket;
+import schr0.chastmob.item.ItemMapHomeChest;
 import schr0.chastmob.packet.MessageParticleEntity;
 
 public class EntityChast extends EntityGolem
@@ -241,14 +243,6 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Override
-	public void setCustomNameTag(String name)
-	{
-		super.setCustomNameTag(name);
-
-		this.getInventoryChastMain().setCustomName(name);
-	}
-
-	@Override
 	@Nullable
 	protected SoundEvent getDeathSound()
 	{
@@ -285,6 +279,14 @@ public class EntityChast extends EntityGolem
 	public boolean canBeLeashedTo(EntityPlayer player)
 	{
 		return (this.isOwnerTame() && this.isOwnerEntity(player));
+	}
+
+	@Override
+	public void setCustomNameTag(String name)
+	{
+		super.setCustomNameTag(name);
+
+		this.getInventoryChastMain().setCustomName(name);
 	}
 
 	@Override
@@ -325,15 +327,10 @@ public class EntityChast extends EntityGolem
 
 			InventoryHelper.dropInventoryItems(world, this, this.getInventoryChastMain());
 
+			InventoryHelper.dropInventoryItems(world, this, this.getInventoryChastEquipment());
+
 			for (EntityEquipmentSlot eqSlot : EntityEquipmentSlot.values())
 			{
-				ItemStack stackEq = this.getItemStackFromSlot(eqSlot);
-
-				if (ChastMobHelper.isNotEmptyItemStack(stackEq))
-				{
-					Block.spawnAsEntity(world, this.getPosition(), stackEq);
-				}
-
 				this.setItemStackToSlot(eqSlot, ChastMobHelper.getEmptyItemStack());
 			}
 		}
@@ -357,8 +354,6 @@ public class EntityChast extends EntityGolem
 			}
 
 			boolean isServerWorld = !this.getEntityWorld().isRemote;
-			EntityEquipmentSlot eqSlotMainhand = EntityEquipmentSlot.MAINHAND;
-			ItemStack stackMainhand = this.getItemStackFromSlot(eqSlotMainhand);
 
 			for (Entity passenger : this.getPassengers())
 			{
@@ -395,26 +390,6 @@ public class EntityChast extends EntityGolem
 					}
 				}
 
-				if (stack.getItem().equals(ChastMobItems.MAP_HOME_CHEST))
-				{
-					if (isServerWorld)
-					{
-						this.setAISitting(false);
-						this.setAIState(EnumAIState.FREEDOM);
-
-						if (ChastMobHelper.isNotEmptyItemStack(stackMainhand))
-						{
-							Block.spawnAsEntity(this.getEntityWorld(), this.getPosition(), stackMainhand);
-						}
-
-						this.setItemStackToSlot(eqSlotMainhand, stack);
-
-						player.setItemStackToSlot(eqSlotMainhand, ChastMobHelper.getEmptyItemStack());
-					}
-
-					return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
-				}
-
 				if (stack.interactWithEntity(player, this, hand))
 				{
 					return this.onSuccessProcessInteract(player, (SoundEvent) null);
@@ -426,14 +401,6 @@ public class EntityChast extends EntityGolem
 				if (isServerWorld)
 				{
 					this.setAISitting(!this.isStateSit());
-					this.setAIState(EnumAIState.FOLLOW);
-
-					if (ChastMobHelper.isNotEmptyItemStack(stackMainhand))
-					{
-						Block.spawnAsEntity(this.getEntityWorld(), this.getPosition(), stackMainhand);
-					}
-
-					this.setItemStackToSlot(eqSlotMainhand, ChastMobHelper.getEmptyItemStack());
 				}
 
 				return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
@@ -443,13 +410,11 @@ public class EntityChast extends EntityGolem
 				if (isServerWorld)
 				{
 					player.openGui(ChastMob.instance, ChastMobGui.ID_CHAST_INVENTORY, this.getEntityWorld(), this.getEntityId(), 0, 0);
-					// player.displayGUIChest(this.getInventoryChast());
 				}
 
 				return this.onSuccessProcessInteract(player, (SoundEvent) null);
 			}
 		}
-		// TODO VANILLA FIX
 		else
 		{
 			this.onSpawnByPlayer(player);
@@ -495,7 +460,48 @@ public class EntityChast extends EntityGolem
 	{
 		super.onUpdate();
 
-		this.onUpdateCoverOpen();
+		boolean isCoverOpen = this.isCoverOpen();
+		this.prevLidAngle = this.lidAngle;
+
+		if (isCoverOpen && (this.lidAngle == 0.0F))
+		{
+			this.setCoverOpen(true);
+
+			this.playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, this.rand.nextFloat() * 0.1F + 0.9F);
+		}
+
+		if ((!isCoverOpen && (0.0F < this.lidAngle)) || (isCoverOpen && (this.lidAngle < 1.0F)))
+		{
+			float angel1 = 0.1F;
+			float angel2 = this.lidAngle;
+			float angel3 = 0.5F;
+
+			if (isCoverOpen)
+			{
+				this.lidAngle += angel1;
+			}
+			else
+			{
+				this.lidAngle -= angel1;
+			}
+
+			if (1.0F < this.lidAngle)
+			{
+				this.lidAngle = 1.0F;
+			}
+
+			if ((this.lidAngle < angel3) && (angel3 <= angel2))
+			{
+				this.setCoverOpen(false);
+
+				this.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 0.5F, this.rand.nextFloat() * 0.1F + 0.9F);
+			}
+
+			if (this.lidAngle < 0.0F)
+			{
+				this.lidAngle = 0.0F;
+			}
+		}
 
 		if (this.ticksExisted < (20 * 5))
 		{
@@ -508,13 +514,7 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	// TODO /* ======================================== MOD START =====================================*/
-
-	@SideOnly(Side.CLIENT)
-	public float getAngleCoverX(float partialTickTime)
-	{
-		return ((this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * partialTickTime) * 0.5F * (float) Math.PI);
-	}
+	// TODO /* ======================================== DATA_MANAGER START =====================================*/
 
 	public EnumDyeColor getArmColor()
 	{
@@ -642,34 +642,12 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public void setAIPanicking(int panicTime)
-	{
-		if (this.aiChastPanic != null)
-		{
-			this.aiChastPanic.setPanicking(panicTime);
+	// TODO /* ======================================== MOD START =====================================*/
 
-			if (0 < panicTime)
-			{
-				this.aiChastSit.setSitting(false);
-				this.aiChastTrade.setTrading(null);
-			}
-		}
-	}
-
-	public void setAISitting(boolean isSitting)
+	@SideOnly(Side.CLIENT)
+	public float getAngleCoverX(float partialTickTime)
 	{
-		if (this.aiChastSit != null)
-		{
-			this.aiChastSit.setSitting(isSitting);
-		}
-	}
-
-	public void setAITrading(@Nullable EntityPlayer tradePlayer)
-	{
-		if (this.aiChastTrade != null)
-		{
-			this.aiChastTrade.setTrading(tradePlayer);
-		}
+		return ((this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * partialTickTime) * 0.5F * (float) Math.PI);
 	}
 
 	public boolean isOwnerEntity(EntityLivingBase owner)
@@ -704,6 +682,69 @@ public class EntityChast extends EntityGolem
 		{
 			return null;
 		}
+	}
+
+	public EnumHealthState getHealthState()
+	{
+		int health = (int) this.getHealth();
+		int healthMax = (int) this.getMaxHealth();
+		EnumHealthState enumHealthState = EnumHealthState.FINE;
+
+		if (health < (healthMax / 2))
+		{
+			enumHealthState = EnumHealthState.HURT;
+
+			if (health < (healthMax / 4))
+			{
+				enumHealthState = EnumHealthState.DYING;
+			}
+		}
+
+		return enumHealthState;
+	}
+
+	public EnumAIMode getAIMode()
+	{
+		ItemStack specialItem = this.getInventoryChastEquipment().getSpecialItem();
+
+		if (this.getAIState() == EnumAIState.FREEDOM)
+		{
+			if (ChastMobHelper.isNotEmptyItemStack(specialItem) && (specialItem.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
+			{
+				ItemMapHomeChest itemMapHomeChest = (ItemMapHomeChest) specialItem.getItem();
+
+				if (itemMapHomeChest.hasHomeChest(specialItem))
+				{
+					return EnumAIMode.PATROL;
+				}
+			}
+
+			return EnumAIMode.FREEDOM;
+		}
+		else
+		{
+			return EnumAIMode.FOLLOW;
+		}
+	}
+
+	public InventoryChastMain getInventoryChastMain()
+	{
+		if (this.inventoryChastMain == null)
+		{
+			this.inventoryChastMain = new InventoryChastMain(this);
+		}
+
+		return this.inventoryChastMain;
+	}
+
+	public InventoryChastEquipment getInventoryChastEquipment()
+	{
+		if (this.inventoryChastEquipment == null)
+		{
+			this.inventoryChastEquipment = new InventoryChastEquipment(this);
+		}
+
+		return this.inventoryChastEquipment;
 	}
 
 	public void onSpawnByPlayer(EntityPlayer player)
@@ -750,43 +791,34 @@ public class EntityChast extends EntityGolem
 		this.setAIState(enumAIState);
 	}
 
-	public EnumHealthState getHealthState()
+	public void setAIPanicking(int panicTime)
 	{
-		EnumHealthState enumHealthState = EnumHealthState.FINE;
-		int health = (int) this.getHealth();
-		int healthMax = (int) this.getMaxHealth();
-
-		if (health < (healthMax / 2))
+		if (this.aiChastPanic != null)
 		{
-			enumHealthState = EnumHealthState.HURT;
+			this.aiChastPanic.setPanicking(panicTime);
 
-			if (health < (healthMax / 4))
+			if (0 < panicTime)
 			{
-				enumHealthState = EnumHealthState.DYING;
+				this.aiChastSit.setSitting(false);
+				this.aiChastTrade.setTrading(null);
 			}
 		}
-
-		return enumHealthState;
 	}
 
-	public InventoryChastMain getInventoryChastMain()
+	public void setAISitting(boolean isSitting)
 	{
-		if (this.inventoryChastMain == null)
+		if (this.aiChastSit != null)
 		{
-			this.inventoryChastMain = new InventoryChastMain(this);
+			this.aiChastSit.setSitting(isSitting);
 		}
-
-		return this.inventoryChastMain;
 	}
 
-	public InventoryChastEquipment getInventoryChastEquipment()
+	public void setAITrading(@Nullable EntityPlayer tradePlayer)
 	{
-		if (this.inventoryChastEquipment == null)
+		if (this.aiChastTrade != null)
 		{
-			this.inventoryChastEquipment = new InventoryChastEquipment(this);
+			this.aiChastTrade.setTrading(tradePlayer);
 		}
-
-		return this.inventoryChastEquipment;
 	}
 
 	private boolean onSuccessProcessInteract(EntityPlayer player, @Nullable SoundEvent soundEvent)
@@ -799,52 +831,6 @@ public class EntityChast extends EntityGolem
 		}
 
 		return true;
-	}
-
-	private void onUpdateCoverOpen()
-	{
-		boolean isCoverOpen = this.isCoverOpen();
-		this.prevLidAngle = this.lidAngle;
-
-		if (isCoverOpen && (this.lidAngle == 0.0F))
-		{
-			this.setCoverOpen(true);
-
-			this.playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, this.rand.nextFloat() * 0.1F + 0.9F);
-		}
-
-		if ((!isCoverOpen && (0.0F < this.lidAngle)) || (isCoverOpen && (this.lidAngle < 1.0F)))
-		{
-			float angel1 = 0.1F;
-			float angel2 = this.lidAngle;
-			float angel3 = 0.5F;
-
-			if (isCoverOpen)
-			{
-				this.lidAngle += angel1;
-			}
-			else
-			{
-				this.lidAngle -= angel1;
-			}
-
-			if (1.0F < this.lidAngle)
-			{
-				this.lidAngle = 1.0F;
-			}
-
-			if ((this.lidAngle < angel3) && (angel3 <= angel2))
-			{
-				this.setCoverOpen(false);
-
-				this.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 0.5F, this.rand.nextFloat() * 0.1F + 0.9F);
-			}
-
-			if (this.lidAngle < 0.0F)
-			{
-				this.lidAngle = 0.0F;
-			}
-		}
 	}
 
 }

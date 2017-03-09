@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.EnumAIState;
 
 public class EntityAIChastFollowOwner extends EntityAIChast
 {

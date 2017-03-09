@@ -43,7 +43,19 @@ public class RenderChast extends RenderLiving<EntityChast>
 					EntityRenderer.func_189692_a(this.getFontRendererFromRenderManager(), this.getModeLabel(entity), (float) x, (float) y + (entity.height + 0.25F - (isSneaking ? 0.125F : 0.0F)), (float) z, 0, this.renderManager.playerViewY, this.renderManager.playerViewX, (this.renderManager.options.thirdPersonView == 2), isSneaking);
 				}
 		//*/
+
 		super.doRender(entity, x, y, z, entityYaw, partialTicks);
+	}
+
+	@Override
+	protected boolean canRenderName(EntityChast entity)
+	{
+		if (entity.isStateTrade())
+		{
+			return false;
+		}
+
+		return super.canRenderName(entity);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -110,4 +122,5 @@ public class RenderChast extends RenderLiving<EntityChast>
 			return label;
 		}
 	//*/
+
 }

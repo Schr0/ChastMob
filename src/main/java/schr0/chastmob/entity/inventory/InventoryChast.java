@@ -1,4 +1,4 @@
-package schr0.chastmob.entity;
+package schr0.chastmob.entity.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryBasic;
@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.entity.EntityChast;
 
 public abstract class InventoryChast extends InventoryBasic
 {
@@ -52,6 +53,11 @@ public abstract class InventoryChast extends InventoryBasic
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
+
+	public EntityChast getOwnerEntity()
+	{
+		return this.theChast;
+	}
 
 	public void readInventoryFromNBT(NBTTagList nbtList)
 	{

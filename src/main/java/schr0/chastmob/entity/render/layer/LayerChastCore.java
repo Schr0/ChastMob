@@ -9,7 +9,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.EnumHealthState;
 import schr0.chastmob.entity.render.ModelChast;
 import schr0.chastmob.entity.render.RenderChast;
 
@@ -51,18 +50,24 @@ public class LayerChastCore implements LayerRenderer<EntityChast>
 
 	private float[] getCoreRgb(EntityChast entityChast)
 	{
-		EnumDyeColor enumDyeColor = EnumDyeColor.GREEN;
-		int health = (int) entityChast.getHealth();
-		int healthMax = (int) entityChast.getMaxHealth();
+		EnumDyeColor enumDyeColor;
 
-		if (entityChast.getHealthState() == EnumHealthState.HURT)
+		switch (entityChast.getHealthState())
 		{
-			enumDyeColor = EnumDyeColor.YELLOW;
+			case HURT :
 
-			if (entityChast.getHealthState() == EnumHealthState.DYING)
-			{
+				enumDyeColor = EnumDyeColor.YELLOW;
+				break;
+
+			case DYING :
+
 				enumDyeColor = EnumDyeColor.RED;
-			}
+				break;
+
+			default :
+
+				enumDyeColor = EnumDyeColor.GREEN;
+				break;
 		}
 
 		return EntitySheep.getDyeRgb(enumDyeColor);

@@ -16,6 +16,5 @@ public class ChastMobLang
 	public static final String ENTITY_CHAST_AIMODE_FOLLOW = "entity.schr0chastmob.chast.aimode.follow";
 	public static final String ENTITY_CHAST_AIMODE_PATROL = "entity.schr0chastmob.chast.aimode.patrol";
 	public static final String ENTITY_CHAST_AIMODE_SUPPLY = "entity.schr0chastmob.chast.aimode.supply";
-	public static final String ENTITY_CHAST_GUI_BUTTON = "entity.schr0chastmob.chast.gui.button";
 
 }

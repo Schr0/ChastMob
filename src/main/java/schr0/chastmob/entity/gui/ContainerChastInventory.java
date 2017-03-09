@@ -1,11 +1,15 @@
 package schr0.chastmob.entity.gui;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.item.ItemMapHomeChest;
 
 public class ContainerChastInventory extends Container
 {
@@ -17,17 +21,42 @@ public class ContainerChastInventory extends Container
 	{
 		int column;
 		int row;
+		int index;
 
 		entityChast.getInventoryChastEquipment().openInventory(entityPlayer);
 
-		for (column = 0; column < 3; ++column)
+		for (column = 0; column < 4; ++column)
 		{
-			this.addSlotToContainer(new Slot(entityChast.getInventoryChastEquipment(), column, 8, (column * 18) + 18));
-		}
+			index = column;
 
-		for (column = 0; column < 2; ++column)
-		{
-			this.addSlotToContainer(new Slot(entityChast.getInventoryChastEquipment(), (column + 3), 80, (column * 18) + 36));
+			if (index == 3)
+			{
+				this.addSlotToContainer(new Slot(entityChast.getInventoryChastEquipment(), index, 149, 46)
+				{
+
+					@Override
+					public boolean isItemValid(@Nullable ItemStack stack)
+					{
+						if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
+						{
+							ItemMapHomeChest itemMapHomeChest = (ItemMapHomeChest) stack.getItem();
+
+							if (itemMapHomeChest.hasHomeChest(stack))
+							{
+								return true;
+							}
+						}
+
+						return false;
+					}
+
+				});
+
+			}
+			else
+			{
+				this.addSlotToContainer(new Slot(entityChast.getInventoryChastEquipment(), index, 8, (column * 18) + 18));
+			}
 		}
 
 		entityChast.getInventoryChastMain().openInventory(entityPlayer);
@@ -36,7 +65,9 @@ public class ContainerChastInventory extends Container
 		{
 			for (row = 0; row < 9; ++row)
 			{
-				this.addSlotToContainer(new Slot(entityChast.getInventoryChastMain(), (row + column * 9), (row * 18) + 8, (column * 18) + 74));
+				index = (row + column * 9);
+
+				this.addSlotToContainer(new Slot(entityChast.getInventoryChastMain(), index, (row * 18) + 8, (column * 18) + 74));
 			}
 		}
 
@@ -46,13 +77,17 @@ public class ContainerChastInventory extends Container
 		{
 			for (row = 0; row < 9; ++row)
 			{
-				this.addSlotToContainer(new Slot(entityPlayer.inventory, (row + column * 9 + 9), (row * 18) + 8, (column * 18) + 140));
+				index = (row + column * 9 + 9);
+
+				this.addSlotToContainer(new Slot(entityPlayer.inventory, index, (row * 18) + 8, (column * 18) + 140));
 			}
 		}
 
 		for (row = 0; row < 9; ++row)
 		{
-			this.addSlotToContainer(new Slot(entityPlayer.inventory, row, (row * 18) + 8, 198));
+			index = row;
+
+			this.addSlotToContainer(new Slot(entityPlayer.inventory, index, (row * 18) + 8, 198));
 		}
 
 		this.theChast = entityChast;
@@ -80,16 +115,16 @@ public class ContainerChastInventory extends Container
 
 		// mergeItemStack(移動するItemStack, 移動先の最小スロット番号, 移動先の最大スロット番号, 昇順or降順)
 
-		if (index < 32)
+		if (index < 31)
 		{
-			if (!this.mergeItemStack(dstItemStack, 32, this.inventorySlots.size(), true))
+			if (!this.mergeItemStack(dstItemStack, 31, this.inventorySlots.size(), true))
 			{
 				return null;
 			}
 		}
 		else
 		{
-			if (!this.mergeItemStack(dstItemStack, 5, 32, false))
+			if (!this.mergeItemStack(dstItemStack, 4, 31, false))
 			{
 				return null;
 			}

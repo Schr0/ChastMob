@@ -11,7 +11,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.InventoryChast;
+import schr0.chastmob.entity.inventory.InventoryChast;
+import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.item.ItemMapHomeChest;
 
 public abstract class EntityAIChast extends EntityAIBase
@@ -57,22 +58,21 @@ public abstract class EntityAIChast extends EntityAIBase
 	{
 		BlockPos blockPos = this.theChast.getPosition();
 
-		switch (this.theChast.getAIState())
+		switch (this.theChast.getAIMode())
 		{
-			case FREEDOM :
+			case PATROL :
 
-				ItemStack stackMainhand = this.theChast.getHeldItemMainhand();
+				ItemStack specialItem = this.theChast.getInventoryChastEquipment().getSpecialItem();
 
-				if (ChastMobHelper.isNotEmptyItemStack(stackMainhand) && (stackMainhand.getItem() instanceof ItemMapHomeChest))
+				if (ChastMobHelper.isNotEmptyItemStack(specialItem) && (specialItem.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
 				{
-					BlockPos homeChestPosition = ((ItemMapHomeChest) stackMainhand.getItem()).getHomeChestPosition(stackMainhand);
+					BlockPos homeChestPosition = ((ItemMapHomeChest) specialItem.getItem()).getHomeChestPosition(specialItem);
 
 					if (homeChestPosition != null)
 					{
 						blockPos = homeChestPosition;
 					}
 				}
-
 				break;
 
 			case FOLLOW :
@@ -83,9 +83,10 @@ public abstract class EntityAIChast extends EntityAIBase
 				{
 					blockPos = ownerEntity.getPosition();
 				}
-
 				break;
 
+			default :
+				break;
 		}
 
 		return blockPos;

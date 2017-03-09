@@ -1,4 +1,6 @@
-package schr0.chastmob.entity;
+package schr0.chastmob.entity.inventory;
+
+import schr0.chastmob.entity.EntityChast;
 
 public class InventoryChastMain extends InventoryChast
 {
