@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.EnumAIState;
+import schr0.chastmob.entity.EnumAIMode;
 
 public class EntityAIChastFollowOwner extends EntityAIChast
 {
@@ -29,22 +29,24 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().getAIState() == EnumAIState.FOLLOW)
+		if ((this.getOwnerAIMode() == EnumAIMode.FREEDOM) || (this.getOwnerAIMode() == EnumAIMode.PATROL))
 		{
-			EntityLivingBase entityOwner = this.getAIOwnerEntity().getOwnerEntity();
+			return false;
+		}
 
-			if (this.canFollowEntityLivingBase(entityOwner))
+		EntityLivingBase entityOwner = this.getOwnerEntity().getOwnerEntity();
+
+		if (this.canFollowEntityLivingBase(entityOwner))
+		{
+			if (this.getOwnerEntity().getDistanceSqToEntity(entityOwner) < this.distance)
 			{
-				if (this.getAIOwnerEntity().getDistanceSqToEntity(entityOwner) < this.distance)
-				{
-					return false;
-				}
-				else
-				{
-					this.setFollowing(TIME_LIMIT, entityOwner);
+				return false;
+			}
+			else
+			{
+				this.setFollowing(TIME_LIMIT, entityOwner);
 
-					return true;
-				}
+				return true;
 			}
 		}
 
@@ -75,9 +77,9 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		--this.timeCounter;
 
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, this.getAIOwnerEntity().getHorizontalFaceSpeed(), this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, this.getOwnerEntity().getHorizontalFaceSpeed(), this.getOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.distance)
+		if (this.getOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.distance)
 		{
 			this.setFollowing(0, null);
 		}
@@ -89,7 +91,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 			}
 			else
 			{
-				this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.speed);
+				this.getOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.speed);
 			}
 		}
 	}

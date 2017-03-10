@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.EnumAIState;
+import schr0.chastmob.entity.EnumAIMode;
 
 public class EntityAIChastStoreChest extends EntityAIChast
 {
@@ -37,14 +37,14 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), ChastMobHelper.getEmptyItemStack()))
+		if ((this.getOwnerAIMode() == EnumAIMode.FOLLOW) || (this.getOwnerAIMode() == EnumAIMode.SUPPLY))
 		{
 			return false;
 		}
 
-		if (this.getAIOwnerEntity().getAIState() == EnumAIState.FREEDOM)
+		if (!ChastMobHelper.canStoreInventory(this.getOwnerInventoryMain(), ChastMobHelper.getEmptyItemStack()))
 		{
-			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIHomePosition());
+			TileEntityChest homeChest = (TileEntityChest) this.getOwnerWorld().getTileEntity(this.getOwnerHomePosition());
 
 			if (this.canStoringTileEntityChest(homeChest))
 			{
@@ -54,7 +54,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 			}
 			else
 			{
-				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.distance);
+				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getOwnerEntity(), this.distance);
 
 				if (this.canStoringTileEntityChest(nearOpenChest))
 				{
@@ -84,7 +84,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getAIOwnerEntity().setCoverOpen(false);
+		this.getOwnerEntity().setCoverOpen(false);
 	}
 
 	@Override
@@ -92,8 +92,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getAIOwnerEntity().setCoverOpen(false);
-
+		this.getOwnerEntity().setCoverOpen(false);
 		this.setStoring(0, null);
 	}
 
@@ -104,23 +103,23 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		BlockPos targetBlockPos = this.targetChest.getPos();
 
-		this.getAIOwnerEntity().getLookHelper().setLookPosition(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getOwnerEntity().getLookHelper().setLookPosition(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 10.0F, this.getOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getAIOwnerEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
+		if (this.getOwnerEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
 		{
-			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.distance);
+			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getOwnerEntity(), this.distance);
 
 			if ((nearChest != null) && nearChest.equals(this.targetChest))
 			{
-				for (int slot = 0; slot < this.getAIOwnerInventory().getSizeInventory(); ++slot)
+				for (int slot = 0; slot < this.getOwnerInventoryMain().getSizeInventory(); ++slot)
 				{
-					ItemStack stackInv = this.getAIOwnerInventory().getStackInSlot(slot);
+					ItemStack stackInv = this.getOwnerInventoryMain().getStackInSlot(slot);
 
 					if (ChastMobHelper.isNotEmptyItemStack(stackInv))
 					{
-						this.getAIOwnerInventory().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) nearChest, stackInv, EnumFacing.UP));
+						this.getOwnerInventoryMain().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) nearChest, stackInv, EnumFacing.UP));
 
-						this.getAIOwnerEntity().setCoverOpen(true);
+						this.getOwnerEntity().setCoverOpen(true);
 					}
 				}
 
@@ -150,7 +149,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		if (tileEntityChest != null)
 		{
-			return ChastMobHelper.canBlockBeSeen(this.getAIOwnerEntity(), tileEntityChest.getPos());
+			return ChastMobHelper.canBlockBeSeen(this.getOwnerEntity(), tileEntityChest.getPos());
 		}
 
 		return false;

@@ -29,22 +29,23 @@ public class EntityAIChastTrade extends EntityAIChast
 	public void startExecuting()
 	{
 		super.startExecuting();
-		this.getAIOwnerEntity().setStateTrade(true);
+
+		this.getOwnerEntity().setStateTrade(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
 		super.resetTask();
-		this.getAIOwnerEntity().setStateTrade(false);
 
+		this.getOwnerEntity().setStateTrade(false);
 		this.setTrading(null);
 	}
 
 	@Override
 	public void updateTask()
 	{
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.tradePlayer, this.getAIOwnerEntity().getHorizontalFaceSpeed(), this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getOwnerEntity().getLookHelper().setLookPositionWithEntity(this.tradePlayer, this.getOwnerEntity().getHorizontalFaceSpeed(), this.getOwnerEntity().getVerticalFaceSpeed());
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

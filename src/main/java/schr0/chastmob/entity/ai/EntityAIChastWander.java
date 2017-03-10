@@ -29,7 +29,7 @@ public class EntityAIChastWander extends EntityAIChast
 	{
 		if (this.isWandering())
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getAIOwnerEntity(), this.distance, this.distance);
+			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getOwnerEntity(), this.distance, this.distance);
 
 			if (vec3d == null)
 			{
@@ -51,7 +51,7 @@ public class EntityAIChastWander extends EntityAIChast
 	@Override
 	public boolean continueExecuting()
 	{
-		return !this.getAIOwnerEntity().getNavigator().noPath();
+		return !this.getOwnerEntity().getNavigator().noPath();
 	}
 
 	@Override
@@ -59,14 +59,14 @@ public class EntityAIChastWander extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
+		this.getOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
 	public boolean isWandering()
 	{
-		return (this.getAIOwnerEntity().getRNG().nextInt(CHANCE_WONDER) == 0);
+		return (this.getOwnerEntity().getRNG().nextInt(CHANCE_WONDER) == 0);
 	}
 
 }

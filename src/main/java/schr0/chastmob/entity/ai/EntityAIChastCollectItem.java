@@ -37,7 +37,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		{
 			if (this.canCollectEntityItem(entityItem))
 			{
-				float range = (float) this.getAIOwnerEntity().getDistanceSqToEntity(entityItem);
+				float range = (float) this.getOwnerEntity().getDistanceSqToEntity(entityItem);
 
 				if (range < rangeOrigin)
 				{
@@ -67,7 +67,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getAIOwnerEntity().setCoverOpen(false);
+		this.getOwnerEntity().setCoverOpen(false);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getAIOwnerEntity().setCoverOpen(false);
+		this.getOwnerEntity().setCoverOpen(false);
 		this.setCollecting(0, null);
 	}
 
@@ -84,17 +84,17 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		--this.timeCounter;
 
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, this.getAIOwnerEntity().getHorizontalFaceSpeed(), this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, this.getOwnerEntity().getHorizontalFaceSpeed(), this.getOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
+		if (this.getOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
 		{
 			for (EntityItem entityItem : this.getAroundEntityItem())
 			{
 				if (entityItem.equals(this.targetEntityItem) && this.canCollectEntityItem(entityItem))
 				{
-					TileEntityHopper.putDropInInventoryAllSlots(this.getAIOwnerInventory(), entityItem);
+					TileEntityHopper.putDropInInventoryAllSlots(this.getOwnerInventoryMain(), entityItem);
 
-					this.getAIOwnerEntity().setCoverOpen(true);
+					this.getOwnerEntity().setCoverOpen(true);
 
 					this.setCollecting(0, null);
 
@@ -104,7 +104,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		}
 		else
 		{
-			this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.speed);
+			this.getOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.speed);
 		}
 	}
 
@@ -123,12 +123,12 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private List<EntityItem> getAroundEntityItem()
 	{
-		return this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIHomePosition()).expandXyz(this.distance));
+		return this.getOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getOwnerHomePosition()).expandXyz(this.distance));
 	}
 
 	private boolean canCollectEntityItem(EntityItem entityItem)
 	{
-		if (this.getAIOwnerEntity().getEntitySenses().canSee(entityItem))
+		if (this.getOwnerEntity().getEntitySenses().canSee(entityItem))
 		{
 			return (entityItem.isEntityAlive() && !entityItem.cannotPickup());
 		}

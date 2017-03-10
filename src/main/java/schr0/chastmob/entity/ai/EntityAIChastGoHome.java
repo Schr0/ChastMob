@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.EnumAIState;
+import schr0.chastmob.entity.EnumAIMode;
 
 public class EntityAIChastGoHome extends EntityAIChast
 {
@@ -32,16 +32,18 @@ public class EntityAIChastGoHome extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().getAIState() == EnumAIState.FREEDOM)
+		if (this.getOwnerAIMode() != EnumAIMode.PATROL)
 		{
-			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIHomePosition());
+			return false;
+		}
 
-			if (this.canGoingTileEntityChest(homeChest))
-			{
-				this.setGoing(TIME_LIMIT, homeChest);
+		TileEntityChest homeChest = (TileEntityChest) this.getOwnerWorld().getTileEntity(this.getOwnerHomePosition());
 
-				return true;
-			}
+		if (this.canGoingTileEntityChest(homeChest))
+		{
+			this.setGoing(TIME_LIMIT, homeChest);
+
+			return true;
 		}
 
 		return false;
@@ -63,7 +65,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getAIOwnerEntity().setCoverOpen(false);
+		this.getOwnerEntity().setCoverOpen(false);
 	}
 
 	@Override
@@ -71,8 +73,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getAIOwnerEntity().setCoverOpen(false);
-
+		this.getOwnerEntity().setCoverOpen(false);
 		this.setGoing(0, null);
 	}
 
@@ -83,9 +84,9 @@ public class EntityAIChastGoHome extends EntityAIChast
 
 		BlockPos targetBlockPos = this.targetChest.getPos();
 
-		this.getAIOwnerEntity().getLookHelper().setLookPosition(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getOwnerEntity().getLookHelper().setLookPosition(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 10.0F, this.getOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getAIOwnerEntity().getDistanceSqToCenter(targetBlockPos) < (this.distance * this.distance))
+		if (this.getOwnerEntity().getDistanceSqToCenter(targetBlockPos) < (this.distance * this.distance))
 		{
 			this.setGoing(0, null);
 		}
@@ -97,7 +98,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 			}
 			else
 			{
-				this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.speed);
+				this.getOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.speed);
 			}
 		}
 	}
@@ -119,14 +120,14 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		if (tileEntityChest != null)
 		{
-			TileEntityChest nearChest = this.getNearChestTileEntity(this.getAIOwnerEntity(), this.distance);
+			TileEntityChest nearChest = this.getNearChestTileEntity(this.getOwnerEntity(), this.distance);
 
 			if (nearChest != null && nearChest.equals(tileEntityChest))
 			{
 				return false;
 			}
 
-			return ChastMobHelper.canBlockBeSeen(this.getAIOwnerEntity(), tileEntityChest.getPos());
+			return ChastMobHelper.canBlockBeSeen(this.getOwnerEntity(), tileEntityChest.getPos());
 		}
 
 		return false;

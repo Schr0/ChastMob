@@ -8,8 +8,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.item.ItemMapHomeChest;
+import schr0.chastmob.item.ISpecificationItem;
 
 public class ContainerChastInventory extends Container
 {
@@ -37,11 +36,9 @@ public class ContainerChastInventory extends Container
 					@Override
 					public boolean isItemValid(@Nullable ItemStack stack)
 					{
-						if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
+						if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem() instanceof ISpecificationItem))
 						{
-							ItemMapHomeChest itemMapHomeChest = (ItemMapHomeChest) stack.getItem();
-
-							if (itemMapHomeChest.hasHomeChest(stack))
+							if (((ISpecificationItem) stack.getItem()).isItemValidForEquipmentSlot(stack))
 							{
 								return true;
 							}

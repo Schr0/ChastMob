@@ -323,16 +323,16 @@ public class EntityChast extends EntityGolem
 				}));
 			}
 
+			for (EntityEquipmentSlot eqSlot : EntityEquipmentSlot.values())
+			{
+				this.setItemStackToSlot(eqSlot, ChastMobHelper.getEmptyItemStack());
+			}
+
 			Block.spawnAsEntity(world, this.getPosition(), new ItemStack(Blocks.CHEST));
 
 			InventoryHelper.dropInventoryItems(world, this, this.getInventoryChastMain());
 
 			InventoryHelper.dropInventoryItems(world, this, this.getInventoryChastEquipment());
-
-			for (EntityEquipmentSlot eqSlot : EntityEquipmentSlot.values())
-			{
-				this.setItemStackToSlot(eqSlot, ChastMobHelper.getEmptyItemStack());
-			}
 		}
 
 		super.onDeath(cause);
@@ -650,6 +650,25 @@ public class EntityChast extends EntityGolem
 		return ((this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * partialTickTime) * 0.5F * (float) Math.PI);
 	}
 
+	public EnumHealthState getHealthState()
+	{
+		int health = (int) this.getHealth();
+		int healthMax = (int) this.getMaxHealth();
+		EnumHealthState enumHealthState = EnumHealthState.FINE;
+
+		if (health < (healthMax / 2))
+		{
+			enumHealthState = EnumHealthState.HURT;
+
+			if (health < (healthMax / 4))
+			{
+				enumHealthState = EnumHealthState.DYING;
+			}
+		}
+
+		return enumHealthState;
+	}
+
 	public boolean isOwnerEntity(EntityLivingBase owner)
 	{
 		if (!(owner instanceof EntityPlayer))
@@ -681,49 +700,6 @@ public class EntityChast extends EntityGolem
 		catch (IllegalArgumentException var2)
 		{
 			return null;
-		}
-	}
-
-	public EnumHealthState getHealthState()
-	{
-		int health = (int) this.getHealth();
-		int healthMax = (int) this.getMaxHealth();
-		EnumHealthState enumHealthState = EnumHealthState.FINE;
-
-		if (health < (healthMax / 2))
-		{
-			enumHealthState = EnumHealthState.HURT;
-
-			if (health < (healthMax / 4))
-			{
-				enumHealthState = EnumHealthState.DYING;
-			}
-		}
-
-		return enumHealthState;
-	}
-
-	public EnumAIMode getAIMode()
-	{
-		ItemStack specialItem = this.getInventoryChastEquipment().getSpecialItem();
-
-		if (this.getAIState() == EnumAIState.FREEDOM)
-		{
-			if (ChastMobHelper.isNotEmptyItemStack(specialItem) && (specialItem.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
-			{
-				ItemMapHomeChest itemMapHomeChest = (ItemMapHomeChest) specialItem.getItem();
-
-				if (itemMapHomeChest.hasHomeChest(specialItem))
-				{
-					return EnumAIMode.PATROL;
-				}
-			}
-
-			return EnumAIMode.FREEDOM;
-		}
-		else
-		{
-			return EnumAIMode.FOLLOW;
 		}
 	}
 
@@ -767,6 +743,30 @@ public class EntityChast extends EntityGolem
 		ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(this, 0));
 
 		this.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
+	}
+
+	public EnumAIMode getAIMode()
+	{
+		ItemStack specificationItem = this.getInventoryChastEquipment().getSpecificationItem();
+
+		if (this.getAIState() == EnumAIState.FREEDOM)
+		{
+			if (ChastMobHelper.isNotEmptyItemStack(specificationItem) && (specificationItem.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
+			{
+				ItemMapHomeChest itemMapHomeChest = (ItemMapHomeChest) specificationItem.getItem();
+
+				if (itemMapHomeChest.hasHomeChest(specificationItem))
+				{
+					return EnumAIMode.PATROL;
+				}
+			}
+
+			return EnumAIMode.FREEDOM;
+		}
+		else
+		{
+			return EnumAIMode.FOLLOW;
+		}
 	}
 
 	public void changeAIState()

@@ -23,10 +23,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 
-public class ItemMapHomeChest extends Item
+public class ItemMapHomeChest extends Item implements ISpecificationItem
 {
 
 	public ItemMapHomeChest()
@@ -52,6 +53,22 @@ public class ItemMapHomeChest extends Item
 				return 0.0F;
 			}
 		});
+	}
+
+	@Override
+	public boolean isItemValidForEquipmentSlot(ItemStack stack)
+	{
+		if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
+		{
+			ItemMapHomeChest itemMapHomeChest = (ItemMapHomeChest) stack.getItem();
+
+			if (itemMapHomeChest.hasHomeChest(stack))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override
@@ -104,6 +121,11 @@ public class ItemMapHomeChest extends Item
 
 	// TODO /* ======================================== MOD START =====================================*/
 
+	public boolean hasHomeChest(ItemStack stack)
+	{
+		return (this.getHomeChestPosition(stack) != null);
+	}
+
 	@Nullable
 	public BlockPos getHomeChestPosition(ItemStack stack)
 	{
@@ -143,11 +165,6 @@ public class ItemMapHomeChest extends Item
 		}
 
 		stack.setTagCompound(nbtItemStack);
-	}
-
-	public boolean hasHomeChest(ItemStack stack)
-	{
-		return (this.getHomeChestPosition(stack) != null);
 	}
 
 }

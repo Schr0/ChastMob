@@ -11,7 +11,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.inventory.InventoryChast;
+import schr0.chastmob.entity.EnumAIMode;
+import schr0.chastmob.entity.inventory.InventoryChastEquipment;
+import schr0.chastmob.entity.inventory.InventoryChastMain;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.item.ItemMapHomeChest;
 
@@ -39,38 +41,48 @@ public abstract class EntityAIChast extends EntityAIBase
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public EntityChast getAIOwnerEntity()
-	{
-		return this.theChast;
-	}
-
-	public World getAIOwnerWorld()
+	public World getOwnerWorld()
 	{
 		return this.theChast.getEntityWorld();
 	}
 
-	public InventoryChast getAIOwnerInventory()
+	public EntityChast getOwnerEntity()
+	{
+		return this.theChast;
+	}
+
+	public EnumAIMode getOwnerAIMode()
+	{
+		return this.theChast.getAIMode();
+	}
+
+	public InventoryChastMain getOwnerInventoryMain()
 	{
 		return this.theChast.getInventoryChastMain();
 	}
 
-	public BlockPos getAIHomePosition()
+	public InventoryChastEquipment getOwnerInventoryChastEquipment()
 	{
-		BlockPos blockPos = this.theChast.getPosition();
+		return this.theChast.getInventoryChastEquipment();
+	}
+
+	public BlockPos getOwnerHomePosition()
+	{
+		BlockPos homePosition = this.theChast.getPosition();
 
 		switch (this.theChast.getAIMode())
 		{
 			case PATROL :
 
-				ItemStack specialItem = this.theChast.getInventoryChastEquipment().getSpecialItem();
+				ItemStack specificationItem = this.theChast.getInventoryChastEquipment().getSpecificationItem();
 
-				if (ChastMobHelper.isNotEmptyItemStack(specialItem) && (specialItem.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
+				if (ChastMobHelper.isNotEmptyItemStack(specificationItem) && (specificationItem.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
 				{
-					BlockPos homeChestPosition = ((ItemMapHomeChest) specialItem.getItem()).getHomeChestPosition(specialItem);
+					BlockPos homePositionChest = ((ItemMapHomeChest) specificationItem.getItem()).getHomeChestPosition(specificationItem);
 
-					if (homeChestPosition != null)
+					if (homePositionChest != null)
 					{
-						blockPos = homeChestPosition;
+						homePosition = homePositionChest;
 					}
 				}
 				break;
@@ -81,7 +93,7 @@ public abstract class EntityAIChast extends EntityAIBase
 
 				if (this.theChast.isOwnerTame() && (ownerEntity != null))
 				{
-					blockPos = ownerEntity.getPosition();
+					homePosition = ownerEntity.getPosition();
 				}
 				break;
 
@@ -89,7 +101,7 @@ public abstract class EntityAIChast extends EntityAIBase
 				break;
 		}
 
-		return blockPos;
+		return homePosition;
 	}
 
 	public void forceMoveToTargetBlockPos(BlockPos blockPos, double moveSpeed)

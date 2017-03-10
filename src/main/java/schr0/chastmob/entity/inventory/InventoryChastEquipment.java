@@ -41,7 +41,7 @@ public class InventoryChastEquipment extends InventoryChast
 	// TODO /* ======================================== MOD START =====================================*/
 
 	@Nullable
-	public ItemStack getSpecialItem()
+	public ItemStack getSpecificationItem()
 	{
 		return this.getStackInSlot(3);
 	}
