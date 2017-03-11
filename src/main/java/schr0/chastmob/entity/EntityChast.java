@@ -313,7 +313,7 @@ public class EntityChast extends EntityGolem
 
 			default :
 
-				itemStack = null;
+				itemStack = ChastMobHelper.getEmptyItemStack();
 				break;
 		}
 

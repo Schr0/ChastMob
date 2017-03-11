@@ -9,15 +9,15 @@ import schr0.chastmob.ChastMob;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.render.RenderChast;
-import schr0.chastmob.item.IArmourItem;
+import schr0.chastmob.item.ItemHelmetChast;
 
 @SideOnly(Side.CLIENT)
-public class LayerChastArmour extends LayerChast
+public class LayerChastHelmet extends LayerChast
 {
 
-	private static final ResourceLocation RES_ARMOUR_CHAST_DEFAULT = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/armour/armour_wood.png");
+	private static final ResourceLocation RES_DEFAULT = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/armour/helmet_chast_wood.png");
 
-	public LayerChastArmour(RenderChast chastRendererRendererIn)
+	public LayerChastHelmet(RenderChast chastRendererRendererIn)
 	{
 		super(chastRendererRendererIn);
 	}
@@ -30,6 +30,7 @@ public class LayerChastArmour extends LayerChast
 		if (ChastMobHelper.isNotEmptyItemStack(stackEqHead))
 		{
 			this.getRenderChast().bindTexture(this.getArmourTexture(stackEqHead));
+
 			this.getModelChast().setModelAttributes(this.getRenderChast().getMainModel());
 			this.getModelChast().render(entityChast, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 			this.getModelChast().setLivingAnimations(entityChast, limbSwing, limbSwingAmount, partialTicks);
@@ -46,11 +47,11 @@ public class LayerChastArmour extends LayerChast
 
 	private ResourceLocation getArmourTexture(ItemStack stack)
 	{
-		if (stack.getItem() instanceof IArmourItem)
+		if (stack.getItem() instanceof ItemHelmetChast)
 		{
-			return ((IArmourItem) stack.getItem()).getArmourTexture();
+			return ((ItemHelmetChast) stack.getItem()).getTexture(stack);
 		}
 
-		return RES_ARMOUR_CHAST_DEFAULT;
+		return RES_DEFAULT;
 	}
 }

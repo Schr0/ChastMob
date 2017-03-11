@@ -1,5 +1,7 @@
 package schr0.chastmob.entity.ai;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import schr0.chastmob.entity.EntityChast;
 
@@ -55,7 +57,7 @@ public class EntityAIChastTrade extends EntityAIChast
 		return (this.tradePlayer != null);
 	}
 
-	public void setTrading(EntityPlayer tradePlayer)
+	public void setTrading(@Nullable EntityPlayer tradePlayer)
 	{
 		this.tradePlayer = tradePlayer;
 	}

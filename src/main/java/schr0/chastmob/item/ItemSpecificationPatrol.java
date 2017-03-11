@@ -22,13 +22,12 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import schr0.chastmob.ChastMob;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 
-public class ItemSpecificationPatrol extends Item implements ISpecificationItem, IArmourItem
+public class ItemSpecificationPatrol extends Item implements ISpecificationItem
 {
 
 	public ItemSpecificationPatrol()
@@ -164,13 +163,6 @@ public class ItemSpecificationPatrol extends Item implements ISpecificationItem,
 		}
 
 		stack.setTagCompound(nbtItemStack);
-	}
-
-	// TODO
-	@Override
-	public ResourceLocation getArmourTexture()
-	{
-		return new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/armour/armour_iron.png");
 	}
 
 }

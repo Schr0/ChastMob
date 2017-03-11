@@ -1,4 +1,4 @@
-package schr0.chastmob.api;
+package schr0.chastmob.vanilla;
 
 import java.util.List;
 

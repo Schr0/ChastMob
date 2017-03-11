@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.render.layer.LayerChastArm;
-import schr0.chastmob.entity.render.layer.LayerChastArmour;
+import schr0.chastmob.entity.render.layer.LayerChastHelmet;
 import schr0.chastmob.entity.render.layer.LayerChastCore;
 import schr0.chastmob.entity.render.layer.LayerChastHeldItem;
 
@@ -24,7 +24,7 @@ public class RenderChast extends RenderLiving<EntityChast>
 		super(renderManagerIn, modelBaseIn, shadowSizeIn);
 		this.addLayer(new LayerChastCore(this));
 		this.addLayer(new LayerChastArm(this));
-		this.addLayer(new LayerChastArmour(this));
+		this.addLayer(new LayerChastHelmet(this));
 		this.addLayer(new LayerChastHeldItem(this));
 	}
 

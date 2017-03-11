@@ -17,9 +17,9 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import schr0.chastmob.ChastMobHelper;
-import schr0.chastmob.api.EntityAIOcelotSitChast;
 import schr0.chastmob.item.ItemSoulBottleFull;
 import schr0.chastmob.item.ItemSoulFragment;
+import schr0.chastmob.vanilla.EntityAIOcelotSitChast;
 
 public class ChastMobEvent
 {

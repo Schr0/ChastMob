@@ -8,8 +8,8 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.item.IArmourItem;
 import schr0.chastmob.item.ISpecificationItem;
+import schr0.chastmob.item.ItemHelmetChast;
 
 public class ContainerChastInventory extends Container
 {
@@ -60,7 +60,7 @@ public class ContainerChastInventory extends Container
 						@Override
 						public boolean isItemValid(@Nullable ItemStack stack)
 						{
-							if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem() instanceof IArmourItem))
+							if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem() instanceof ItemHelmetChast))
 							{
 								return true;
 							}
@@ -121,11 +121,12 @@ public class ContainerChastInventory extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int index)
 	{
+		ItemStack stackEmpty = ChastMobHelper.getEmptyItemStack();
 		Slot slot = (Slot) this.inventorySlots.get(index);
 
 		if (slot == null || slot.getHasStack() == false)
 		{
-			return null;
+			return stackEmpty;
 		}
 
 		ItemStack srcItemStack = slot.getStack();
@@ -137,14 +138,14 @@ public class ContainerChastInventory extends Container
 		{
 			if (!this.mergeItemStack(dstItemStack, 31, this.inventorySlots.size(), true))
 			{
-				return null;
+				return stackEmpty;
 			}
 		}
 		else
 		{
 			if (!this.mergeItemStack(dstItemStack, 4, 31, false))
 			{
-				return null;
+				return stackEmpty;
 			}
 		}
 
@@ -159,7 +160,7 @@ public class ContainerChastInventory extends Container
 
 		if (dstItemStack.stackSize == srcItemStack.stackSize)
 		{
-			return null;
+			return stackEmpty;
 		}
 
 		slot.onPickupFromSlot(player, dstItemStack);
