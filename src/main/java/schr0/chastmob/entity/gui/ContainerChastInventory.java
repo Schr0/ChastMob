@@ -8,6 +8,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.item.IArmourItem;
 import schr0.chastmob.item.ISpecificationItem;
 
 public class ContainerChastInventory extends Container
@@ -48,11 +49,31 @@ public class ContainerChastInventory extends Container
 					}
 
 				});
-
 			}
 			else
 			{
-				this.addSlotToContainer(new Slot(entityChast.getInventoryChastEquipment(), index, 8, (column * 18) + 18));
+				if (index == 0)
+				{
+					this.addSlotToContainer(new Slot(entityChast.getInventoryChastEquipment(), index, 8, 18)
+					{
+
+						@Override
+						public boolean isItemValid(@Nullable ItemStack stack)
+						{
+							if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem() instanceof IArmourItem))
+							{
+								return true;
+							}
+
+							return false;
+						}
+
+					});
+				}
+				else
+				{
+					this.addSlotToContainer(new Slot(entityChast.getInventoryChastEquipment(), index, 8, (column * 18) + 18));
+				}
 			}
 		}
 

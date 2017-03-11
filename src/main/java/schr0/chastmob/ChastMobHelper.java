@@ -51,7 +51,7 @@ public class ChastMobHelper
 	{
 		for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
 		{
-			if (!isNotEmptyItemStack(inventory.getStackInSlot(slot)))
+			if (isNotEmptyItemStack(inventory.getStackInSlot(slot)) == false)
 			{
 				return slot;
 			}

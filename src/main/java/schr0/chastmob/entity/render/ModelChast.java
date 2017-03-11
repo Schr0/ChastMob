@@ -13,7 +13,7 @@ import schr0.chastmob.entity.EntityChast;
 public class ModelChast extends ModelBase
 {
 
-	public static final int WIDTH = 64;
+	public static final int WIDTH = 128;
 	public static final int HEIGHT = 64;
 
 	public ModelRenderer body;
@@ -24,6 +24,9 @@ public class ModelChast extends ModelBase
 	public ModelRenderer armLeft;
 	public ModelRenderer legRight;
 	public ModelRenderer legLeft;
+
+	public ModelRenderer armourUpper;
+	public ModelRenderer armourLower;
 
 	public ModelChast()
 	{
@@ -60,9 +63,21 @@ public class ModelChast extends ModelBase
 		this.legLeft = new ModelRenderer(this, 24, 48).addBox(-1F, 0F, -1F, 2, 9, 2);
 		this.legLeft.setRotationPoint(3F, 15F, 0F);
 
+		this.armourUpper = new ModelRenderer(this, 64, 0).addBox(-7.5F, -6.5F, -14.5F, 15, 5, 15);
+		this.armourUpper.setRotationPoint(0F, 0F, 0F);
+		// 親：this.coverMain.setRotationPoint(0F, 6F, 7F);
+		// 子：this.armourUpper.setRotationPoint(0F, 6F, 7F);
+
+		this.armourLower = new ModelRenderer(this, 64, 20).addBox(-7.5F, -2.5F, -7.5F, 15, 9, 15);
+		this.armourLower.setRotationPoint(0F, 0F, 0F);
+		// 親：this.body.setRotationPoint(0F, 10F, 0F);
+		// 子：this.armourLower.setRotationPoint(0F, 10F, 0F);
+
 		this.coverMain.addChild(this.coverHandle);
+		this.coverMain.addChild(this.armourUpper);
 		this.body.addChild(this.coverMain);
 		this.body.addChild(this.core);
+		this.body.addChild(this.armourLower);
 
 		this.body.mirror = true;
 		this.core.mirror = true;
@@ -72,6 +87,8 @@ public class ModelChast extends ModelBase
 		this.armLeft.mirror = true;
 		this.legRight.mirror = true;
 		this.legLeft.mirror = true;
+		this.armourUpper.mirror = true;
+		this.armourLower.mirror = true;
 	}
 
 	@Override
@@ -82,7 +99,6 @@ public class ModelChast extends ModelBase
 		if (this.isChild)
 		{
 			GL11.glPushMatrix();
-
 			float scaleHalf = (1.0F / 2.0F);
 			GL11.glScalef(scaleHalf, scaleHalf, scaleHalf);
 			GL11.glTranslatef(0.0F, 24.0F * scale, 0.0F);

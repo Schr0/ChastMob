@@ -15,7 +15,7 @@ import schr0.chastmob.entity.EnumAIMode;
 import schr0.chastmob.entity.inventory.InventoryChastEquipment;
 import schr0.chastmob.entity.inventory.InventoryChastMain;
 import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.item.ItemMapHomeChest;
+import schr0.chastmob.item.ItemSpecificationPatrol;
 
 public abstract class EntityAIChast extends EntityAIBase
 {
@@ -76,9 +76,9 @@ public abstract class EntityAIChast extends EntityAIBase
 
 				ItemStack specificationItem = this.theChast.getInventoryChastEquipment().getSpecificationItem();
 
-				if (ChastMobHelper.isNotEmptyItemStack(specificationItem) && (specificationItem.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
+				if (ChastMobHelper.isNotEmptyItemStack(specificationItem) && (specificationItem.getItem().equals(ChastMobItems.SPECIFICATION_PATROL)))
 				{
-					BlockPos homePositionChest = ((ItemMapHomeChest) specificationItem.getItem()).getHomeChestPosition(specificationItem);
+					BlockPos homePositionChest = ((ItemSpecificationPatrol) specificationItem.getItem()).getHomeChestPosition(specificationItem);
 
 					if (homePositionChest != null)
 					{

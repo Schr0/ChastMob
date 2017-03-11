@@ -9,6 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.render.layer.LayerChastArm;
+import schr0.chastmob.entity.render.layer.LayerChastArmour;
 import schr0.chastmob.entity.render.layer.LayerChastCore;
 import schr0.chastmob.entity.render.layer.LayerChastHeldItem;
 
@@ -23,6 +24,7 @@ public class RenderChast extends RenderLiving<EntityChast>
 		super(renderManagerIn, modelBaseIn, shadowSizeIn);
 		this.addLayer(new LayerChastCore(this));
 		this.addLayer(new LayerChastArm(this));
+		this.addLayer(new LayerChastArmour(this));
 		this.addLayer(new LayerChastHeldItem(this));
 	}
 
@@ -30,21 +32,6 @@ public class RenderChast extends RenderLiving<EntityChast>
 	protected ResourceLocation getEntityTexture(EntityChast entity)
 	{
 		return RES_CHAST;
-	}
-
-	@Override
-	public void doRender(EntityChast entity, double x, double y, double z, float entityYaw, float partialTicks)
-	{
-		/*
-				if (this.canRenderModeLabel(entity))
-				{
-					boolean isSneaking = entity.isSneaking();
-		
-					EntityRenderer.func_189692_a(this.getFontRendererFromRenderManager(), this.getModeLabel(entity), (float) x, (float) y + (entity.height + 0.25F - (isSneaking ? 0.125F : 0.0F)), (float) z, 0, this.renderManager.playerViewY, this.renderManager.playerViewX, (this.renderManager.options.thirdPersonView == 2), isSneaking);
-				}
-		//*/
-
-		super.doRender(entity, x, y, z, entityYaw, partialTicks);
 	}
 
 	@Override
@@ -61,6 +48,20 @@ public class RenderChast extends RenderLiving<EntityChast>
 	// TODO /* ======================================== MOD START =====================================*/
 
 	/*
+	 *
+		@Override
+		public void doRender(EntityChast entity, double x, double y, double z, float entityYaw, float partialTicks)
+		{
+					if (this.canRenderModeLabel(entity))
+					{
+						boolean isSneaking = entity.isSneaking();
+	
+						EntityRenderer.func_189692_a(this.getFontRendererFromRenderManager(), this.getModeLabel(entity), (float) x, (float) y + (entity.height + 0.25F - (isSneaking ? 0.125F : 0.0F)), (float) z, 0, this.renderManager.playerViewY, this.renderManager.playerViewX, (this.renderManager.options.thirdPersonView == 2), isSneaking);
+					}
+	
+			super.doRender(entity, x, y, z, entityYaw, partialTicks);
+		}
+	
 		private boolean canRenderModeLabel(EntityChast entity)
 		{
 			if (this.renderManager.renderViewEntity instanceof EntityPlayer)

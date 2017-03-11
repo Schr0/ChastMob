@@ -58,7 +58,7 @@ import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 import schr0.chastmob.init.ChastMobPacket;
-import schr0.chastmob.item.ItemMapHomeChest;
+import schr0.chastmob.item.ItemSpecificationPatrol;
 import schr0.chastmob.packet.MessageParticleEntity;
 
 public class EntityChast extends EntityGolem
@@ -243,13 +243,6 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Override
-	@Nullable
-	protected SoundEvent getDeathSound()
-	{
-		return SoundEvents.ENTITY_ITEM_BREAK;
-	}
-
-	@Override
 	public double getYOffset()
 	{
 		Entity ridingEntity = this.getRidingEntity();
@@ -276,17 +269,81 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Override
+	@Nullable
+	protected SoundEvent getHurtSound()
+	{
+		return SoundEvents.BLOCK_WOOD_HIT;
+	}
+
+	@Override
+	@Nullable
+	protected SoundEvent getDeathSound()
+	{
+		return SoundEvents.ENTITY_ITEM_BREAK;
+	}
+
+	@Override
 	public boolean canBeLeashedTo(EntityPlayer player)
 	{
 		return (this.isOwnerTame() && this.isOwnerEntity(player));
 	}
 
+	@Nullable
 	@Override
-	public void setCustomNameTag(String name)
+	public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn)
 	{
-		super.setCustomNameTag(name);
+		ItemStack itemStack;
 
-		this.getInventoryChastMain().setCustomName(name);
+		switch (slotIn)
+		{
+			case HEAD :
+
+				itemStack = this.getInventoryChastEquipment().getHeadItem();
+				break;
+
+			case MAINHAND :
+
+				itemStack = this.getInventoryChastEquipment().getMainhandItem();
+				break;
+
+			case OFFHAND :
+
+				itemStack = this.getInventoryChastEquipment().getOffhandItem();
+				break;
+
+			default :
+
+				itemStack = null;
+				break;
+		}
+
+		return itemStack;
+	}
+
+	@Override
+	public void setItemStackToSlot(EntityEquipmentSlot slotIn, @Nullable ItemStack stack)
+	{
+		switch (slotIn)
+		{
+			case HEAD :
+
+				this.getInventoryChastEquipment().setInventorySlotContents(0, stack);
+				break;
+
+			case MAINHAND :
+
+				this.getInventoryChastEquipment().setInventorySlotContents(1, stack);
+				break;
+
+			case OFFHAND :
+
+				this.getInventoryChastEquipment().setInventorySlotContents(2, stack);
+				break;
+
+			default :
+
+				break;
+		}
 	}
 
 	@Override
@@ -321,11 +378,6 @@ public class EntityChast extends EntityGolem
 						TextFormatting.ITALIC.BOLD + this.getName(),
 						TextFormatting.ITALIC.BOLD + ownerEntity.getName(),
 				}));
-			}
-
-			for (EntityEquipmentSlot eqSlot : EntityEquipmentSlot.values())
-			{
-				this.setItemStackToSlot(eqSlot, ChastMobHelper.getEmptyItemStack());
 			}
 
 			Block.spawnAsEntity(world, this.getPosition(), new ItemStack(Blocks.CHEST));
@@ -751,11 +803,9 @@ public class EntityChast extends EntityGolem
 
 		if (this.getAIState() == EnumAIState.FREEDOM)
 		{
-			if (ChastMobHelper.isNotEmptyItemStack(specificationItem) && (specificationItem.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
+			if (ChastMobHelper.isNotEmptyItemStack(specificationItem) && (specificationItem.getItem().equals(ChastMobItems.SPECIFICATION_PATROL)))
 			{
-				ItemMapHomeChest itemMapHomeChest = (ItemMapHomeChest) specificationItem.getItem();
-
-				if (itemMapHomeChest.hasHomeChest(specificationItem))
+				if (((ItemSpecificationPatrol) specificationItem.getItem()).hasHomeChest(specificationItem))
 				{
 					return EnumAIMode.PATROL;
 				}

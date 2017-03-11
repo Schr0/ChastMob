@@ -22,15 +22,16 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.ChastMob;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 
-public class ItemMapHomeChest extends Item implements ISpecificationItem
+public class ItemSpecificationPatrol extends Item implements ISpecificationItem, IArmourItem
 {
 
-	public ItemMapHomeChest()
+	public ItemSpecificationPatrol()
 	{
 		this.setMaxStackSize(1);
 
@@ -42,9 +43,9 @@ public class ItemMapHomeChest extends Item implements ISpecificationItem
 			{
 				Item item = stack.getItem();
 
-				if (ChastMobHelper.isNotEmptyItemStack(stack) && item instanceof ItemMapHomeChest)
+				if (ChastMobHelper.isNotEmptyItemStack(stack) && (item instanceof ItemSpecificationPatrol))
 				{
-					if (!((ItemMapHomeChest) item).hasHomeChest(stack))
+					if (((ItemSpecificationPatrol) item).hasHomeChest(stack) == false)
 					{
 						return 1.0F;
 					}
@@ -58,11 +59,9 @@ public class ItemMapHomeChest extends Item implements ISpecificationItem
 	@Override
 	public boolean isItemValidForEquipmentSlot(ItemStack stack)
 	{
-		if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem().equals(ChastMobItems.MAP_HOME_CHEST)))
+		if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem().equals(ChastMobItems.SPECIFICATION_PATROL)))
 		{
-			ItemMapHomeChest itemMapHomeChest = (ItemMapHomeChest) stack.getItem();
-
-			if (itemMapHomeChest.hasHomeChest(stack))
+			if (((ItemSpecificationPatrol) stack.getItem()).hasHomeChest(stack))
 			{
 				return true;
 			}
@@ -82,7 +81,7 @@ public class ItemMapHomeChest extends Item implements ISpecificationItem
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_MAP_HOME_CHEST_TIPS, new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_SPECIFICATION_PATROL_TIPS, new Object[0]).getFormattedText());
 
 		BlockPos homeChestPosition = this.getHomeChestPosition(stack);
 
@@ -165,6 +164,13 @@ public class ItemMapHomeChest extends Item implements ISpecificationItem
 		}
 
 		stack.setTagCompound(nbtItemStack);
+	}
+
+	// TODO
+	@Override
+	public ResourceLocation getArmourTexture()
+	{
+		return new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/armour/armour_iron.png");
 	}
 
 }

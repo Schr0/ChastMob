@@ -23,16 +23,17 @@ public class GuiChastInventory extends GuiContainer
 {
 
 	private static final ResourceLocation RES_CHAST_STATUS = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/gui/chast_inventory.png");
-	private GuiChastInventory.ChageAIStateButton buttonChageAIState;
+
 	private EntityChast theChast;
 	private EntityPlayer thePlayer;
+	private GuiChastInventory.ChageAIStateButton buttonChageAIState;
 
 	public GuiChastInventory(EntityChast entityChast, EntityPlayer entityPlayer)
 	{
 		super(new ContainerChastInventory(entityChast, entityPlayer));
+
 		this.xSize = 176;
 		this.ySize = 222;
-
 		this.theChast = entityChast;
 		this.thePlayer = entityPlayer;
 	}
@@ -57,28 +58,7 @@ public class GuiChastInventory extends GuiContainer
 		int originPosY = (this.height - this.ySize) / 2;
 		this.drawTexturedModalRect(originPosX, originPosY, 0, 0, this.xSize, this.ySize);
 
-		int healthTextureY;
-
-		switch (this.theChast.getHealthState())
-		{
-			case HURT :
-
-				healthTextureY = 24;
-
-				break;
-
-			case DYING :
-
-				healthTextureY = 40;
-
-				break;
-
-			default :
-
-				healthTextureY = 8;
-		}
-
-		this.drawTexturedModalRect((originPosX + 104), (originPosY + 24), 184, healthTextureY, this.getHealthBar(), 10);
+		this.drawTexturedModalRect((originPosX + 104), (originPosY + 24), 184, this.getHealthTextureY(), this.getHealthBar(), 10);
 
 		int entityPosX = (originPosX + 51);
 		int entityPosY = (originPosY + 60);
@@ -116,6 +96,32 @@ public class GuiChastInventory extends GuiContainer
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
+
+	private int getHealthTextureY()
+	{
+		int healthTextureY;
+
+		switch (this.theChast.getHealthState())
+		{
+			case HURT :
+
+				healthTextureY = 24;
+
+				break;
+
+			case DYING :
+
+				healthTextureY = 40;
+
+				break;
+
+			default :
+
+				healthTextureY = 8;
+		}
+
+		return healthTextureY;
+	}
 
 	private int getHealthBar()
 	{
