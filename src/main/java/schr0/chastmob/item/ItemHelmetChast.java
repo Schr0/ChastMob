@@ -8,6 +8,8 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class ItemHelmetChast extends Item
 {
@@ -24,6 +26,7 @@ public abstract class ItemHelmetChast extends Item
 		this.enchantability = material.getEnchantability();
 	}
 
+	@SideOnly(Side.CLIENT)
 	public abstract ResourceLocation getTexture(ItemStack stack);
 
 	@Override

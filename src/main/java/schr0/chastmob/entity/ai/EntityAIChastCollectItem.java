@@ -22,7 +22,6 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	public EntityAIChastCollectItem(EntityChast entityChast, double speed, double distance)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 
 		this.speed = speed;
 		this.distance = distance;

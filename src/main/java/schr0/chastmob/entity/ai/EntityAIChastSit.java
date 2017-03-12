@@ -10,7 +10,6 @@ public class EntityAIChastSit extends EntityAIChast
 	public EntityAIChastSit(EntityChast entityChast)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 	}
 
 	@Override

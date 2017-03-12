@@ -342,6 +342,7 @@ public class EntityChast extends EntityGolem
 
 			default :
 
+				// none
 				break;
 		}
 	}
@@ -354,12 +355,27 @@ public class EntityChast extends EntityGolem
 			return false;
 		}
 
-		if ((source.getSourceOfDamage() instanceof EntityLivingBase) && !this.getEntityWorld().isRemote)
+		if (!this.isEquipHelmet() && (source.getSourceOfDamage() instanceof EntityLivingBase) && !this.getEntityWorld().isRemote)
 		{
 			this.setAIPanicking((int) amount);
 		}
 
 		return super.attackEntityFrom(source, amount);
+	}
+
+	protected void damageArmor(float damage)
+	{
+		ItemStack stackHelmet = this.getInventoryChastEquipment().getHeadItem();
+
+		if (ChastMobHelper.isNotEmptyItemStack(stackHelmet))
+		{
+			stackHelmet.damageItem(Math.max(1, (int) (damage / 4)), this);
+
+			if (stackHelmet.stackSize <= 0)
+			{
+				this.getInventoryChastEquipment().setInventorySlotContents(0, ChastMobHelper.getEmptyItemStack());
+			}
+		}
 	}
 
 	@Override
@@ -706,6 +722,7 @@ public class EntityChast extends EntityGolem
 	{
 		int health = (int) this.getHealth();
 		int healthMax = (int) this.getMaxHealth();
+
 		EnumHealthState enumHealthState = EnumHealthState.FINE;
 
 		if (health < (healthMax / 2))
@@ -775,6 +792,11 @@ public class EntityChast extends EntityGolem
 		return this.inventoryChastEquipment;
 	}
 
+	public boolean isEquipHelmet()
+	{
+		return ChastMobHelper.isNotEmptyItemStack(this.getInventoryChastEquipment().getHeadItem());
+	}
+
 	public void onSpawnByPlayer(EntityPlayer player)
 	{
 		if (!player.getEntityWorld().isRemote)
@@ -821,20 +843,18 @@ public class EntityChast extends EntityGolem
 
 	public void changeAIState()
 	{
-		EnumAIState enumAIState = this.getAIState();
+		EnumAIState enumAIState;
 
 		switch (this.getAIState())
 		{
-			case FREEDOM :
-
-				enumAIState = EnumAIState.FOLLOW;
-
-				break;
-
 			case FOLLOW :
 
 				enumAIState = EnumAIState.FREEDOM;
+				break;
 
+			default :
+
+				enumAIState = EnumAIState.FOLLOW;
 				break;
 		}
 

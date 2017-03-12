@@ -20,7 +20,6 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	public EntityAIChastFollowOwner(EntityChast entityChast, double speed, double distance)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 
 		this.speed = speed;
 		this.distance = (distance * distance);

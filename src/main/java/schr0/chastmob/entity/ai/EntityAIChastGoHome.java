@@ -6,7 +6,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.EnumAIMode;
 
@@ -23,7 +22,6 @@ public class EntityAIChastGoHome extends EntityAIChast
 	public EntityAIChastGoHome(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 
 		this.speed = speed;
 		this.distance = distance;
@@ -127,7 +125,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 				return false;
 			}
 
-			return ChastMobHelper.canBlockBeSeen(this.getOwnerEntity(), tileEntityChest.getPos());
+			return this.canBlockBeSeen(tileEntityChest.getPos());
 		}
 
 		return false;
@@ -136,18 +134,18 @@ public class EntityAIChastGoHome extends EntityAIChast
 	private TileEntityChest getNearChestTileEntity(EntityChast entityChast, int searchXYZ)
 	{
 		BlockPos blockPos = entityChast.getPosition();
-		int pX = blockPos.getX();
-		int pY = blockPos.getY();
-		int pZ = blockPos.getZ();
+		int blockPosX = blockPos.getX();
+		int blockPosY = blockPos.getY();
+		int blockPosZ = blockPos.getZ();
 		float rangeOrigin = (float) (searchXYZ * searchXYZ * searchXYZ * 2);
 		BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
 		TileEntityChest tileEntityChest = null;
 
-		for (int x = (pX - searchXYZ); x <= (pX + searchXYZ); ++x)
+		for (int x = (blockPosX - searchXYZ); x <= (blockPosX + searchXYZ); ++x)
 		{
-			for (int y = (pY - searchXYZ); y <= (pY + searchXYZ); ++y)
+			for (int y = (blockPosY - searchXYZ); y <= (blockPosY + searchXYZ); ++y)
 			{
-				for (int z = (pZ - searchXYZ); z <= (pZ + searchXYZ); ++z)
+				for (int z = (blockPosZ - searchXYZ); z <= (blockPosZ + searchXYZ); ++z)
 				{
 					blockPosMutable.setPos(x, y, z);
 					World world = entityChast.worldObj;
@@ -155,7 +153,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 
 					if (tileEntity instanceof TileEntityChest)
 					{
-						float range = (float) ((x - pX) * (x - pX) + (y - pY) * (y - pY) + (z - pZ) * (z - pZ));
+						float range = (float) ((x - blockPosX) * (x - blockPosX) + (y - blockPosY) * (y - blockPosY) + (z - blockPosZ) * (z - blockPosZ));
 
 						if (range < rangeOrigin)
 						{

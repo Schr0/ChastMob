@@ -18,7 +18,6 @@ public class EntityAIChastWander extends EntityAIChast
 	public EntityAIChastWander(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 
 		this.speed = speed;
 		this.distance = distance;

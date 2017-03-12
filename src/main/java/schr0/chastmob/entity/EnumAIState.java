@@ -1,15 +1,12 @@
 package schr0.chastmob.entity;
 
-import net.minecraft.util.IStringSerializable;
-
-public enum EnumAIState implements IStringSerializable
+public enum EnumAIState
 {
 
-	FREEDOM("freedom", 0),
-	FOLLOW("follow", 1);
+	FREEDOM(0),
+	FOLLOW(1);
 
 	private static final EnumAIState[] AISTATE_LOOKUP = new EnumAIState[values().length];
-	private final String name;
 	private final int number;
 
 	static
@@ -20,16 +17,9 @@ public enum EnumAIState implements IStringSerializable
 		}
 	}
 
-	private EnumAIState(String name, int number)
+	private EnumAIState(int number)
 	{
 		this.number = number;
-		this.name = name;
-	}
-
-	@Override
-	public String getName()
-	{
-		return this.name;
 	}
 
 	public int getNumber()

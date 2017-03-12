@@ -28,7 +28,6 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	public EntityAIChastStoreChest(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 
 		this.speed = speed;
 		this.distance = distance;
@@ -149,7 +148,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		if (tileEntityChest != null)
 		{
-			return ChastMobHelper.canBlockBeSeen(this.getOwnerEntity(), tileEntityChest.getPos());
+			return this.canBlockBeSeen(tileEntityChest.getPos());
 		}
 
 		return false;

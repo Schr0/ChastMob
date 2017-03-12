@@ -99,9 +99,8 @@ public class ModelChast extends ModelBase
 		if (this.isChild)
 		{
 			GL11.glPushMatrix();
-			float scaleHalf = (1.0F / 2.0F);
-			GL11.glScalef(scaleHalf, scaleHalf, scaleHalf);
-			GL11.glTranslatef(0.0F, 24.0F * scale, 0.0F);
+			GL11.glScalef(0.5F, 0.5F, 0.5F);
+			GL11.glTranslatef(0.0F, (24.0F * scale), 0.0F);
 
 			this.body.render(scale);
 			this.armRight.render(scale);
@@ -171,17 +170,17 @@ public class ModelChast extends ModelBase
 			this.legRight.setRotationPoint(-3F, 15F, 0F);
 			this.legLeft.setRotationPoint(3F, 15F, 0F);
 
-			float angleSwingArmRightLegLeftX = (MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount);
-			float angleSwingArmLeftLegRightX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount);
+			float angleSwingArmRightLegLeftX = (MathHelper.cos(limbSwing * 0.6662F) * 1.5F * limbSwingAmount);
+			float angleSwingArmLeftLegRightX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.5F * limbSwingAmount);
 
 			if (entityChast.isStatePanic())
 			{
 				float anglePanicArmX = 3.0F;
-				float anglePanicSwingArmRightX = (MathHelper.cos(limbSwing * 0.6662F) * 0.7F * limbSwingAmount) - anglePanicArmX;
-				float anglePanicSwingArmLeftX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 0.7F * limbSwingAmount) - anglePanicArmX;
+				float anglePanicArmRightX = (MathHelper.cos(limbSwing * 0.6662F) * 0.5F * limbSwingAmount) - anglePanicArmX;
+				float anglePanicArmLeftX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 0.5F * limbSwingAmount) - anglePanicArmX;
 
-				this.armRight.rotateAngleX = anglePanicSwingArmRightX;
-				this.armLeft.rotateAngleX = anglePanicSwingArmLeftX;
+				this.armRight.rotateAngleX = anglePanicArmRightX;
+				this.armLeft.rotateAngleX = anglePanicArmLeftX;
 			}
 			else
 			{
@@ -198,6 +197,7 @@ public class ModelChast extends ModelBase
 		this.armLeft.rotateAngleX -= angleArmX;
 
 		float angleArmZ = 0.35F;
+
 		if (entityChast.isStatePanic())
 		{
 			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmZ;

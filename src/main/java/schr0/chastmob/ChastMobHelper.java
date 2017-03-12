@@ -2,27 +2,11 @@ package schr0.chastmob;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 public class ChastMobHelper
 {
-
-	public static boolean isNotEmptyItemStack(ItemStack stack)
-	{
-		return (stack != null);
-	}
-
-	public static ItemStack getEmptyItemStack()
-	{
-		return (ItemStack) null;
-	}
 
 	public static boolean canStoreInventory(IInventory inventory, @Nullable ItemStack stack)
 	{
@@ -81,29 +65,16 @@ public class ChastMobHelper
 		return -1;
 	}
 
-	public static boolean canBlockBeSeen(Entity owner, BlockPos blockPos)
+	// TODO /* ======================================== for 1.11 =====================================*/
+
+	public static boolean isNotEmptyItemStack(ItemStack stack)
 	{
-		World world = owner.getEntityWorld();
-		IBlockState state = world.getBlockState(blockPos);
+		return (stack != null);
+	}
 
-		if (state == null)
-		{
-			return false;
-		}
-
-		Vec3d entityVec3d = new Vec3d(owner.posX, owner.posY + owner.getEyeHeight(), owner.posZ);
-		Vec3d targetVec3d = new Vec3d(((double) blockPos.getX() + 0.5D), ((double) blockPos.getY() + (state.getCollisionBoundingBox(world, blockPos).minY + state.getCollisionBoundingBox(world, blockPos).maxY) * 0.9D), ((double) blockPos.getZ() + 0.5D));
-		RayTraceResult rayTraceResult = world.rayTraceBlocks(entityVec3d, targetVec3d);
-
-		if (rayTraceResult != null && rayTraceResult.typeOfHit.equals(RayTraceResult.Type.BLOCK))
-		{
-			if (rayTraceResult.getBlockPos().equals(blockPos))
-			{
-				return true;
-			}
-		}
-
-		return false;
+	public static ItemStack getEmptyItemStack()
+	{
+		return (ItemStack) null;
 	}
 
 }

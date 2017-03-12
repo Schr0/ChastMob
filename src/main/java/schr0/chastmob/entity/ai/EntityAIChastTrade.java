@@ -13,7 +13,6 @@ public class EntityAIChastTrade extends EntityAIChast
 	public EntityAIChastTrade(EntityChast entityChast)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 	}
 
 	@Override

@@ -30,7 +30,6 @@ public class EntityAIChastPanic extends EntityAIChast
 	public EntityAIChastPanic(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 
 		this.speed = speed;
 		this.distance = distance;
