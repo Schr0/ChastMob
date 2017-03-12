@@ -5,18 +5,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import schr0.chastmob.ChastMob;
 
-public class ItemHelmetChastWood extends ItemHelmetChast
+public class ItemHelmetChastGold extends ItemHelmetChast
 {
 
-	public ItemHelmetChastWood()
+	public ItemHelmetChastGold()
 	{
-		super(Item.ToolMaterial.WOOD);
+		super(Item.ToolMaterial.GOLD);
 	}
 
 	@Override
 	public ResourceLocation getTexture(ItemStack stack)
 	{
-		return new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/armour/helmet_chast_wood.png");
+		return new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/armour/helmet_chast_gold.png");
 	}
 
 }

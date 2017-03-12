@@ -31,7 +31,7 @@ public class ChastMob
 	/**
 	 * Modのバージョン.
 	 */
-	public static final String MOD_VERSION = "1.1.0";
+	public static final String MOD_VERSION = "2.0.0";
 
 	/**
 	 * Forgeのバージョン.

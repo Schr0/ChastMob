@@ -1,6 +1,6 @@
 package schr0.chastmob.item;
 
-import net.minecraft.item.ItemArmor;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import schr0.chastmob.ChastMob;
@@ -10,7 +10,7 @@ public class ItemHelmetChastIron extends ItemHelmetChast
 
 	public ItemHelmetChastIron()
 	{
-		super(ItemArmor.ArmorMaterial.IRON);
+		super(Item.ToolMaterial.IRON);
 	}
 
 	@Override
