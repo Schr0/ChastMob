@@ -1,11 +1,12 @@
 package schr0.chastmob.entity.render.layer;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import schr0.chastmob.ChastMob;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.render.RenderChast;
@@ -14,8 +15,6 @@ import schr0.chastmob.item.ItemHelmetChast;
 @SideOnly(Side.CLIENT)
 public class LayerChastHelmet extends LayerChast
 {
-
-	private static final ResourceLocation RES_DEFAULT = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/armour/helmet_chast_wood.png");
 
 	public LayerChastHelmet(RenderChast chastRendererRendererIn)
 	{
@@ -31,7 +30,7 @@ public class LayerChastHelmet extends LayerChast
 		{
 			this.getRenderChast().bindTexture(this.getArmourTexture(stackEqHead));
 
-			this.getModelChast().setModelAttributes(this.getRenderChast().getMainModel());
+			this.getModelChast().setModelAttributes(this.getModelChast());
 			this.getModelChast().render(entityChast, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 			this.getModelChast().setLivingAnimations(entityChast, limbSwing, limbSwingAmount, partialTicks);
 		}
@@ -45,6 +44,7 @@ public class LayerChastHelmet extends LayerChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
+	@Nullable
 	private ResourceLocation getArmourTexture(ItemStack stack)
 	{
 		if (stack.getItem() instanceof ItemHelmetChast)
@@ -52,6 +52,6 @@ public class LayerChastHelmet extends LayerChast
 			return ((ItemHelmetChast) stack.getItem()).getTexture(stack);
 		}
 
-		return RES_DEFAULT;
+		return (ResourceLocation) null;
 	}
 }

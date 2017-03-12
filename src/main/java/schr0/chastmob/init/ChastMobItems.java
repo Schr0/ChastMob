@@ -30,8 +30,8 @@ public class ChastMobItems
 	public static final Item HELMET_CHAST_WOOD;
 	public static final Item HELMET_CHAST_STONE;
 	public static final Item HELMET_CHAST_IRON;
-	public static final Item HELMET_CHAST_GOLD;
 	public static final Item HELMET_CHAST_DIAMOND;
+	public static final Item HELMET_CHAST_GOLD;
 
 	public static final String NAME_SOUL_BOTTLE = "soul_bottle";
 	public static final String NAME_SOUL_BOTTLE_FULL = "soul_bottle_full";
@@ -41,19 +41,10 @@ public class ChastMobItems
 	public static final String NAME_HELMET_CHAST_WOOD = "helmet_chast_wood";
 	public static final String NAME_HELMET_CHAST_STONE = "helmet_chast_stone";
 	public static final String NAME_HELMET_CHAST_IRON = "helmet_chast_iron";
-	public static final String NAME_HELMET_CHAST_GOLD = "helmet_chast_gold";
 	public static final String NAME_HELMET_CHAST_DIAMOND = "helmet_chast_diamond";
+	public static final String NAME_HELMET_CHAST_GOLD = "helmet_chast_gold";
 
-	public static final int META_SOUL_BOTTLE = 0;
-	public static final int META_SOUL_BOTTLE_FULL = 0;
-	public static final int META_SOUL_FRAGMENT = 0;
-	public static final int META_CORE_CHAST = 0;
-	public static final int META_SPECIFICATION_PATROL = 0;
-	public static final int META_HELMET_CHAST_WOOD = 0;
-	public static final int META_HELMET_CHAST_STONE = 0;
-	public static final int META_HELMET_CHAST_IRON = 0;
-	public static final int META_HELMET_CHAST_GOLD = 0;
-	public static final int META_HELMET_CHAST_DIAMOND = 0;
+	public static final int META_DEFAULT = 0;
 
 	static
 	{
@@ -65,37 +56,37 @@ public class ChastMobItems
 		HELMET_CHAST_WOOD = new ItemHelmetChastWood().setUnlocalizedName(NAME_HELMET_CHAST_WOOD).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		HELMET_CHAST_STONE = new ItemHelmetChastStone().setUnlocalizedName(NAME_HELMET_CHAST_STONE).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		HELMET_CHAST_IRON = new ItemHelmetChastIron().setUnlocalizedName(NAME_HELMET_CHAST_IRON).setCreativeTab(ChastMobCreativeTabs.ITEM);
-		HELMET_CHAST_GOLD = new ItemHelmetChastGold().setUnlocalizedName(NAME_HELMET_CHAST_GOLD).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		HELMET_CHAST_DIAMOND = new ItemHelmetChastDiamond().setUnlocalizedName(NAME_HELMET_CHAST_DIAMOND).setCreativeTab(ChastMobCreativeTabs.ITEM);
+		HELMET_CHAST_GOLD = new ItemHelmetChastGold().setUnlocalizedName(NAME_HELMET_CHAST_GOLD).setCreativeTab(ChastMobCreativeTabs.ITEM);
 	}
 
 	public void init()
 	{
-		registerItem(SOUL_BOTTLE, NAME_SOUL_BOTTLE, META_SOUL_BOTTLE);
-		registerItem(SOUL_BOTTLE_FULL, NAME_SOUL_BOTTLE_FULL, META_SOUL_BOTTLE_FULL);
-		registerItem(SOUL_FRAGMENT, NAME_SOUL_FRAGMENT, META_SOUL_FRAGMENT);
-		registerItem(CORE_CHAST, NAME_CORE_CHAST, META_CORE_CHAST);
-		registerItem(SPECIFICATION_PATROL, NAME_SPECIFICATION_PATROL, META_SPECIFICATION_PATROL);
-		registerItem(HELMET_CHAST_WOOD, NAME_HELMET_CHAST_WOOD, META_HELMET_CHAST_WOOD);
-		registerItem(HELMET_CHAST_STONE, NAME_HELMET_CHAST_STONE, META_HELMET_CHAST_STONE);
-		registerItem(HELMET_CHAST_IRON, NAME_HELMET_CHAST_IRON, META_HELMET_CHAST_IRON);
-		registerItem(HELMET_CHAST_GOLD, NAME_HELMET_CHAST_GOLD, META_HELMET_CHAST_GOLD);
-		registerItem(HELMET_CHAST_DIAMOND, NAME_HELMET_CHAST_DIAMOND, META_HELMET_CHAST_DIAMOND);
+		registerItem(SOUL_BOTTLE, NAME_SOUL_BOTTLE, META_DEFAULT);
+		registerItem(SOUL_BOTTLE_FULL, NAME_SOUL_BOTTLE_FULL, META_DEFAULT);
+		registerItem(SOUL_FRAGMENT, NAME_SOUL_FRAGMENT, META_DEFAULT);
+		registerItem(CORE_CHAST, NAME_CORE_CHAST, META_DEFAULT);
+		registerItem(SPECIFICATION_PATROL, NAME_SPECIFICATION_PATROL, META_DEFAULT);
+		registerItem(HELMET_CHAST_WOOD, NAME_HELMET_CHAST_WOOD, META_DEFAULT);
+		registerItem(HELMET_CHAST_STONE, NAME_HELMET_CHAST_STONE, META_DEFAULT);
+		registerItem(HELMET_CHAST_IRON, NAME_HELMET_CHAST_IRON, META_DEFAULT);
+		registerItem(HELMET_CHAST_DIAMOND, NAME_HELMET_CHAST_DIAMOND, META_DEFAULT);
+		registerItem(HELMET_CHAST_GOLD, NAME_HELMET_CHAST_GOLD, META_DEFAULT);
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void initClient()
 	{
-		ChastMobModelLoader.registerModel(SOUL_BOTTLE, META_SOUL_BOTTLE);
-		ChastMobModelLoader.registerModel(SOUL_BOTTLE_FULL, META_SOUL_BOTTLE_FULL);
-		ChastMobModelLoader.registerModel(SOUL_FRAGMENT, META_SOUL_FRAGMENT);
-		ChastMobModelLoader.registerModel(CORE_CHAST, META_CORE_CHAST);
-		ChastMobModelLoader.registerModel(SPECIFICATION_PATROL, META_SPECIFICATION_PATROL);
-		ChastMobModelLoader.registerModel(HELMET_CHAST_WOOD, META_HELMET_CHAST_WOOD);
-		ChastMobModelLoader.registerModel(HELMET_CHAST_STONE, META_HELMET_CHAST_STONE);
-		ChastMobModelLoader.registerModel(HELMET_CHAST_IRON, META_HELMET_CHAST_IRON);
-		ChastMobModelLoader.registerModel(HELMET_CHAST_GOLD, META_HELMET_CHAST_GOLD);
-		ChastMobModelLoader.registerModel(HELMET_CHAST_DIAMOND, META_HELMET_CHAST_DIAMOND);
+		ChastMobModelLoader.registerModel(SOUL_BOTTLE, META_DEFAULT);
+		ChastMobModelLoader.registerModel(SOUL_BOTTLE_FULL, META_DEFAULT);
+		ChastMobModelLoader.registerModel(SOUL_FRAGMENT, META_DEFAULT);
+		ChastMobModelLoader.registerModel(CORE_CHAST, META_DEFAULT);
+		ChastMobModelLoader.registerModel(SPECIFICATION_PATROL, META_DEFAULT);
+		ChastMobModelLoader.registerModel(HELMET_CHAST_WOOD, META_DEFAULT);
+		ChastMobModelLoader.registerModel(HELMET_CHAST_STONE, META_DEFAULT);
+		ChastMobModelLoader.registerModel(HELMET_CHAST_IRON, META_DEFAULT);
+		ChastMobModelLoader.registerModel(HELMET_CHAST_GOLD, META_DEFAULT);
+		ChastMobModelLoader.registerModel(HELMET_CHAST_DIAMOND, META_DEFAULT);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

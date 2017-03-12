@@ -12,12 +12,10 @@ public abstract class LayerChast implements LayerRenderer<EntityChast>
 {
 
 	private final RenderChast renderChast;
-	private final ModelChast modelChast;
 
 	public LayerChast(RenderChast chastRendererRendererIn)
 	{
 		this.renderChast = chastRendererRendererIn;
-		this.modelChast = new ModelChast();
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -29,7 +27,7 @@ public abstract class LayerChast implements LayerRenderer<EntityChast>
 
 	public ModelChast getModelChast()
 	{
-		return this.modelChast;
+		return (ModelChast) renderChast.getMainModel();
 	}
 
 }

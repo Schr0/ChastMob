@@ -9,15 +9,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.render.layer.LayerChastArm;
-import schr0.chastmob.entity.render.layer.LayerChastHelmet;
 import schr0.chastmob.entity.render.layer.LayerChastCore;
 import schr0.chastmob.entity.render.layer.LayerChastHeldItem;
+import schr0.chastmob.entity.render.layer.LayerChastHelmet;
 
 @SideOnly(Side.CLIENT)
 public class RenderChast extends RenderLiving<EntityChast>
 {
 
-	private static final ResourceLocation RES_CHAST = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/chast.png");
+	private static final ResourceLocation RES_ENTITY_CHAST = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/chast.png");
 
 	public RenderChast(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn)
 	{
@@ -31,7 +31,7 @@ public class RenderChast extends RenderLiving<EntityChast>
 	@Override
 	protected ResourceLocation getEntityTexture(EntityChast entity)
 	{
-		return RES_CHAST;
+		return RES_ENTITY_CHAST;
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public class LayerChastCore extends LayerChast
 		float[] dyeRgb = this.getCoreRgb(entityChast);
 		GlStateManager.color(dyeRgb[0], dyeRgb[1], dyeRgb[2]);
 
-		this.getModelChast().setModelAttributes(this.getRenderChast().getMainModel());
+		this.getModelChast().setModelAttributes(this.getModelChast());
 		this.getModelChast().render(entityChast, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 		this.getModelChast().setLivingAnimations(entityChast, limbSwing, limbSwingAmount, partialTicks);
 	}

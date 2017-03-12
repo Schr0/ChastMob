@@ -512,6 +512,16 @@ public class EntityChast extends EntityGolem
 	{
 		super.onUpdate();
 
+		if (this.ticksExisted < (20 * 5))
+		{
+			EntityLivingBase ownerEntity = this.getOwnerEntity();
+
+			if ((ownerEntity != null) && (ownerEntity.getDistanceToEntity(this) < 16.0D))
+			{
+				this.getLookHelper().setLookPositionWithEntity(ownerEntity, this.getHorizontalFaceSpeed(), this.getVerticalFaceSpeed());
+			}
+		}
+
 		boolean isCoverOpen = this.isCoverOpen();
 		this.prevLidAngle = this.lidAngle;
 
@@ -552,16 +562,6 @@ public class EntityChast extends EntityGolem
 			if (this.lidAngle < 0.0F)
 			{
 				this.lidAngle = 0.0F;
-			}
-		}
-
-		if (this.ticksExisted < (20 * 5))
-		{
-			EntityLivingBase ownerEntity = this.getOwnerEntity();
-
-			if ((ownerEntity != null) && (ownerEntity.getDistanceToEntity(this) < 16.0D))
-			{
-				this.getLookHelper().setLookPositionWithEntity(ownerEntity, this.getHorizontalFaceSpeed(), this.getVerticalFaceSpeed());
 			}
 		}
 	}

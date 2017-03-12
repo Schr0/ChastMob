@@ -24,7 +24,6 @@ public class ModelChast extends ModelBase
 	public ModelRenderer armLeft;
 	public ModelRenderer legRight;
 	public ModelRenderer legLeft;
-
 	public ModelRenderer armourUpper;
 	public ModelRenderer armourLower;
 
@@ -73,12 +72,6 @@ public class ModelChast extends ModelBase
 		// 親：this.body.setRotationPoint(0F, 10F, 0F);
 		// 子：this.armourLower.setRotationPoint(0F, 10F, 0F);
 
-		this.coverMain.addChild(this.coverHandle);
-		this.coverMain.addChild(this.armourUpper);
-		this.body.addChild(this.coverMain);
-		this.body.addChild(this.core);
-		this.body.addChild(this.armourLower);
-
 		this.body.mirror = true;
 		this.core.mirror = true;
 		this.coverMain.mirror = true;
@@ -89,6 +82,13 @@ public class ModelChast extends ModelBase
 		this.legLeft.mirror = true;
 		this.armourUpper.mirror = true;
 		this.armourLower.mirror = true;
+
+		this.coverMain.addChild(this.coverHandle);
+		this.body.addChild(this.coverMain);
+		this.body.addChild(this.core);
+
+		this.coverMain.addChild(this.armourUpper);
+		this.body.addChild(this.armourLower);
 	}
 
 	@Override
@@ -146,6 +146,7 @@ public class ModelChast extends ModelBase
 		if (entityChast.isStateSit() || entityChast.isRiding())
 		{
 			float pointSitY = 8.0F;
+
 			this.body.setRotationPoint(0F, (10F + pointSitY), 0F);
 			this.armRight.setRotationPoint(-7F, (8F + pointSitY), 0F);
 			this.armLeft.setRotationPoint(7F, (8F + pointSitY), 0F);
@@ -153,10 +154,12 @@ public class ModelChast extends ModelBase
 			this.legLeft.setRotationPoint(3F, (15F + pointSitY), 0F);
 
 			float angleSitArmX = -0.95F;
+
 			this.armRight.rotateAngleX = angleSitArmX;
 			this.armLeft.rotateAngleX = angleSitArmX;
 
 			float angleSitLegX = -1.55F;
+
 			this.legRight.rotateAngleX = angleSitLegX;
 			this.legLeft.rotateAngleX = angleSitLegX;
 		}
@@ -173,8 +176,12 @@ public class ModelChast extends ModelBase
 
 			if (entityChast.isStatePanic())
 			{
-				this.armRight.rotateAngleX = 0.0F;
-				this.armLeft.rotateAngleX = 0.0F;
+				float anglePanicArmX = 3.0F;
+				float anglePanicSwingArmRightX = (MathHelper.cos(limbSwing * 0.6662F) * 0.7F * limbSwingAmount) - anglePanicArmX;
+				float anglePanicSwingArmLeftX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 0.7F * limbSwingAmount) - anglePanicArmX;
+
+				this.armRight.rotateAngleX = anglePanicSwingArmRightX;
+				this.armLeft.rotateAngleX = anglePanicSwingArmLeftX;
 			}
 			else
 			{
@@ -190,15 +197,14 @@ public class ModelChast extends ModelBase
 		this.armRight.rotateAngleX += angleArmX;
 		this.armLeft.rotateAngleX -= angleArmX;
 
+		float angleArmZ = 0.35F;
 		if (entityChast.isStatePanic())
 		{
-			float anglePanicArmZ = 2.5F;
-			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + anglePanicArmZ;
-			this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - anglePanicArmZ;
+			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmZ;
+			this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + angleArmZ;
 		}
 		else
 		{
-			float angleArmZ = 0.35F;
 			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + angleArmZ;
 			this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmZ;
 		}
