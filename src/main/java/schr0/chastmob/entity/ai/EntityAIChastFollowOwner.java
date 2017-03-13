@@ -33,17 +33,17 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 			return false;
 		}
 
-		EntityLivingBase entityOwner = this.getOwnerEntity().getOwnerEntity();
+		EntityLivingBase ownerEntity = this.getOwnerEntity().getOwnerEntity();
 
-		if (this.canFollowEntityLivingBase(entityOwner))
+		if (this.canFollowEntityLivingBase(ownerEntity))
 		{
-			if (this.getOwnerEntity().getDistanceSqToEntity(entityOwner) < this.distance)
+			if (this.getOwnerEntity().getDistanceSqToEntity(ownerEntity) < this.distance)
 			{
 				return false;
 			}
 			else
 			{
-				this.setFollowing(TIME_LIMIT, entityOwner);
+				this.setFollowing(TIME_LIMIT, ownerEntity);
 
 				return true;
 			}

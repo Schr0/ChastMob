@@ -275,7 +275,6 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Override
-	@Nullable
 	protected SoundEvent getDeathSound()
 	{
 		return SoundEvents.ENTITY_ITEM_BREAK;
@@ -287,7 +286,6 @@ public class EntityChast extends EntityGolem
 		return (this.isOwnerTame() && this.isOwnerEntity(player));
 	}
 
-	@Nullable
 	@Override
 	public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn)
 	{
@@ -320,7 +318,7 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Override
-	public void setItemStackToSlot(EntityEquipmentSlot slotIn, @Nullable ItemStack stack)
+	public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack)
 	{
 		switch (slotIn)
 		{
@@ -362,6 +360,7 @@ public class EntityChast extends EntityGolem
 		return super.attackEntityFrom(source, amount);
 	}
 
+	@Override
 	protected void damageArmor(float damage)
 	{
 		ItemStack stackHelmet = this.getInventoryChastEquipment().getHeadItem();
@@ -369,11 +368,6 @@ public class EntityChast extends EntityGolem
 		if (ChastMobHelper.isNotEmptyItemStack(stackHelmet))
 		{
 			stackHelmet.damageItem(Math.max(1, (int) (damage / 4)), this);
-
-			if (stackHelmet.isEmpty())
-			{
-				this.getInventoryChastEquipment().setInventorySlotContents(0, ChastMobHelper.getEmptyItemStack());
-			}
 		}
 	}
 
@@ -421,7 +415,7 @@ public class EntityChast extends EntityGolem
 			}
 
 			boolean isServerWorld = !this.getEntityWorld().isRemote;
-			ItemStack stack = player.getHeldItem(hand);
+			ItemStack stackHeld = player.getHeldItem(hand);
 
 			for (Entity passenger : this.getPassengers())
 			{
@@ -436,11 +430,11 @@ public class EntityChast extends EntityGolem
 				}
 			}
 
-			if (ChastMobHelper.isNotEmptyItemStack(stack))
+			if (ChastMobHelper.isNotEmptyItemStack(stackHeld))
 			{
-				if (stack.getItem() == Items.DYE)
+				if (stackHeld.getItem() == Items.DYE)
 				{
-					EnumDyeColor enumDyeColor = EnumDyeColor.byDyeDamage(stack.getMetadata());
+					EnumDyeColor enumDyeColor = EnumDyeColor.byDyeDamage(stackHeld.getMetadata());
 
 					if (enumDyeColor != this.getArmColor())
 					{
@@ -450,7 +444,7 @@ public class EntityChast extends EntityGolem
 
 							if (!player.capabilities.isCreativeMode)
 							{
-								stack.shrink(1);
+								stackHeld.shrink(1);
 							}
 						}
 
@@ -458,7 +452,7 @@ public class EntityChast extends EntityGolem
 					}
 				}
 
-				if (stack.interactWithEntity(player, this, hand))
+				if (stackHeld.interactWithEntity(player, this, hand))
 				{
 					return this.onSuccessProcessInteract(player, (SoundEvent) null);
 				}

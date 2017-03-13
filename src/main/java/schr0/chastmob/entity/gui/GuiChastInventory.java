@@ -24,18 +24,17 @@ public class GuiChastInventory extends GuiContainer
 
 	private static final ResourceLocation RES_CHAST_STATUS = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/gui/chast_inventory.png");
 
-	private EntityChast theChast;
-	private EntityPlayer thePlayer;
+	private EntityChast guiChast;
+	private EntityPlayer guiPlayer;
 	private GuiChastInventory.ChageAIStateButton buttonChageAIState;
 
 	public GuiChastInventory(EntityChast entityChast, EntityPlayer entityPlayer)
 	{
 		super(new ContainerChastInventory(entityChast, entityPlayer));
 
-		this.xSize = 176;
 		this.ySize = 222;
-		this.theChast = entityChast;
-		this.thePlayer = entityPlayer;
+		this.guiChast = entityChast;
+		this.guiPlayer = entityPlayer;
 	}
 
 	@Override
@@ -62,15 +61,15 @@ public class GuiChastInventory extends GuiContainer
 
 		int entityPosX = (originPosX + 51);
 		int entityPosY = (originPosY + 60);
-		GuiInventory.drawEntityOnScreen(entityPosX, entityPosY, 25, (float) (entityPosX - xMouse), (float) ((entityPosY / 2) - yMouse), this.theChast);
+		GuiInventory.drawEntityOnScreen(entityPosX, entityPosY, 25, (float) (entityPosX - xMouse), (float) ((entityPosY / 2) - yMouse), this.guiChast);
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int xMouse, int yMouse)
 	{
-		String nameChast = this.theChast.getName() + " / " + this.theChast.getAIMode().getLabel();
+		String nameChast = this.guiChast.getName() + " / " + this.guiChast.getAIMode().getLabel();
 		this.fontRendererObj.drawString(nameChast, this.xSize / 2 - this.fontRendererObj.getStringWidth(nameChast) / 2, 6, 4210752);
-		this.fontRendererObj.drawString(this.thePlayer.inventory.getDisplayName().getUnformattedText(), 8, 128, 4210752);
+		this.fontRendererObj.drawString(this.guiPlayer.inventory.getDisplayName().getUnformattedText(), 8, 128, 4210752);
 	}
 
 	@Override
@@ -80,7 +79,7 @@ public class GuiChastInventory extends GuiContainer
 
 		if (this.isPointInRegion(102, 22, 64, 14, mouseX, mouseY))
 		{
-			this.drawHoveringText(Lists.newArrayList(this.theChast.getHealth() + " / " + this.theChast.getMaxHealth()), mouseX, mouseY);
+			this.drawHoveringText(Lists.newArrayList(this.guiChast.getHealth() + " / " + this.guiChast.getMaxHealth()), mouseX, mouseY);
 		}
 	}
 
@@ -89,7 +88,7 @@ public class GuiChastInventory extends GuiContainer
 	{
 		if (button == this.buttonChageAIState)
 		{
-			ChastMobPacket.DISPATCHER.sendToServer(new MessageButtonAction(this.theChast));
+			ChastMobPacket.DISPATCHER.sendToServer(new MessageButtonAction(this.guiChast));
 
 			((ChageAIStateButton) button).mouseClicked();
 		}
@@ -101,7 +100,7 @@ public class GuiChastInventory extends GuiContainer
 	{
 		int healthTextureY;
 
-		switch (this.theChast.getHealthState())
+		switch (this.guiChast.getHealthState())
 		{
 			case HURT :
 
@@ -125,8 +124,8 @@ public class GuiChastInventory extends GuiContainer
 
 	private int getHealthBar()
 	{
-		int health = (int) this.theChast.getHealth();
-		int healthMax = (int) this.theChast.getMaxHealth();
+		int health = (int) this.guiChast.getHealth();
+		int healthMax = (int) this.guiChast.getMaxHealth();
 
 		return Math.min(60, (60 - ((healthMax - health) * 3)));
 	}

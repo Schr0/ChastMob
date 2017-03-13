@@ -169,15 +169,6 @@ public class EntityAIChastPanic extends EntityAIChast
 
 				stackInv.shrink(1);
 
-				if (stackInv.isEmpty())
-				{
-					inventoryChastEquipment.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());
-				}
-				else
-				{
-					inventoryChastEquipment.setInventorySlotContents(slot, stackInv);
-				}
-
 				entityChast.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 
 				return;
@@ -204,15 +195,6 @@ public class EntityAIChastPanic extends EntityAIChast
 				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackInvCopy);
 
 				stackInv.shrink(1);
-
-				if (stackInv.isEmpty())
-				{
-					inventoryChastMain.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());
-				}
-				else
-				{
-					inventoryChastMain.setInventorySlotContents(slot, stackInv);
-				}
 
 				entityChast.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 

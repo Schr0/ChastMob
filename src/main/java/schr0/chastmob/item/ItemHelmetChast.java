@@ -2,6 +2,8 @@ package schr0.chastmob.item;
 
 import com.google.common.collect.Multimap;
 
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -46,6 +48,17 @@ public abstract class ItemHelmetChast extends Item
 	public int getItemEnchantability()
 	{
 		return this.enchantability;
+	}
+
+	@Override
+	public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment)
+	{
+		if (enchantment.type == EnumEnchantmentType.ARMOR_HEAD)
+		{
+			return true;
+		}
+
+		return super.canApplyAtEnchantingTable(stack, enchantment);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

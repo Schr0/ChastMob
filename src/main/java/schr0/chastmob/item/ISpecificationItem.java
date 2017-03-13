@@ -5,6 +5,6 @@ import net.minecraft.item.ItemStack;
 public interface ISpecificationItem
 {
 
-	boolean isItemValidForEquipmentSlot(ItemStack stack);
+	boolean isItemValidForSpecificationSlot(ItemStack stack);
 
 }

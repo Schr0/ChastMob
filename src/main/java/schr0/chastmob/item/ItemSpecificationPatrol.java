@@ -55,7 +55,7 @@ public class ItemSpecificationPatrol extends Item implements ISpecificationItem
 	}
 
 	@Override
-	public boolean isItemValidForEquipmentSlot(ItemStack stack)
+	public boolean isItemValidForSpecificationSlot(ItemStack stack)
 	{
 		if (stack.getItem() == ChastMobItems.SPECIFICATION_PATROL)
 		{
