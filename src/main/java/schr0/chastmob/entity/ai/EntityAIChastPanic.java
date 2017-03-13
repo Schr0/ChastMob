@@ -163,13 +163,13 @@ public class EntityAIChastPanic extends EntityAIChast
 
 				ItemStack stackInvCopy = stackInv.copy();
 
-				stackInvCopy.stackSize = 1;
+				stackInvCopy.setCount(1);
 
 				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackInvCopy);
 
-				--stackInv.stackSize;
+				stackInv.shrink(1);
 
-				if (stackInv.stackSize <= 0)
+				if (stackInv.isEmpty())
 				{
 					inventoryChastEquipment.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());
 				}
@@ -199,13 +199,13 @@ public class EntityAIChastPanic extends EntityAIChast
 
 				ItemStack stackInvCopy = stackInv.copy();
 
-				stackInvCopy.stackSize = 1;
+				stackInvCopy.setCount(1);
 
 				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackInvCopy);
 
-				--stackInv.stackSize;
+				stackInv.shrink(1);
 
-				if (stackInv.stackSize <= 0)
+				if (stackInv.isEmpty())
 				{
 					inventoryChastMain.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());
 				}
@@ -239,9 +239,9 @@ public class EntityAIChastPanic extends EntityAIChast
 				for (int posZ = (entityPosZ - searchXYZ); posZ <= (entityPosZ + searchXYZ); ++posZ)
 				{
 					blockPosMutable.setPos(posX, posY, posZ);
-					Block block = entity.worldObj.getBlockState(blockPosMutable).getBlock();
+					Block block = entity.getEntityWorld().getBlockState(blockPosMutable).getBlock();
 
-					if (block.equals(Blocks.WATER) || block.equals(Blocks.FLOWING_WATER))
+					if ((block == Blocks.WATER) || (block == Blocks.FLOWING_WATER))
 					{
 						float range = (float) ((posX - entityPosX) * (posX - entityPosX) + (posY - entityPosY) * (posY - entityPosY) + (posZ - entityPosZ) * (posZ - entityPosZ));
 

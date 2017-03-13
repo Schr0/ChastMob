@@ -45,7 +45,7 @@ public class GuiChastInventory extends GuiContainer
 
 		int buttonPosX = ((this.width - this.xSize) / 2) + 102;
 		int buttonPosY = ((this.height - this.ySize) / 2) + 41;
-		this.buttonChageAIState = (GuiChastInventory.ChageAIStateButton) this.func_189646_b(new GuiChastInventory.ChageAIStateButton(0, buttonPosX, buttonPosY, 44, 26));
+		this.buttonChageAIState = (GuiChastInventory.ChageAIStateButton) this.addButton(new GuiChastInventory.ChageAIStateButton(0, buttonPosX, buttonPosY, 44, 26));
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class GuiChastInventory extends GuiContainer
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException
 	{
-		if (button.equals(this.buttonChageAIState))
+		if (button == this.buttonChageAIState)
 		{
 			ChastMobPacket.DISPATCHER.sendToServer(new MessageButtonAction(this.theChast));
 

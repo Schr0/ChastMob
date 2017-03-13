@@ -27,10 +27,10 @@ item.helmet_chast_gold.name=Chast Gold Helmet
 item.helmet_chast_diamond.name=Chast Diamond Helmet
 
 // ======================================== ENTITY ===================================== //
-entity.schr0chastmob.chast.name=Chast
-entity.schr0chastmob.chast.thanks=%s " Thanks, %s ! "
-entity.schr0chastmob.chast.goodbye=%s " Goodbye, %s ... "
-entity.schr0chastmob.chast.aimode.freedom=FREEDOM
-entity.schr0chastmob.chast.aimode.follow=FOLLOW
-entity.schr0chastmob.chast.aimode.patrol=PATROL
-entity.schr0chastmob.chast.aimode.supply=SUPPLY
+entity.chast.name=Chast
+entity.chast.thanks=%s " Thanks, %s ! "
+entity.chast.goodbye=%s " Goodbye, %s ... "
+entity.chast.aimode.freedom=FREEDOM
+entity.chast.aimode.follow=FOLLOW
+entity.chast.aimode.patrol=PATROL
+entity.chast.aimode.supply=SUPPLY

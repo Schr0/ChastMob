@@ -52,8 +52,8 @@ public class ChastMobHelper
 
 			if (isNotEmptyItemStack(stackInv))
 			{
-				boolean isItemEqual = (stackInv.getItem().equals(stack.getItem()) && (!stackInv.getHasSubtypes() || stackInv.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackInv, stack));
-				boolean isStackSizeEqual = (stackInv.isStackable() && (stackInv.stackSize < stackInv.getMaxStackSize()) && (stackInv.stackSize < inventory.getInventoryStackLimit()));
+				boolean isItemEqual = (stackInv.getItem() == stack.getItem() && (!stackInv.getHasSubtypes() || stackInv.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackInv, stack));
+				boolean isStackSizeEqual = (stackInv.isStackable() && (stackInv.getCount() < stackInv.getMaxStackSize()) && (stackInv.getCount() < inventory.getInventoryStackLimit()));
 
 				if (isItemEqual && isStackSizeEqual)
 				{
@@ -69,12 +69,12 @@ public class ChastMobHelper
 
 	public static boolean isNotEmptyItemStack(ItemStack stack)
 	{
-		return (stack != null);
+		return !stack.isEmpty();
 	}
 
 	public static ItemStack getEmptyItemStack()
 	{
-		return (ItemStack) null;
+		return ItemStack.EMPTY;
 	}
 
 }

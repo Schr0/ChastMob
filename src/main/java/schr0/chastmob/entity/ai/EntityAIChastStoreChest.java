@@ -108,7 +108,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		{
 			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getOwnerEntity(), this.distance);
 
-			if ((nearChest != null) && nearChest.equals(this.targetChest))
+			if ((nearChest != null) && (nearChest == this.targetChest))
 			{
 				for (int slot = 0; slot < this.getOwnerInventoryMain().getSizeInventory(); ++slot)
 				{
@@ -116,7 +116,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 					if (ChastMobHelper.isNotEmptyItemStack(stackInv))
 					{
-						this.getOwnerInventoryMain().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) nearChest, stackInv, EnumFacing.UP));
+						this.getOwnerInventoryMain().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) null, (IInventory) nearChest, stackInv, EnumFacing.UP));
 
 						this.getOwnerEntity().setCoverOpen(true);
 					}
@@ -171,7 +171,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 				for (int z = (entityPosZ - searchXYZ); z <= (entityPosZ + searchXYZ); ++z)
 				{
 					blockPosMutable.setPos(x, y, z);
-					World world = entityChast.worldObj;
+					World world = entityChast.getEntityWorld();
 					TileEntity tileEntity = world.getTileEntity(blockPosMutable);
 
 					if (tileEntity instanceof TileEntityChest)

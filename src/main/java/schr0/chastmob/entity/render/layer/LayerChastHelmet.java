@@ -49,7 +49,7 @@ public class LayerChastHelmet extends LayerChast
 	{
 		if (stack.getItem() instanceof ItemHelmetChast)
 		{
-			return ((ItemHelmetChast) stack.getItem()).getTexture(stack);
+			return ((ItemHelmetChast) stack.getItem()).getHelmetTexture(stack);
 		}
 
 		return (ResourceLocation) null;

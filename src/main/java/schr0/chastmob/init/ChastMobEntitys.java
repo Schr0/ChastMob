@@ -2,6 +2,8 @@ package schr0.chastmob.init;
 
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -29,7 +31,7 @@ public class ChastMobEntitys
 
 	public void init()
 	{
-		EntityRegistry.registerModEntity(EntityChast.class, NAME_CHAST, ID_CHAST, ChastMob.instance, TRACKING_RANGE, UPDATE_FREQUENCY, SENDS_VELOCITY_UPDATES, EGG_PRIMARY_CHAST, EGG_SECONDARY_CHAST);
+		registerEntity(EntityChast.class, NAME_CHAST, ID_CHAST, ChastMob.instance, TRACKING_RANGE, UPDATE_FREQUENCY, SENDS_VELOCITY_UPDATES, EGG_PRIMARY_CHAST, EGG_SECONDARY_CHAST);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -43,6 +45,13 @@ public class ChastMobEntitys
 				return new RenderChast(renderManager, new ModelChast(), 0.5F);
 			}
 		});
+	}
+
+	// TODO /* ======================================== MOD START =====================================*/
+
+	private static void registerEntity(Class<? extends Entity> entityClass, String entityName, int id, Object mod, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates, int eggPrimary, int eggSecondary)
+	{
+		EntityRegistry.registerModEntity(new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + entityName), entityClass, entityName, id, mod, trackingRange, updateFrequency, sendsVelocityUpdates, eggPrimary, eggSecondary);
 	}
 
 }

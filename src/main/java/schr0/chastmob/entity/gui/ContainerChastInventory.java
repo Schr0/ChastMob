@@ -37,7 +37,7 @@ public class ContainerChastInventory extends Container
 					@Override
 					public boolean isItemValid(@Nullable ItemStack stack)
 					{
-						if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem() instanceof ISpecificationItem))
+						if (stack.getItem() instanceof ISpecificationItem)
 						{
 							if (((ISpecificationItem) stack.getItem()).isItemValidForEquipmentSlot(stack))
 							{
@@ -60,7 +60,7 @@ public class ContainerChastInventory extends Container
 						@Override
 						public boolean isItemValid(@Nullable ItemStack stack)
 						{
-							if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem() instanceof ItemHelmetChast))
+							if (stack.getItem() instanceof ItemHelmetChast)
 							{
 								return true;
 							}
@@ -115,7 +115,7 @@ public class ContainerChastInventory extends Container
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn)
 	{
-		return this.theChast.getInventoryChastMain().isUseableByPlayer(playerIn);
+		return this.theChast.getInventoryChastMain().isUsableByPlayer(playerIn);
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public class ContainerChastInventory extends Container
 			}
 		}
 
-		if (dstItemStack.stackSize == 0)
+		if (dstItemStack.isEmpty())
 		{
 			slot.putStack(ChastMobHelper.getEmptyItemStack());
 		}
@@ -158,12 +158,12 @@ public class ContainerChastInventory extends Container
 			slot.onSlotChanged();
 		}
 
-		if (dstItemStack.stackSize == srcItemStack.stackSize)
+		if (dstItemStack.getCount() == srcItemStack.getCount())
 		{
 			return stackEmpty;
 		}
 
-		slot.onPickupFromSlot(player, dstItemStack);
+		slot.onTake(player, dstItemStack);
 
 		return srcItemStack;
 	}
@@ -172,6 +172,7 @@ public class ContainerChastInventory extends Container
 	public void onContainerClosed(EntityPlayer playerIn)
 	{
 		this.theChast.getInventoryChastMain().closeInventory(playerIn);
+		this.theChast.getInventoryChastEquipment().closeInventory(playerIn);
 
 		super.onContainerClosed(playerIn);
 	}

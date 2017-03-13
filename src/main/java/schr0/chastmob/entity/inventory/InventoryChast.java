@@ -11,26 +11,26 @@ import schr0.chastmob.entity.EntityChast;
 public abstract class InventoryChast extends InventoryBasic
 {
 
-	private EntityChast theChast;
+	private EntityChast entityChast;
 
 	public InventoryChast(EntityChast entityChast, int slotCount)
 	{
 		super(entityChast.getName(), true, slotCount);
 
-		this.theChast = entityChast;
+		this.entityChast = entityChast;
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer player)
+	public boolean isUsableByPlayer(EntityPlayer player)
 	{
-		if (this.theChast.isEntityAlive())
+		if (this.entityChast.isEntityAlive())
 		{
-			if (this.theChast.isStatePanic())
+			if (this.entityChast.isStatePanic())
 			{
 				return false;
 			}
 
-			return (player.getDistanceSqToEntity(this.theChast) <= 64.0D);
+			return (player.getDistanceSqToEntity(this.entityChast) < 64.0D);
 		}
 
 		return false;
@@ -41,7 +41,7 @@ public abstract class InventoryChast extends InventoryBasic
 	{
 		super.markDirty();
 
-		this.theChast.setAITrading(player);
+		this.entityChast.setAITrading(player);
 	}
 
 	@Override
@@ -49,14 +49,14 @@ public abstract class InventoryChast extends InventoryBasic
 	{
 		super.markDirty();
 
-		this.theChast.setAITrading(null);
+		this.entityChast.setAITrading(null);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
 	public EntityChast getOwnerEntity()
 	{
-		return this.theChast;
+		return this.entityChast;
 	}
 
 	public void readInventoryFromNBT(NBTTagList nbtList)
@@ -70,7 +70,7 @@ public abstract class InventoryChast extends InventoryBasic
 
 			if ((0 <= slot) && (slot < this.getSizeInventory()))
 			{
-				this.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(nbt));
+				this.setInventorySlotContents(slot, new ItemStack(nbt));
 			}
 		}
 	}

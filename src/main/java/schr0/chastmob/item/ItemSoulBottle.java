@@ -36,9 +36,11 @@ public class ItemSoulBottle extends Item
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
-		if (worldIn.getBlockState(pos).getBlock().equals(Blocks.SOUL_SAND))
+		ItemStack stack = player.getHeldItem(hand);
+
+		if (worldIn.getBlockState(pos).getBlock() == Blocks.SOUL_SAND)
 		{
 			worldIn.destroyBlock(pos, false);
 
@@ -46,22 +48,22 @@ public class ItemSoulBottle extends Item
 
 			ItemStack stackSoulBottleFull = new ItemStack(ChastMobItems.SOUL_BOTTLE_FULL, 1, ItemSoulBottleFull.MAX_DAMAGE);
 
-			if (!playerIn.inventory.addItemStackToInventory(stackSoulBottleFull))
+			if (!player.inventory.addItemStackToInventory(stackSoulBottleFull))
 			{
-				playerIn.dropItem(stackSoulBottleFull, false);
+				player.dropItem(stackSoulBottleFull, false);
 			}
 
-			if (!playerIn.capabilities.isCreativeMode)
+			if (!player.capabilities.isCreativeMode)
 			{
-				--stack.stackSize;
+				stack.shrink(1);
 			}
 
-			playerIn.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.5F, 1.0F);
+			player.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.5F, 1.0F);
 
 			return EnumActionResult.SUCCESS;
 		}
 
-		return super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+		return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
 	}
 
 }

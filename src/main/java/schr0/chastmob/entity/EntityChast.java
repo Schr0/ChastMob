@@ -52,7 +52,6 @@ import schr0.chastmob.entity.ai.EntityAIChastTrade;
 import schr0.chastmob.entity.ai.EntityAIChastWander;
 import schr0.chastmob.entity.inventory.InventoryChastEquipment;
 import schr0.chastmob.entity.inventory.InventoryChastMain;
-import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobGui;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
@@ -64,9 +63,9 @@ import schr0.chastmob.packet.MessageParticleEntity;
 public class EntityChast extends EntityGolem
 {
 
-	public static void func_189790_b(DataFixer p_189790_0_)
+	public static void registerFixesChast(DataFixer p_189790_0_)
 	{
-		EntityLiving.func_189752_a(p_189790_0_, ChastMobEntitys.NAME_CHAST);
+		EntityLiving.registerFixesMob(p_189790_0_, EntityChast.class);
 	}
 
 	private static final DataParameter<Integer> ARM_COLOR = EntityDataManager.<Integer> createKey(EntityChast.class, DataSerializers.VARINT);
@@ -105,7 +104,7 @@ public class EntityChast extends EntityGolem
 		this.aiChastPanic = new EntityAIChastPanic(this, (speed * 2), distance);
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
-		// FREEDOM (PATROL) || FOLLOW
+		// FREEDOM (PATROL) || FOLLOW (SUPPLY)
 		EntityAIBase aiChastStoreChest = new EntityAIChastStoreChest(this, speed, distance);
 		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this, speed, (double) distance);
 		EntityAIBase aiChastGoHome = new EntityAIChastGoHome(this, speed, distance);
@@ -371,7 +370,7 @@ public class EntityChast extends EntityGolem
 		{
 			stackHelmet.damageItem(Math.max(1, (int) (damage / 4)), this);
 
-			if (stackHelmet.stackSize <= 0)
+			if (stackHelmet.isEmpty())
 			{
 				this.getInventoryChastEquipment().setInventorySlotContents(0, ChastMobHelper.getEmptyItemStack());
 			}
@@ -389,7 +388,7 @@ public class EntityChast extends EntityGolem
 
 			if (ownerEntity instanceof EntityPlayerMP)
 			{
-				((EntityPlayerMP) ownerEntity).addChatMessage(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_GOODBYE, new Object[]
+				((EntityPlayerMP) ownerEntity).sendMessage(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_GOODBYE, new Object[]
 				{
 						TextFormatting.ITALIC.BOLD + this.getName(),
 						TextFormatting.ITALIC.BOLD + ownerEntity.getName(),
@@ -407,7 +406,7 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Override
-	public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+	public boolean processInteract(EntityPlayer player, EnumHand hand)
 	{
 		if (this.isStatePanic())
 		{
@@ -422,6 +421,7 @@ public class EntityChast extends EntityGolem
 			}
 
 			boolean isServerWorld = !this.getEntityWorld().isRemote;
+			ItemStack stack = player.getHeldItem(hand);
 
 			for (Entity passenger : this.getPassengers())
 			{
@@ -438,7 +438,7 @@ public class EntityChast extends EntityGolem
 
 			if (ChastMobHelper.isNotEmptyItemStack(stack))
 			{
-				if (stack.getItem().equals(Items.DYE))
+				if (stack.getItem() == Items.DYE)
 				{
 					EnumDyeColor enumDyeColor = EnumDyeColor.byDyeDamage(stack.getMetadata());
 
@@ -450,7 +450,7 @@ public class EntityChast extends EntityGolem
 
 							if (!player.capabilities.isCreativeMode)
 							{
-								--stack.stackSize;
+								stack.shrink(1);
 							}
 						}
 
@@ -807,7 +807,7 @@ public class EntityChast extends EntityGolem
 			this.setAIState(EnumAIState.FOLLOW);
 			this.setAISitting(false);
 
-			player.addChatMessage(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_THANKS, new Object[]
+			player.sendMessage(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_THANKS, new Object[]
 			{
 					TextFormatting.ITALIC.BOLD + this.getName(),
 					TextFormatting.ITALIC.BOLD + player.getName(),
@@ -821,13 +821,13 @@ public class EntityChast extends EntityGolem
 
 	public EnumAIMode getAIMode()
 	{
-		ItemStack specificationItem = this.getInventoryChastEquipment().getSpecificationItem();
+		ItemStack stackSpecificationItem = this.getInventoryChastEquipment().getSpecificationItem();
 
 		if (this.getAIState() == EnumAIState.FREEDOM)
 		{
-			if (ChastMobHelper.isNotEmptyItemStack(specificationItem) && (specificationItem.getItem().equals(ChastMobItems.SPECIFICATION_PATROL)))
+			if (stackSpecificationItem.getItem() == ChastMobItems.SPECIFICATION_PATROL)
 			{
-				if (((ItemSpecificationPatrol) specificationItem.getItem()).hasHomeChest(specificationItem))
+				if (((ItemSpecificationPatrol) stackSpecificationItem.getItem()).hasHomeChest(stackSpecificationItem))
 				{
 					return EnumAIMode.PATROL;
 				}

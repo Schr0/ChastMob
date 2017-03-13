@@ -27,7 +27,7 @@ public abstract class ItemHelmetChast extends Item
 	}
 
 	@SideOnly(Side.CLIENT)
-	public abstract ResourceLocation getTexture(ItemStack stack);
+	public abstract ResourceLocation getHelmetTexture(ItemStack stack);
 
 	@Override
 	public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack)
@@ -36,7 +36,7 @@ public abstract class ItemHelmetChast extends Item
 
 		if (slot == EntityEquipmentSlot.HEAD)
 		{
-			multimap.put(SharedMonsterAttributes.ARMOR.getAttributeUnlocalizedName(), new AttributeModifier("Helmet modifier", (double) this.damageReduceAmount, 0));
+			multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier("Helmet modifier", (double) this.damageReduceAmount, 0));
 		}
 
 		return multimap;

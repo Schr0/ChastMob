@@ -5,8 +5,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
+import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastCollectItem extends EntityAIChast
@@ -42,7 +44,10 @@ public class EntityAIChastCollectItem extends EntityAIChast
 				{
 					rangeOrigin = range;
 
-					this.setCollecting(TIME_LIMIT, entityItem);
+					if (ChastMobHelper.canStoreInventory(this.getOwnerInventoryMain(), entityItem.getEntityItem()))
+					{
+						this.setCollecting(TIME_LIMIT, entityItem);
+					}
 				}
 			}
 		}
@@ -91,7 +96,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 			{
 				if (entityItem.equals(this.targetEntityItem) && this.canCollectEntityItem(entityItem))
 				{
-					TileEntityHopper.putDropInInventoryAllSlots(this.getOwnerInventoryMain(), entityItem);
+					TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getOwnerInventoryMain(), entityItem);
 
 					this.getOwnerEntity().setCoverOpen(true);
 

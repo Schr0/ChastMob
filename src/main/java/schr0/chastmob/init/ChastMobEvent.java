@@ -16,7 +16,6 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.item.ItemSoulBottleFull;
 import schr0.chastmob.item.ItemSoulFragment;
 import schr0.chastmob.vanilla.EntityAIOcelotSitChast;
@@ -63,7 +62,7 @@ public class ChastMobEvent
 		ItemStack itemStack = event.getItemStack();
 		World world = entityPlayer.getEntityWorld();
 
-		if (ChastMobHelper.isNotEmptyItemStack(itemStack) && (itemStack.getItem() instanceof ItemSoulFragment) && (entityTarget instanceof EntityLivingBase))
+		if ((itemStack.getItem() instanceof ItemSoulFragment) && (entityTarget instanceof EntityLivingBase))
 		{
 			EntityLivingBase targetLivingBase = (EntityLivingBase) entityTarget;
 
@@ -110,7 +109,7 @@ public class ChastMobEvent
 
 	private boolean isItemSoulBottleFullFriendly(ItemStack stack)
 	{
-		if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem() instanceof ItemSoulBottleFull) && (stack.getItemDamage() == 0))
+		if ((stack.getItem() instanceof ItemSoulBottleFull) && (stack.getItemDamage() == 0))
 		{
 			return true;
 		}

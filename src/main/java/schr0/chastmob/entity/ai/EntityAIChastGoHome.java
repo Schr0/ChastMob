@@ -120,7 +120,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 		{
 			TileEntityChest nearChest = this.getNearChestTileEntity(this.getOwnerEntity(), this.distance);
 
-			if (nearChest != null && nearChest.equals(tileEntityChest))
+			if ((nearChest != null) && (nearChest == tileEntityChest))
 			{
 				return false;
 			}
@@ -148,7 +148,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 				for (int z = (blockPosZ - searchXYZ); z <= (blockPosZ + searchXYZ); ++z)
 				{
 					blockPosMutable.setPos(x, y, z);
-					World world = entityChast.worldObj;
+					World world = entityChast.getEntityWorld();
 					TileEntity tileEntity = world.getTileEntity(blockPosMutable);
 
 					if (tileEntity instanceof TileEntityChest)

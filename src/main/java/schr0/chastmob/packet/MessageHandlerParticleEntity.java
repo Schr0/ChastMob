@@ -19,7 +19,7 @@ public class MessageHandlerParticleEntity implements IMessageHandler<MessagePart
 	@Override
 	public IMessage onMessage(MessageParticleEntity message, MessageContext ctx)
 	{
-		World world = FMLClientHandler.instance().getClient().theWorld;
+		World world = FMLClientHandler.instance().getClient().world;
 		Entity entity = message.getEntity(world);
 
 		if (entity != null)

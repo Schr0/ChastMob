@@ -22,7 +22,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
@@ -42,7 +41,7 @@ public class ItemSpecificationPatrol extends Item implements ISpecificationItem
 			{
 				Item item = stack.getItem();
 
-				if (ChastMobHelper.isNotEmptyItemStack(stack) && (item instanceof ItemSpecificationPatrol))
+				if (item instanceof ItemSpecificationPatrol)
 				{
 					if (((ItemSpecificationPatrol) item).hasHomeChest(stack) == false)
 					{
@@ -58,7 +57,7 @@ public class ItemSpecificationPatrol extends Item implements ISpecificationItem
 	@Override
 	public boolean isItemValidForEquipmentSlot(ItemStack stack)
 	{
-		if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem().equals(ChastMobItems.SPECIFICATION_PATROL)))
+		if (stack.getItem() == ChastMobItems.SPECIFICATION_PATROL)
 		{
 			if (((ItemSpecificationPatrol) stack.getItem()).hasHomeChest(stack))
 			{
@@ -100,21 +99,23 @@ public class ItemSpecificationPatrol extends Item implements ISpecificationItem
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
+		ItemStack stack = player.getHeldItem(hand);
+
 		if (!this.hasHomeChest(stack))
 		{
 			if (worldIn.getTileEntity(pos) instanceof TileEntityChest)
 			{
 				this.setHomeChestPosition(stack, pos);
 
-				playerIn.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+				player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 
 				return EnumActionResult.SUCCESS;
 			}
 		}
 
-		return super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+		return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

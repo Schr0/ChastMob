@@ -36,7 +36,7 @@ public class ChastMob
 	/**
 	 * Forgeのバージョン.
 	 */
-	public static final String MOD_DEPENDENCIES = "required-after:Forge@[1.10.2-12.18.3.2185,)";
+	public static final String MOD_DEPENDENCIES = "required-after:forge@[1.11.2-13.20.0.2228,)";
 
 	/**
 	 * ResourceLocationのDomain.
