@@ -6,9 +6,9 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.item.IFilterItem;
-import schr0.chastmob.item.ISpecificationItem;
-import schr0.chastmob.item.ItemHelmetChast;
+import schr0.chastmob.item.ItemFilter;
+import schr0.chastmob.item.ItemHelmet;
+import schr0.chastmob.item.ItemMode;
 
 public class ContainerChastInventory extends Container
 {
@@ -36,7 +36,7 @@ public class ContainerChastInventory extends Container
 						@Override
 						public boolean isItemValid(ItemStack stack)
 						{
-							if (stack.getItem() instanceof ItemHelmetChast)
+							if (stack.getItem() instanceof ItemHelmet)
 							{
 								return true;
 							}
@@ -65,9 +65,9 @@ public class ContainerChastInventory extends Container
 						@Override
 						public boolean isItemValid(ItemStack stack)
 						{
-							if (stack.getItem() instanceof IFilterItem)
+							if (stack.getItem() instanceof ItemFilter)
 							{
-								if (((IFilterItem) stack.getItem()).isItemValidForFilterSlot(stack))
+								if (((ItemFilter) stack.getItem()).isItemValidForSlot(stack))
 								{
 									return true;
 								}
@@ -87,9 +87,9 @@ public class ContainerChastInventory extends Container
 						@Override
 						public boolean isItemValid(ItemStack stack)
 						{
-							if (stack.getItem() instanceof ISpecificationItem)
+							if (stack.getItem() instanceof ItemMode)
 							{
-								if (((ISpecificationItem) stack.getItem()).isItemValidForSpecificationSlot(stack))
+								if (((ItemMode) stack.getItem()).isItemValidForSlot(stack))
 								{
 									return true;
 								}

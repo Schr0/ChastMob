@@ -22,10 +22,10 @@ import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.init.ChastMobLang;
 
-public class ItemCoreChast extends Item
+public class ItemCore extends Item
 {
 
-	public ItemCoreChast()
+	public ItemCore()
 	{
 		this.setMaxStackSize(1);
 	}
@@ -34,7 +34,7 @@ public class ItemCoreChast extends Item
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_CORE_CHAST_TIPS, new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_CORE_TIPS, new Object[0]).getFormattedText());
 	}
 
 	@Override

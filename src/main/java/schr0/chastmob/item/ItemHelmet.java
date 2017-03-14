@@ -13,13 +13,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class ItemHelmetChast extends Item
+public abstract class ItemHelmet extends Item
 {
 
 	private final int damageReduceAmount;
 	private final int enchantability;
 
-	public ItemHelmetChast(ItemHelmetChast.HelmetMaterial material)
+	public ItemHelmet(ItemHelmet.HelmetMaterial material)
 	{
 		this.setMaxDamage(material.getMaxUses());
 		this.setMaxStackSize(1);

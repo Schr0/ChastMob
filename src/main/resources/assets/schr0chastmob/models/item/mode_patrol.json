@@ -2,7 +2,7 @@
 	"parent": "item/generated",
 	"textures":
 	{
-		"layer0": "schr0chastmob:items/specification_patrol"
+		"layer0": "schr0chastmob:items/mode_patrol"
 	},
 
 	"overrides":
@@ -12,7 +12,7 @@
 			{
 				"empty": 1
 			},
-				"model": "schr0chastmob:item/specification_patrol_empty"
+				"model": "schr0chastmob:item/mode_patrol_empty"
 	        }
 	]
 

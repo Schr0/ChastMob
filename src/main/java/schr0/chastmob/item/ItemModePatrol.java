@@ -26,10 +26,10 @@ import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 
-public class ItemSpecificationPatrol extends Item implements ISpecificationItem
+public class ItemModePatrol extends ItemMode
 {
 
-	public ItemSpecificationPatrol()
+	public ItemModePatrol()
 	{
 		this.setMaxStackSize(1);
 
@@ -41,9 +41,9 @@ public class ItemSpecificationPatrol extends Item implements ISpecificationItem
 			{
 				Item item = stack.getItem();
 
-				if (item instanceof ItemSpecificationPatrol)
+				if (item instanceof ItemModePatrol)
 				{
-					if (((ItemSpecificationPatrol) item).hasHomeChest(stack) == false)
+					if (((ItemModePatrol) item).hasHomeChest(stack) == false)
 					{
 						return 1.0F;
 					}
@@ -55,11 +55,11 @@ public class ItemSpecificationPatrol extends Item implements ISpecificationItem
 	}
 
 	@Override
-	public boolean isItemValidForSpecificationSlot(ItemStack stack)
+	public boolean isItemValidForSlot(ItemStack stack)
 	{
-		if (stack.getItem() == ChastMobItems.SPECIFICATION_PATROL)
+		if (stack.getItem() == ChastMobItems.MODE_PATROL)
 		{
-			if (((ItemSpecificationPatrol) stack.getItem()).hasHomeChest(stack))
+			if (((ItemModePatrol) stack.getItem()).hasHomeChest(stack))
 			{
 				return true;
 			}
@@ -79,7 +79,7 @@ public class ItemSpecificationPatrol extends Item implements ISpecificationItem
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_SPECIFICATION_PATROL_TIPS, new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_MODE_PATROL_TIPS, new Object[0]).getFormattedText());
 
 		BlockPos homeChestPosition = this.getHomeChestPosition(stack);
 

@@ -2,6 +2,6 @@
 	"parent": "item/generated",
 	"textures":
 	{
-		"layer0": "schr0chastmob:items/core_chast"
+		"layer0": "schr0chastmob:items/chast_core"
 	}
 }

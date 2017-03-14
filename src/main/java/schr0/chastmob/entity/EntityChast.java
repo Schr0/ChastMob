@@ -57,7 +57,7 @@ import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 import schr0.chastmob.init.ChastMobPacket;
-import schr0.chastmob.item.ItemSpecificationPatrol;
+import schr0.chastmob.item.ItemModePatrol;
 import schr0.chastmob.packet.MessageParticleEntity;
 
 public class EntityChast extends EntityGolem
@@ -815,13 +815,13 @@ public class EntityChast extends EntityGolem
 
 	public EnumAIMode getAIMode()
 	{
-		ItemStack stackSpecificationItem = this.getInventoryChastEquipment().getSpecificationItem();
+		ItemStack stackModeItem = this.getInventoryChastEquipment().getModeItem();
 
 		if (this.getAIState() == EnumAIState.FREEDOM)
 		{
-			if (stackSpecificationItem.getItem() == ChastMobItems.SPECIFICATION_PATROL)
+			if (stackModeItem.getItem() == ChastMobItems.MODE_PATROL)
 			{
-				if (((ItemSpecificationPatrol) stackSpecificationItem.getItem()).hasHomeChest(stackSpecificationItem))
+				if (((ItemModePatrol) stackModeItem.getItem()).hasHomeChest(stackModeItem))
 				{
 					return EnumAIMode.PATROL;
 				}

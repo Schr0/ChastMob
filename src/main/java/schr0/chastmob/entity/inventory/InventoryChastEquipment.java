@@ -33,7 +33,7 @@ public class InventoryChastEquipment extends InventoryChast
 		return this.getStackInSlot(3);
 	}
 
-	public ItemStack getSpecificationItem()
+	public ItemStack getModeItem()
 	{
 		return this.getStackInSlot(4);
 	}

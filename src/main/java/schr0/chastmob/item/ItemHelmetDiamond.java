@@ -4,12 +4,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import schr0.chastmob.ChastMob;
 
-public class ItemHelmetChastDiamond extends ItemHelmetChast
+public class ItemHelmetDiamond extends ItemHelmet
 {
 
-	public ItemHelmetChastDiamond()
+	public ItemHelmetDiamond()
 	{
-		super(ItemHelmetChast.HelmetMaterial.DIAMOND);
+		super(ItemHelmet.HelmetMaterial.DIAMOND);
 	}
 
 	@Override
