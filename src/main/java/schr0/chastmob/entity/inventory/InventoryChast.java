@@ -54,11 +54,6 @@ public abstract class InventoryChast extends InventoryBasic
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public EntityChast getOwnerEntity()
-	{
-		return this.entityChast;
-	}
-
 	public void readInventoryFromNBT(NBTTagList nbtList)
 	{
 		this.clear();

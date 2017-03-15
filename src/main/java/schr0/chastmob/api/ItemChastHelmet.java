@@ -1,4 +1,4 @@
-package schr0.chastmob.item;
+package schr0.chastmob.api;
 
 import com.google.common.collect.Multimap;
 
@@ -13,13 +13,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class ItemHelmet extends Item
+public abstract class ItemChastHelmet extends Item
 {
 
 	private final int damageReduceAmount;
 	private final int enchantability;
 
-	public ItemHelmet(ItemHelmet.HelmetMaterial material)
+	public ItemChastHelmet(ItemChastHelmet.ChastHelmetMaterial material)
 	{
 		this.setMaxDamage(material.getMaxUses());
 		this.setMaxStackSize(1);
@@ -63,8 +63,9 @@ public abstract class ItemHelmet extends Item
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public static enum HelmetMaterial
+	public static enum ChastHelmetMaterial
 	{
+
 		WOOD(59, 1, 15),
 		STONE(131, 2, 5),
 		IRON(250, 3, 14),
@@ -75,7 +76,7 @@ public abstract class ItemHelmet extends Item
 		private final int damageReduceAmount;
 		private final int enchantability;
 
-		private HelmetMaterial(int maxUses, int damageReduceAmount, int enchantability)
+		private ChastHelmetMaterial(int maxUses, int damageReduceAmount, int enchantability)
 		{
 			this.maxUses = maxUses;
 			this.damageReduceAmount = damageReduceAmount;

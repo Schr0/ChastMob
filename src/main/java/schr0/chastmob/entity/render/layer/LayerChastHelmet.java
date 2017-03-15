@@ -8,9 +8,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.api.ItemChastHelmet;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.render.RenderChast;
-import schr0.chastmob.item.ItemHelmet;
 
 @SideOnly(Side.CLIENT)
 public class LayerChastHelmet extends LayerChast
@@ -47,9 +47,9 @@ public class LayerChastHelmet extends LayerChast
 	@Nullable
 	private ResourceLocation getArmourTexture(ItemStack stack)
 	{
-		if (stack.getItem() instanceof ItemHelmet)
+		if (stack.getItem() instanceof ItemChastHelmet)
 		{
-			return ((ItemHelmet) stack.getItem()).getHelmetTexture(stack);
+			return ((ItemChastHelmet) stack.getItem()).getHelmetTexture(stack);
 		}
 
 		return (ResourceLocation) null;

@@ -5,9 +5,9 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.api.ItemChastHelmet;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.item.ItemFilter;
-import schr0.chastmob.item.ItemHelmet;
 import schr0.chastmob.item.ItemMode;
 
 public class ContainerChastInventory extends Container
@@ -36,7 +36,7 @@ public class ContainerChastInventory extends Container
 						@Override
 						public boolean isItemValid(ItemStack stack)
 						{
-							if (stack.getItem() instanceof ItemHelmet)
+							if (stack.getItem() instanceof ItemChastHelmet)
 							{
 								return true;
 							}
@@ -67,7 +67,7 @@ public class ContainerChastInventory extends Container
 						{
 							if (stack.getItem() instanceof ItemFilter)
 							{
-								if (((ItemFilter) stack.getItem()).isItemValidForSlot(stack))
+								if (((ItemFilter) stack.getItem()).hasInventoryFilter(stack))
 								{
 									return true;
 								}

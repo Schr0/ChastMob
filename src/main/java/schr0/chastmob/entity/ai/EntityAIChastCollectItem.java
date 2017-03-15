@@ -6,10 +6,12 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.item.ItemFilter;
 
 public class EntityAIChastCollectItem extends EntityAIChast
 {
@@ -132,9 +134,35 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private boolean canCollectEntityItem(EntityItem entityItem)
 	{
-		if (this.getOwnerEntity().getEntitySenses().canSee(entityItem))
+		if (this.getOwnerEntity().getEntitySenses().canSee(entityItem) && entityItem.isEntityAlive() && !entityItem.cannotPickup())
 		{
-			return (entityItem.isEntityAlive() && !entityItem.cannotPickup());
+			ItemStack stackEntityItem = entityItem.getEntityItem();
+			ItemFilter.InventoryFilter inventoryFilter = this.getOwnerEquipmentInventoryFilter();
+
+			if (inventoryFilter != null)
+			{
+				for (int slot = 0; slot < inventoryFilter.getSizeInventory(); ++slot)
+				{
+					ItemStack stackSlot = inventoryFilter.getStackInSlot(slot);
+
+					if (inventoryFilter.getFilterType() == ItemFilter.Type.WHITE)
+					{
+						if (stackEntityItem.isItemEqual(stackSlot))
+						{
+							return true;
+						}
+					}
+					else
+					{
+						if (stackEntityItem.isItemEqual(stackSlot))
+						{
+							return false;
+						}
+
+						return true;
+					}
+				}
+			}
 		}
 
 		return false;

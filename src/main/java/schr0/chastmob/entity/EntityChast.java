@@ -63,6 +63,37 @@ import schr0.chastmob.packet.MessageParticleEntity;
 public class EntityChast extends EntityGolem
 {
 
+	public static enum HealthState
+	{
+
+		FINE,
+		HURT,
+		DYING,
+
+	}
+
+	public static enum AIMode
+	{
+
+		FREEDOM(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_FREEDOM, new Object[0]).getFormattedText()),
+		FOLLOW(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_FOLLOW, new Object[0]).getFormattedText()),
+		PATROL(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_PATROL, new Object[0]).getFormattedText()),
+		SUPPLY(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_SUPPLY, new Object[0]).getFormattedText());
+
+		private final String label;
+
+		private AIMode(String label)
+		{
+			this.label = label;
+		}
+
+		public String getLabel()
+		{
+			return this.label;
+		}
+
+	}
+
 	public static void registerFixesChast(DataFixer p_189790_0_)
 	{
 		EntityLiving.registerFixesMob(p_189790_0_, EntityChast.class);
@@ -268,7 +299,6 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Override
-	@Nullable
 	protected SoundEvent getHurtSound()
 	{
 		return SoundEvents.BLOCK_WOOD_HIT;
@@ -712,20 +742,20 @@ public class EntityChast extends EntityGolem
 		return ((this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * partialTickTime) * 0.5F * (float) Math.PI);
 	}
 
-	public EnumHealthState getHealthState()
+	public EntityChast.HealthState getHealthState()
 	{
 		int health = (int) this.getHealth();
 		int healthMax = (int) this.getMaxHealth();
 
-		EnumHealthState enumHealthState = EnumHealthState.FINE;
+		EntityChast.HealthState enumHealthState = EntityChast.HealthState.FINE;
 
 		if (health < (healthMax / 2))
 		{
-			enumHealthState = EnumHealthState.HURT;
+			enumHealthState = EntityChast.HealthState.HURT;
 
 			if (health < (healthMax / 4))
 			{
-				enumHealthState = EnumHealthState.DYING;
+				enumHealthState = EntityChast.HealthState.DYING;
 			}
 		}
 
@@ -813,7 +843,7 @@ public class EntityChast extends EntityGolem
 		this.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 	}
 
-	public EnumAIMode getAIMode()
+	public EntityChast.AIMode getAIMode()
 	{
 		ItemStack stackModeItem = this.getInventoryChastEquipment().getModeItem();
 
@@ -823,15 +853,15 @@ public class EntityChast extends EntityGolem
 			{
 				if (((ItemModePatrol) stackModeItem.getItem()).hasHomeChest(stackModeItem))
 				{
-					return EnumAIMode.PATROL;
+					return EntityChast.AIMode.PATROL;
 				}
 			}
 
-			return EnumAIMode.FREEDOM;
+			return EntityChast.AIMode.FREEDOM;
 		}
 		else
 		{
-			return EnumAIMode.FOLLOW;
+			return EntityChast.AIMode.FOLLOW;
 		}
 	}
 

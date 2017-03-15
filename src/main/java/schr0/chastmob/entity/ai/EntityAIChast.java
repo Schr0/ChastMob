@@ -1,5 +1,7 @@
 package schr0.chastmob.entity.ai;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -13,9 +15,10 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.EnumAIMode;
+import schr0.chastmob.entity.inventory.InventoryChastEquipment;
 import schr0.chastmob.entity.inventory.InventoryChastMain;
 import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.item.ItemFilter;
 import schr0.chastmob.item.ItemModePatrol;
 
 public abstract class EntityAIChast extends EntityAIBase
@@ -44,17 +47,17 @@ public abstract class EntityAIChast extends EntityAIBase
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public EntityChast getOwnerEntity()
-	{
-		return this.entityChast;
-	}
-
 	public World getOwnerWorld()
 	{
 		return this.entityChast.getEntityWorld();
 	}
 
-	public EnumAIMode getOwnerAIMode()
+	public EntityChast getOwnerEntity()
+	{
+		return this.entityChast;
+	}
+
+	public EntityChast.AIMode getOwnerAIMode()
 	{
 		return this.entityChast.getAIMode();
 	}
@@ -62,6 +65,11 @@ public abstract class EntityAIChast extends EntityAIBase
 	public InventoryChastMain getOwnerInventoryMain()
 	{
 		return this.entityChast.getInventoryChastMain();
+	}
+
+	public InventoryChastEquipment getOwnerInventoryChastEquipment()
+	{
+		return this.entityChast.getInventoryChastEquipment();
 	}
 
 	public BlockPos getOwnerHomePosition()
@@ -100,6 +108,19 @@ public abstract class EntityAIChast extends EntityAIBase
 		}
 
 		return homePosition;
+	}
+
+	@Nullable
+	public ItemFilter.InventoryFilter getOwnerEquipmentInventoryFilter()
+	{
+		ItemStack stackFilter = this.entityChast.getInventoryChastEquipment().getFilterItem();
+
+		if (stackFilter.getItem() == ChastMobItems.FILTER)
+		{
+			return ((ItemFilter) stackFilter.getItem()).getInventoryFilter(stackFilter);
+		}
+
+		return (ItemFilter.InventoryFilter) null;
 	}
 
 	public boolean canBlockBeSeen(BlockPos blockPos)

@@ -2,8 +2,6 @@ package schr0.chastmob.init;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 
 public class ChastMobCreativeTabs
@@ -13,7 +11,6 @@ public class ChastMobCreativeTabs
 	{
 
 		@Override
-		@SideOnly(Side.CLIENT)
 		public ItemStack getTabIconItem()
 		{
 			return new ItemStack(ChastMobItems.SOUL_BOTTLE_FULL);

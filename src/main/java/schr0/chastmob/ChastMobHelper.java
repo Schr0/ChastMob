@@ -65,7 +65,7 @@ public class ChastMobHelper
 		return -1;
 	}
 
-	// TODO /* ======================================== for 1.11 =====================================*/
+	// TODO /* ======================================== for 1.11.2 =====================================*/
 
 	public static boolean isNotEmptyItemStack(ItemStack stack)
 	{

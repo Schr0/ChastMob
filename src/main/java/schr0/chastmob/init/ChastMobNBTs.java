@@ -15,9 +15,11 @@ public class ChastMobNBTs
 	public static final String ENTITY_CHAST_AI_MODE = ENTITY_CHAST + "ai_mode";
 	public static final String ENTITY_CHAST_STATE_SIT = ENTITY_CHAST + "state_sit";
 
-	private static final String ITEM_HOME_CHEST_MAP = TAG + "item.home_chest_map" + ".";
-	public static final String ITEM_HOME_CHEST_MAP_POS_X = ITEM_HOME_CHEST_MAP + "pos_x";
-	public static final String ITEM_HOME_CHEST_MAP_POS_Y = ITEM_HOME_CHEST_MAP + "pos_y";
-	public static final String ITEM_HOME_CHEST_MAP_POS_Z = ITEM_HOME_CHEST_MAP + "pos_z";
+	private static final String ITEM_MODE_PATROL = TAG + "item.mode_patrol" + ".";
+	public static final String ITEM_MODE_PATROL_POS_X = ITEM_MODE_PATROL + "pos_x";
+	public static final String ITEM_MODE_PATROL_POS_Y = ITEM_MODE_PATROL + "pos_y";
+	public static final String ITEM_MODE_PATROL_POS_Z = ITEM_MODE_PATROL + "pos_z";
+
+	public static final String ITEM_FILTER_INVENTORY = "item.filter.inventory";
 
 }
