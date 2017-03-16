@@ -7,6 +7,7 @@ public class ChastMobGui
 {
 
 	public static final int ID_CHAST_INVENTORY = 0;
+	public static final int ID_FILTER_EDIT = 1;
 
 	public void init()
 	{

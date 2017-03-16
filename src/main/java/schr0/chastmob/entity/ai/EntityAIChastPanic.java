@@ -12,8 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.inventory.InventoryChastEquipment;
-import schr0.chastmob.entity.inventory.InventoryChastMain;
+import schr0.chastmob.inventory.InventoryChastEquipment;
+import schr0.chastmob.inventory.InventoryChastMain;
 
 public class EntityAIChastPanic extends EntityAIChast
 {

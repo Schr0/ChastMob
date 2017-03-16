@@ -1,4 +1,4 @@
-package schr0.chastmob.entity.gui;
+package schr0.chastmob.gui.chastinventory;
 
 import java.io.IOException;
 
@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.init.ChastMobPacket;
-import schr0.chastmob.packet.MessageButtonAction;
+import schr0.chastmob.packet.buttonchange.MessageButtonChange;
 
 @SideOnly(Side.CLIENT)
 public class GuiChastInventory extends GuiContainer
@@ -24,17 +24,17 @@ public class GuiChastInventory extends GuiContainer
 
 	private static final ResourceLocation RES_CHAST_STATUS = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/gui/chast_inventory.png");
 
-	private EntityChast guiChast;
-	private EntityPlayer guiPlayer;
-	private GuiChastInventory.ChageAIStateButton buttonChageAIState;
+	private EntityChast entityChast;
+	private EntityPlayer entityPlayer;
+	private GuiChastInventory.ChangeButton buttonChange;
 
 	public GuiChastInventory(EntityChast entityChast, EntityPlayer entityPlayer)
 	{
 		super(new ContainerChastInventory(entityChast, entityPlayer));
 
 		this.ySize = 222;
-		this.guiChast = entityChast;
-		this.guiPlayer = entityPlayer;
+		this.entityChast = entityChast;
+		this.entityPlayer = entityPlayer;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class GuiChastInventory extends GuiContainer
 
 		int buttonPosX = ((this.width - this.xSize) / 2) + 102;
 		int buttonPosY = ((this.height - this.ySize) / 2) + 41;
-		this.buttonChageAIState = (GuiChastInventory.ChageAIStateButton) this.addButton(new GuiChastInventory.ChageAIStateButton(0, buttonPosX, buttonPosY, 44, 26));
+		this.buttonChange = (GuiChastInventory.ChangeButton) this.addButton(new GuiChastInventory.ChangeButton(0, buttonPosX, buttonPosY));
 	}
 
 	@Override
@@ -61,15 +61,15 @@ public class GuiChastInventory extends GuiContainer
 
 		int entityPosX = (originPosX + 51);
 		int entityPosY = (originPosY + 60);
-		GuiInventory.drawEntityOnScreen(entityPosX, entityPosY, 25, (float) (entityPosX - xMouse), (float) ((entityPosY / 2) - yMouse), this.guiChast);
+		GuiInventory.drawEntityOnScreen(entityPosX, entityPosY, 25, (float) (entityPosX - xMouse), (float) ((entityPosY / 2) - yMouse), this.entityChast);
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int xMouse, int yMouse)
 	{
-		String nameChast = this.guiChast.getName() + " / " + this.guiChast.getAIMode().getLabel();
+		String nameChast = this.entityChast.getName() + " / " + this.entityChast.getAIMode().getLabel();
 		this.fontRendererObj.drawString(nameChast, this.xSize / 2 - this.fontRendererObj.getStringWidth(nameChast) / 2, 6, 4210752);
-		this.fontRendererObj.drawString(this.guiPlayer.inventory.getDisplayName().getUnformattedText(), 8, 128, 4210752);
+		this.fontRendererObj.drawString(this.entityPlayer.inventory.getDisplayName().getUnformattedText(), 8, 128, 4210752);
 	}
 
 	@Override
@@ -79,18 +79,18 @@ public class GuiChastInventory extends GuiContainer
 
 		if (this.isPointInRegion(102, 22, 64, 14, mouseX, mouseY))
 		{
-			this.drawHoveringText(Lists.newArrayList(this.guiChast.getHealth() + " / " + this.guiChast.getMaxHealth()), mouseX, mouseY);
+			this.drawHoveringText(Lists.newArrayList(this.entityChast.getHealth() + " / " + this.entityChast.getMaxHealth()), mouseX, mouseY);
 		}
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException
 	{
-		if (button == this.buttonChageAIState)
+		if (button == this.buttonChange)
 		{
-			ChastMobPacket.DISPATCHER.sendToServer(new MessageButtonAction(this.guiChast));
+			ChastMobPacket.DISPATCHER.sendToServer(new MessageButtonChange(this.entityChast));
 
-			((ChageAIStateButton) button).mouseClicked();
+			((ChangeButton) button).mouseClicked();
 		}
 	}
 
@@ -100,7 +100,7 @@ public class GuiChastInventory extends GuiContainer
 	{
 		int healthTextureY;
 
-		switch (this.guiChast.getHealthState())
+		switch (this.entityChast.getHealthState())
 		{
 			case HURT :
 
@@ -124,20 +124,20 @@ public class GuiChastInventory extends GuiContainer
 
 	private int getHealthBar()
 	{
-		int health = (int) this.guiChast.getHealth();
-		int healthMax = (int) this.guiChast.getMaxHealth();
+		int health = (int) this.entityChast.getHealth();
+		int healthMax = (int) this.entityChast.getMaxHealth();
 
 		return Math.min(60, (60 - ((healthMax - health) * 3)));
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static class ChageAIStateButton extends GuiButton
+	private static class ChangeButton extends GuiButton
 	{
 		private int buttonTextureY;
 
-		public ChageAIStateButton(int buttonId, int x, int y, int widthIn, int heightIn)
+		public ChangeButton(int buttonId, int x, int y)
 		{
-			super(buttonId, x, y, widthIn, heightIn, "");
+			super(buttonId, x, y, 44, 26, "");
 
 			this.buttonTextureY = 56;
 		}

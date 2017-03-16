@@ -1,4 +1,4 @@
-package schr0.chastmob.entity.inventory;
+package schr0.chastmob.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryBasic;

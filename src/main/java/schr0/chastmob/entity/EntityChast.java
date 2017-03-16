@@ -50,49 +50,18 @@ import schr0.chastmob.entity.ai.EntityAIChastSit;
 import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
 import schr0.chastmob.entity.ai.EntityAIChastTrade;
 import schr0.chastmob.entity.ai.EntityAIChastWander;
-import schr0.chastmob.entity.inventory.InventoryChastEquipment;
-import schr0.chastmob.entity.inventory.InventoryChastMain;
 import schr0.chastmob.init.ChastMobGui;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 import schr0.chastmob.init.ChastMobPacket;
+import schr0.chastmob.inventory.InventoryChastEquipment;
+import schr0.chastmob.inventory.InventoryChastMain;
 import schr0.chastmob.item.ItemModePatrol;
-import schr0.chastmob.packet.MessageParticleEntity;
+import schr0.chastmob.packet.particleentity.MessageParticleEntity;
 
 public class EntityChast extends EntityGolem
 {
-
-	public static enum HealthState
-	{
-
-		FINE,
-		HURT,
-		DYING,
-
-	}
-
-	public static enum AIMode
-	{
-
-		FREEDOM(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_FREEDOM, new Object[0]).getFormattedText()),
-		FOLLOW(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_FOLLOW, new Object[0]).getFormattedText()),
-		PATROL(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_PATROL, new Object[0]).getFormattedText()),
-		SUPPLY(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_SUPPLY, new Object[0]).getFormattedText());
-
-		private final String label;
-
-		private AIMode(String label)
-		{
-			this.label = label;
-		}
-
-		public String getLabel()
-		{
-			return this.label;
-		}
-
-	}
 
 	public static void registerFixesChast(DataFixer p_189790_0_)
 	{
@@ -736,6 +705,15 @@ public class EntityChast extends EntityGolem
 
 	// TODO /* ======================================== MOD START =====================================*/
 
+	public static enum HealthState
+	{
+
+		FINE,
+		HURT,
+		DYING,
+
+	}
+
 	@SideOnly(Side.CLIENT)
 	public float getAngleCoverX(float partialTickTime)
 	{
@@ -747,7 +725,7 @@ public class EntityChast extends EntityGolem
 		int health = (int) this.getHealth();
 		int healthMax = (int) this.getMaxHealth();
 
-		EntityChast.HealthState enumHealthState = EntityChast.HealthState.FINE;
+		HealthState enumHealthState = EntityChast.HealthState.FINE;
 
 		if (health < (healthMax / 2))
 		{
@@ -843,7 +821,7 @@ public class EntityChast extends EntityGolem
 		this.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 	}
 
-	public EntityChast.AIMode getAIMode()
+	public EnumAIMode getAIMode()
 	{
 		ItemStack stackModeItem = this.getInventoryChastEquipment().getModeItem();
 
@@ -853,15 +831,15 @@ public class EntityChast extends EntityGolem
 			{
 				if (((ItemModePatrol) stackModeItem.getItem()).hasHomeChest(stackModeItem))
 				{
-					return EntityChast.AIMode.PATROL;
+					return EnumAIMode.PATROL;
 				}
 			}
 
-			return EntityChast.AIMode.FREEDOM;
+			return EnumAIMode.FREEDOM;
 		}
 		else
 		{
-			return EntityChast.AIMode.FOLLOW;
+			return EnumAIMode.FOLLOW;
 		}
 	}
 

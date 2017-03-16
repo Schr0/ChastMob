@@ -1,4 +1,4 @@
-package schr0.chastmob.entity.inventory;
+package schr0.chastmob.inventory;
 
 import schr0.chastmob.entity.EntityChast;
 

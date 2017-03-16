@@ -16,7 +16,7 @@ public class ItemHelmetWood extends ItemChastHelmet
 	@Override
 	public ResourceLocation getHelmetTexture(ItemStack stack)
 	{
-		return new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/armour/chast_helmet_wood.png");
+		return new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/entity/chast/armour/helmet_wood.png");
 	}
 
 }

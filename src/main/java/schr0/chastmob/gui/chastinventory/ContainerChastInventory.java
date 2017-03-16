@@ -1,4 +1,4 @@
-package schr0.chastmob.entity.gui;
+package schr0.chastmob.gui.chastinventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -13,8 +13,8 @@ import schr0.chastmob.item.ItemMode;
 public class ContainerChastInventory extends Container
 {
 
-	private EntityChast theChast;
-	private EntityPlayer thePlayer;
+	private EntityChast entityChast;
+	private EntityPlayer entityPlayer;
 
 	public ContainerChastInventory(EntityChast entityChast, EntityPlayer entityPlayer)
 	{
@@ -134,14 +134,14 @@ public class ContainerChastInventory extends Container
 			this.addSlotToContainer(new Slot(entityPlayer.inventory, index, (row * 18) + 8, 198));
 		}
 
-		this.theChast = entityChast;
-		this.thePlayer = entityPlayer;
+		this.entityChast = entityChast;
+		this.entityPlayer = entityPlayer;
 	}
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn)
 	{
-		return this.theChast.getInventoryChastMain().isUsableByPlayer(playerIn);
+		return this.entityChast.getInventoryChastMain().isUsableByPlayer(playerIn);
 	}
 
 	@Override
@@ -200,8 +200,9 @@ public class ContainerChastInventory extends Container
 	@Override
 	public void onContainerClosed(EntityPlayer playerIn)
 	{
-		this.theChast.getInventoryChastMain().closeInventory(playerIn);
-		this.theChast.getInventoryChastEquipment().closeInventory(playerIn);
+		this.entityChast.getInventoryChastMain().closeInventory(playerIn);
+		this.entityChast.getInventoryChastEquipment().closeInventory(playerIn);
+		this.entityPlayer.inventory.openInventory(playerIn);
 
 		super.onContainerClosed(playerIn);
 	}

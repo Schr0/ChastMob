@@ -73,6 +73,7 @@ public class ItemModePatrol extends ItemMode
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
 		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_MODE_PATROL_TIPS, new Object[0]).getFormattedText());
+		tooltip.add("");
 
 		BlockPos homeChestPosition = this.getHomeChestPosition(stack);
 

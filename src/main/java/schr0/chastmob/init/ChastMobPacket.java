@@ -5,10 +5,12 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
-import schr0.chastmob.packet.MessageButtonAction;
-import schr0.chastmob.packet.MessageHandlerButtonAction;
-import schr0.chastmob.packet.MessageHandlerParticleEntity;
-import schr0.chastmob.packet.MessageParticleEntity;
+import schr0.chastmob.packet.buttonchange.MessageButtonChange;
+import schr0.chastmob.packet.buttonchange.MessageHandlerButtonChange;
+import schr0.chastmob.packet.buttonedit.MessageButtonEdit;
+import schr0.chastmob.packet.buttonedit.MessageHandlerButtonEdit;
+import schr0.chastmob.packet.particleentity.MessageHandlerParticleEntity;
+import schr0.chastmob.packet.particleentity.MessageParticleEntity;
 
 public class ChastMobPacket
 {
@@ -17,11 +19,13 @@ public class ChastMobPacket
 	public static final SimpleNetworkWrapper DISPATCHER = NetworkRegistry.INSTANCE.newSimpleChannel(CHANNEL_NAME);
 
 	public static final int ID_PARTICLE_ENTITY = 0;
-	public static final int ID_GUI_BUTTON = 1;
+	public static final int ID_GUI_BUTTON_CHANGE = 1;
+	public static final int ID_GUI_BUTTON_EDIT = 2;
 
 	public void init()
 	{
-		DISPATCHER.registerMessage(MessageHandlerButtonAction.class, MessageButtonAction.class, ID_GUI_BUTTON, Side.SERVER);
+		DISPATCHER.registerMessage(MessageHandlerButtonChange.class, MessageButtonChange.class, ID_GUI_BUTTON_CHANGE, Side.SERVER);
+		DISPATCHER.registerMessage(MessageHandlerButtonEdit.class, MessageButtonEdit.class, ID_GUI_BUTTON_EDIT, Side.SERVER);
 	}
 
 	@SideOnly(Side.CLIENT)

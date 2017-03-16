@@ -20,6 +20,6 @@ public class ChastMobNBTs
 	public static final String ITEM_MODE_PATROL_POS_Y = ITEM_MODE_PATROL + "pos_y";
 	public static final String ITEM_MODE_PATROL_POS_Z = ITEM_MODE_PATROL + "pos_z";
 
-	public static final String ITEM_FILTER_INVENTORY = "item.filter.inventory";
+	public static final String ITEM_FILTER_INVENTORY = TAG + "item.filter.inventory";
 
 }

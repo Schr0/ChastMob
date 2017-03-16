@@ -1,4 +1,4 @@
-package schr0.chastmob.packet;
+package schr0.chastmob.packet.particleentity;
 
 import java.util.Random;
 

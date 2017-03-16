@@ -38,13 +38,13 @@ public class ChastMobItems
 	public static final String NAME_SOUL_BOTTLE = "soul_bottle";
 	public static final String NAME_SOUL_BOTTLE_FULL = "soul_bottle_full";
 	public static final String NAME_SOUL_FRAGMENT = "soul_fragment";
-	public static final String NAME_CORE = "chast_core";
+	public static final String NAME_CORE = "core";
 	public static final String NAME_MODE_PATROL = "mode_patrol";
-	public static final String NAME_HELMET_WOOD = "chast_helmet_wood";
-	public static final String NAME_HELMET_STONE = "chast_helmet_stone";
-	public static final String NAME_HELMET_IRON = "chast_helmet_iron";
-	public static final String NAME_HELMET_DIAMOND = "chast_helmet_diamond";
-	public static final String NAME_HELMET_GOLD = "chast_helmet_gold";
+	public static final String NAME_HELMET_WOOD = "helmet_wood";
+	public static final String NAME_HELMET_STONE = "helmet_stone";
+	public static final String NAME_HELMET_IRON = "helmet_iron";
+	public static final String NAME_HELMET_DIAMOND = "helmet_diamond";
+	public static final String NAME_HELMET_GOLD = "helmet_gold";
 	public static final String NAME_FILTER = "filter";
 
 	public static final int META = 0;
@@ -102,15 +102,17 @@ public class ChastMobItems
 	{
 		GameRegistry.register(item, new ResourceLocation(ChastMob.MOD_ID, name));
 
+		String modid = ChastMob.MOD_ID + ".";
+
 		if (meta == 0)
 		{
-			OreDictionary.registerOre(name, item);
+			OreDictionary.registerOre(modid + name, item);
 		}
 		else
 		{
-			for (int i = 0; i <= meta; i++)
+			for (int i = 0; i < meta; i++)
 			{
-				OreDictionary.registerOre(name + "_" + i, new ItemStack(item, 1, i));
+				OreDictionary.registerOre(modid + name + "_" + i, new ItemStack(item, 1, i));
 			}
 		}
 	}

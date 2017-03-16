@@ -7,6 +7,7 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.entity.EnumAIMode;
 
 public class EntityAIChastGoHome extends EntityAIChast
 {
@@ -29,7 +30,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getOwnerAIMode() != EntityChast.AIMode.PATROL)
+		if (this.getOwnerAIMode() != EnumAIMode.PATROL)
 		{
 			return false;
 		}

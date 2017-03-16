@@ -11,6 +11,7 @@ import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.inventory.InventoryFilter;
 import schr0.chastmob.item.ItemFilter;
 
 public class EntityAIChastCollectItem extends EntityAIChast
@@ -137,7 +138,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		if (this.getOwnerEntity().getEntitySenses().canSee(entityItem) && entityItem.isEntityAlive() && !entityItem.cannotPickup())
 		{
 			ItemStack stackEntityItem = entityItem.getEntityItem();
-			ItemFilter.InventoryFilter inventoryFilter = this.getOwnerEquipmentInventoryFilter();
+			InventoryFilter inventoryFilter = this.getOwnerEquipmentInventoryFilter();
 
 			if (inventoryFilter != null)
 			{

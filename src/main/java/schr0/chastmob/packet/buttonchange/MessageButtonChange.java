@@ -1,4 +1,4 @@
-package schr0.chastmob.packet;
+package schr0.chastmob.packet.buttonchange;
 
 import javax.annotation.Nullable;
 
@@ -8,17 +8,17 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import schr0.chastmob.entity.EntityChast;
 
-public class MessageButtonAction implements IMessage
+public class MessageButtonChange implements IMessage
 {
 
 	private int entitiyID;
 
-	public MessageButtonAction()
+	public MessageButtonChange()
 	{
 		// none
 	}
 
-	public MessageButtonAction(Entity entity)
+	public MessageButtonChange(Entity entity)
 	{
 		this.entitiyID = entity.getEntityId();
 	}

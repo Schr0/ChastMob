@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobPacket;
-import schr0.chastmob.packet.MessageParticleEntity;
+import schr0.chastmob.packet.particleentity.MessageParticleEntity;
 
 public class ItemSoulBottleFull extends Item
 {

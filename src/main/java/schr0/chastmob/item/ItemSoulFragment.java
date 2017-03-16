@@ -15,7 +15,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobPacket;
-import schr0.chastmob.packet.MessageParticleEntity;
+import schr0.chastmob.packet.particleentity.MessageParticleEntity;
 
 public class ItemSoulFragment extends Item
 {

@@ -15,9 +15,11 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.inventory.InventoryChastEquipment;
-import schr0.chastmob.entity.inventory.InventoryChastMain;
+import schr0.chastmob.entity.EnumAIMode;
 import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.inventory.InventoryChastEquipment;
+import schr0.chastmob.inventory.InventoryChastMain;
+import schr0.chastmob.inventory.InventoryFilter;
 import schr0.chastmob.item.ItemFilter;
 import schr0.chastmob.item.ItemModePatrol;
 
@@ -57,7 +59,7 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.entityChast;
 	}
 
-	public EntityChast.AIMode getOwnerAIMode()
+	public EnumAIMode getOwnerAIMode()
 	{
 		return this.entityChast.getAIMode();
 	}
@@ -111,7 +113,7 @@ public abstract class EntityAIChast extends EntityAIBase
 	}
 
 	@Nullable
-	public ItemFilter.InventoryFilter getOwnerEquipmentInventoryFilter()
+	public InventoryFilter getOwnerEquipmentInventoryFilter()
 	{
 		ItemStack stackFilter = this.entityChast.getInventoryChastEquipment().getFilterItem();
 
@@ -120,7 +122,7 @@ public abstract class EntityAIChast extends EntityAIBase
 			return ((ItemFilter) stackFilter.getItem()).getInventoryFilter(stackFilter);
 		}
 
-		return (ItemFilter.InventoryFilter) null;
+		return (InventoryFilter) null;
 	}
 
 	public boolean canBlockBeSeen(BlockPos blockPos)
