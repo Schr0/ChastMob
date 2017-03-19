@@ -10,7 +10,7 @@ import schr0.chastmob.ChastMobHelper;
 public class ContainerFilterEdit extends Container
 {
 
-	private IInventory inventoryCraft;
+	private IInventory inventoryEdit;
 	private ItemStack stackItemFilter;
 	private EntityPlayer entityPlayer;
 
@@ -60,7 +60,7 @@ public class ContainerFilterEdit extends Container
 			this.addSlotToContainer(new Slot(entityPlayer.inventory, index, (row * 18) + 8, 154));
 		}
 
-		this.inventoryCraft = inventory;
+		this.inventoryEdit = inventory;
 		this.stackItemFilter = stack;
 		this.entityPlayer = entityPlayer;
 	}
@@ -105,13 +105,6 @@ public class ContainerFilterEdit extends Container
 				return stackEmpty;
 			}
 		}
-		else
-		{
-			if (!this.mergeItemStack(dstItemStack, 0, 9, false))
-			{
-				return stackEmpty;
-			}
-		}
 
 		if (dstItemStack.isEmpty())
 		{
@@ -135,9 +128,9 @@ public class ContainerFilterEdit extends Container
 	@Override
 	public void onContainerClosed(EntityPlayer playerIn)
 	{
-		for (int slot = 0; slot < this.inventoryCraft.getSizeInventory(); ++slot)
+		for (int slot = 0; slot < this.inventoryEdit.getSizeInventory(); ++slot)
 		{
-			ItemStack stackSlot = this.inventoryCraft.getStackInSlot(slot);
+			ItemStack stackSlot = this.inventoryEdit.getStackInSlot(slot);
 
 			if (!this.entityPlayer.inventory.addItemStackToInventory(stackSlot))
 			{
@@ -145,16 +138,16 @@ public class ContainerFilterEdit extends Container
 			}
 		}
 
-		this.inventoryCraft.clear();
+		this.inventoryEdit.clear();
 
 		super.onContainerClosed(playerIn);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public IInventory getInventoryCraft()
+	public IInventory getInventoryEdit()
 	{
-		return this.inventoryCraft;
+		return this.inventoryEdit;
 	}
 
 }

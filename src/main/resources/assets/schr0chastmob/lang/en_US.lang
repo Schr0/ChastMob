@@ -32,6 +32,9 @@ item.filter_0.tips="Whitelist" Filter.
 item.filter_1.name=Black Filter Sheet
 item.filter_1.tips="Blacklist" Filter.
 
+item.filter.button.clear=CLEAR
+item.filter.button.registry=REGISTRY
+
 // ======================================== ENTITY ===================================== //
 entity.chast.name=Chast
 entity.chast.thanks=%s " Thanks, %s ! "

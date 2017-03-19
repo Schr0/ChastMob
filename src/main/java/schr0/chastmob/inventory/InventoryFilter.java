@@ -22,12 +22,6 @@ public class InventoryFilter extends InventoryBasic
 	}
 
 	@Override
-	public int getInventoryStackLimit()
-	{
-		return 1;
-	}
-
-	@Override
 	public void closeInventory(EntityPlayer player)
 	{
 		Item item = this.stackFilter.getItem();

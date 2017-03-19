@@ -137,25 +137,31 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		if (this.getOwnerEntity().getEntitySenses().canSee(entityItem) && entityItem.isEntityAlive() && !entityItem.cannotPickup())
 		{
-			ItemStack stackEntityItem = entityItem.getEntityItem();
 			InventoryFilter inventoryFilter = this.getOwnerEquipmentInventoryFilter();
 
 			if (inventoryFilter != null)
 			{
+				ItemStack stackA = entityItem.getEntityItem().copy();
+				int meta = stackA.isItemStackDamageable() ? (0) : stackA.getItemDamage();
+
+				stackA.setItemDamage(meta);
+
+				stackA.setCount(1);
+
 				for (int slot = 0; slot < inventoryFilter.getSizeInventory(); ++slot)
 				{
-					ItemStack stackSlot = inventoryFilter.getStackInSlot(slot);
+					ItemStack stackB = inventoryFilter.getStackInSlot(slot);
 
 					if (inventoryFilter.getFilterType() == ItemFilter.Type.WHITE)
 					{
-						if (stackEntityItem.isItemEqual(stackSlot))
+						if (!stackB.isEmpty() && ItemStack.areItemStackTagsEqual(stackA, stackB))
 						{
 							return true;
 						}
 					}
 					else
 					{
-						if (stackEntityItem.isItemEqual(stackSlot))
+						if (!stackB.isEmpty() && ItemStack.areItemStackTagsEqual(stackA, stackB))
 						{
 							return false;
 						}
@@ -163,6 +169,10 @@ public class EntityAIChastCollectItem extends EntityAIChast
 						return true;
 					}
 				}
+			}
+			else
+			{
+				return true;
 			}
 		}
 

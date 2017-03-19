@@ -1,6 +1,9 @@
 package schr0.chastmob.gui.filteredit;
 
 import java.io.IOException;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -9,12 +12,13 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
+import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobPacket;
 import schr0.chastmob.inventory.InventoryFilter;
 import schr0.chastmob.item.ItemFilter;
@@ -26,6 +30,7 @@ public class GuiFilterEdit extends GuiContainer
 
 	private static final ResourceLocation RES_FILTER_EDIT = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/gui/filter_edit.png");
 
+	private IInventory inventoryEdit;
 	private InventoryFilter inventoryFilter;
 	private EntityPlayer entityPlayer;
 	private GuiFilterEdit.RegistryButton buttonRegistry;
@@ -35,6 +40,7 @@ public class GuiFilterEdit extends GuiContainer
 		super(new ContainerFilterEdit(inventory, stack, entityPlayer));
 
 		this.ySize = 178;
+		this.inventoryEdit = inventory;
 		this.inventoryFilter = ((ItemFilter) stack.getItem()).getInventoryFilter(stack);
 		this.entityPlayer = entityPlayer;
 	}
@@ -46,24 +52,30 @@ public class GuiFilterEdit extends GuiContainer
 
 		int buttonPosX = ((this.width - this.xSize) / 2) + 74;
 		int buttonPosY = ((this.height - this.ySize) / 2) + 42;
-		this.buttonRegistry = (GuiFilterEdit.RegistryButton) this.addButton(new GuiFilterEdit.RegistryButton(0, buttonPosX, buttonPosY));
+		this.buttonRegistry = (GuiFilterEdit.RegistryButton) this.addButton(new GuiFilterEdit.RegistryButton(this.inventoryEdit, 0, buttonPosX, buttonPosY));
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float renderPartialTicks, int xMouse, int yMouse)
 	{
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
 		this.mc.getTextureManager().bindTexture(RES_FILTER_EDIT);
 
 		int originPosX = (this.width - this.xSize) / 2;
 		int originPosY = (this.height - this.ySize) / 2;
+
 		this.drawTexturedModalRect(originPosX, originPosY, 0, 0, this.xSize, this.ySize);
 
-		int resultTextureY = 8;
+		int resultTextureY;
 
 		if (this.inventoryFilter.getFilterType() == ItemFilter.Type.BLACK)
 		{
 			resultTextureY = 80;
+		}
+		else
+		{
+			resultTextureY = 8;
 		}
 
 		this.drawTexturedModalRect((originPosX + 102), (originPosY + 17), 184, resultTextureY, 66, 66);
@@ -81,20 +93,21 @@ public class GuiFilterEdit extends GuiContainer
 	{
 		super.drawScreen(mouseX, mouseY, partialTicks);
 
+		int originPosX = (this.width - this.xSize) / 2;
+		int originPosY = (this.height - this.ySize) / 2;
+
 		if (!this.inventoryFilter.isEmpty())
 		{
-			int originPosX = (this.width - this.xSize) / 2;
-			int originPosY = (this.height - this.ySize) / 2;
-			InventoryBasic inventoryFilterCopy = new InventoryBasic("", true, 9);
-
-			for (int slot = 0; slot < this.inventoryFilter.getSizeInventory(); ++slot)
-			{
-				inventoryFilterCopy.setInventorySlotContents(slot, this.inventoryFilter.getStackInSlot(slot));
-			}
-
 			int column;
 			int row;
-			int index;
+			int slot;
+
+			GlStateManager.pushMatrix();
+			RenderHelper.enableGUIStandardItemLighting();
+			GlStateManager.disableLighting();
+			GlStateManager.enableRescaleNormal();
+			GlStateManager.enableColorMaterial();
+			GlStateManager.enableLighting();
 
 			for (column = 0; column < 3; ++column)
 			{
@@ -102,24 +115,13 @@ public class GuiFilterEdit extends GuiContainer
 				{
 					int slotPosX = originPosX + (107 + row * 20);
 					int slotPosY = originPosY + (22 + column * 20);
-					index = (row + column * 3);
-					ItemStack stackSlot = inventoryFilterCopy.getStackInSlot(index);
+					slot = (row + column * 3);
+					ItemStack stackSlot = this.inventoryFilter.getStackInSlot(slot);
 
-					GlStateManager.pushMatrix();
-					RenderHelper.enableGUIStandardItemLighting();
-					GlStateManager.disableLighting();
-					GlStateManager.enableRescaleNormal();
-					GlStateManager.enableColorMaterial();
-					GlStateManager.enableLighting();
 					this.itemRender.zLevel = 100.0F;
 					this.itemRender.renderItemAndEffectIntoGUI(stackSlot, slotPosX, slotPosY);
 					this.itemRender.renderItemOverlays(this.fontRendererObj, stackSlot, slotPosX, slotPosY);
 					this.itemRender.zLevel = 0.0F;
-					GlStateManager.disableLighting();
-					GlStateManager.popMatrix();
-					GlStateManager.enableLighting();
-					GlStateManager.enableDepth();
-					RenderHelper.enableStandardItemLighting();
 				}
 			}
 
@@ -129,8 +131,8 @@ public class GuiFilterEdit extends GuiContainer
 				{
 					int slotPosX = originPosX + (107 + row * 20);
 					int slotPosY = originPosY + (22 + column * 20);
-					index = (row + column * 3);
-					ItemStack stackSlot = inventoryFilterCopy.getStackInSlot(index);
+					slot = (row + column * 3);
+					ItemStack stackSlot = this.inventoryFilter.getStackInSlot(slot);
 
 					if (this.isPointInRegion((107 + row * 20), (22 + column * 20), 16, 16, mouseX, mouseY) && !stackSlot.isEmpty())
 					{
@@ -138,6 +140,28 @@ public class GuiFilterEdit extends GuiContainer
 					}
 				}
 			}
+
+			GlStateManager.disableLighting();
+			GlStateManager.popMatrix();
+			GlStateManager.enableLighting();
+			GlStateManager.enableDepth();
+			RenderHelper.enableStandardItemLighting();
+		}
+
+		if (this.isPointInRegion(74, 42, 27, 19, mouseX, mouseY))
+		{
+			List<String> textLines = Lists.<String> newArrayList();
+
+			if (((ContainerFilterEdit) this.inventorySlots).getInventoryEdit().isEmpty())
+			{
+				textLines.add(new TextComponentTranslation(ChastMobLang.ITEM_FILTER_BUTTON_CLEAR, new Object[0]).getFormattedText());
+			}
+			else
+			{
+				textLines.add(new TextComponentTranslation(ChastMobLang.ITEM_FILTER_BUTTON_REGISTRY, new Object[0]).getFormattedText());
+			}
+
+			this.drawHoveringText(textLines, mouseX, mouseY);
 		}
 	}
 
@@ -147,8 +171,6 @@ public class GuiFilterEdit extends GuiContainer
 		if (button == this.buttonRegistry)
 		{
 			ChastMobPacket.DISPATCHER.sendToServer(new MessageButtonEdit(this.entityPlayer));
-
-			((RegistryButton) button).mouseClicked();
 		}
 	}
 
@@ -157,13 +179,14 @@ public class GuiFilterEdit extends GuiContainer
 	@SideOnly(Side.CLIENT)
 	public static class RegistryButton extends GuiButton
 	{
-		private int buttonTextureY;
 
-		public RegistryButton(int buttonId, int x, int y)
+		private IInventory inventoryEdit;
+
+		public RegistryButton(IInventory inventory, int buttonId, int x, int y)
 		{
 			super(buttonId, x, y, 27, 19, "");
 
-			this.buttonTextureY = 152;
+			this.inventoryEdit = inventory;
 		}
 
 		@Override
@@ -175,23 +198,21 @@ public class GuiFilterEdit extends GuiContainer
 
 				mc.getTextureManager().bindTexture(RES_FILTER_EDIT);
 
-				this.drawTexturedModalRect(this.xPosition, this.yPosition, 184, this.buttonTextureY, this.width, this.height);
+				int buttonTextureY;
+
+				if (this.inventoryEdit.isEmpty())
+				{
+					buttonTextureY = 152;
+				}
+				else
+				{
+					buttonTextureY = 176;
+				}
+
+				this.drawTexturedModalRect(this.xPosition, this.yPosition, 184, buttonTextureY, 27, 19);
+
 			}
 		}
-
-		@Override
-		public void mouseReleased(int mouseX, int mouseY)
-		{
-			this.buttonTextureY = 152;
-		}
-
-		// TODO /* ======================================== MOD START =====================================*/
-
-		public void mouseClicked()
-		{
-			this.buttonTextureY = 176;
-		}
-
 	}
 
 }

@@ -705,35 +705,26 @@ public class EntityChast extends EntityGolem
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public static enum HealthState
-	{
-
-		FINE,
-		HURT,
-		DYING,
-
-	}
-
 	@SideOnly(Side.CLIENT)
 	public float getAngleCoverX(float partialTickTime)
 	{
 		return ((this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * partialTickTime) * 0.5F * (float) Math.PI);
 	}
 
-	public EntityChast.HealthState getHealthState()
+	public EnumHealthState getHealthState()
 	{
 		int health = (int) this.getHealth();
 		int healthMax = (int) this.getMaxHealth();
 
-		HealthState enumHealthState = EntityChast.HealthState.FINE;
+		EnumHealthState enumHealthState = EnumHealthState.FINE;
 
 		if (health < (healthMax / 2))
 		{
-			enumHealthState = EntityChast.HealthState.HURT;
+			enumHealthState = EnumHealthState.HURT;
 
 			if (health < (healthMax / 4))
 			{
-				enumHealthState = EntityChast.HealthState.DYING;
+				enumHealthState = EnumHealthState.DYING;
 			}
 		}
 
