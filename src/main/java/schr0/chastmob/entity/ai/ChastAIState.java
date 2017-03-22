@@ -1,23 +1,23 @@
-package schr0.chastmob.entity;
+package schr0.chastmob.entity.ai;
 
-public enum EnumAIState
+public enum ChastAIState
 {
 
 	FREEDOM(0),
 	FOLLOW(1);
 
-	private static final EnumAIState[] AISTATE_LOOKUP = new EnumAIState[values().length];
+	private static final ChastAIState[] AISTATE_LOOKUP = new ChastAIState[values().length];
 	private final int number;
 
 	static
 	{
-		for (EnumAIState enumaistate : values())
+		for (ChastAIState enumaistate : values())
 		{
 			AISTATE_LOOKUP[enumaistate.getNumber()] = enumaistate;
 		}
 	}
 
-	private EnumAIState(int number)
+	private ChastAIState(int number)
 	{
 		this.number = number;
 	}
@@ -27,7 +27,7 @@ public enum EnumAIState
 		return this.number;
 	}
 
-	public static EnumAIState byNumber(int number)
+	public static ChastAIState byNumber(int number)
 	{
 		if (number < 0 || AISTATE_LOOKUP.length <= number)
 		{

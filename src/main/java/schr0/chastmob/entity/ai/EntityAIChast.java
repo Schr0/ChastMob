@@ -15,7 +15,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.EnumAIMode;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.inventory.InventoryChastEquipment;
 import schr0.chastmob.inventory.InventoryChastMain;
@@ -59,7 +58,7 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.entityChast;
 	}
 
-	public EnumAIMode getOwnerAIMode()
+	public ChastAIMode getOwnerAIMode()
 	{
 		return this.entityChast.getAIMode();
 	}
@@ -119,7 +118,7 @@ public abstract class EntityAIChast extends EntityAIBase
 
 		if (stackFilter.getItem() == ChastMobItems.FILTER)
 		{
-			return ((ItemFilter) stackFilter.getItem()).getInventoryFilter(stackFilter);
+			return ((ItemFilter) stackFilter.getItem()).getInventoryFilterResult(stackFilter);
 		}
 
 		return (InventoryFilter) null;

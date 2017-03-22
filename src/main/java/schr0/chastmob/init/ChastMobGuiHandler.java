@@ -2,7 +2,6 @@ package schr0.chastmob.init;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
@@ -11,6 +10,7 @@ import schr0.chastmob.gui.chastinventory.ContainerChastInventory;
 import schr0.chastmob.gui.chastinventory.GuiChastInventory;
 import schr0.chastmob.gui.filteredit.ContainerFilterEdit;
 import schr0.chastmob.gui.filteredit.GuiFilterEdit;
+import schr0.chastmob.item.ItemFilter;
 
 public class ChastMobGuiHandler implements IGuiHandler
 {
@@ -34,7 +34,9 @@ public class ChastMobGuiHandler implements IGuiHandler
 
 			if (stackMainhand.getItem() == ChastMobItems.FILTER)
 			{
-				return new ContainerFilterEdit(new InventoryBasic("", true, 9), stackMainhand, player);
+				ItemFilter itemFilter = (ItemFilter) stackMainhand.getItem();
+
+				return new ContainerFilterEdit(stackMainhand, itemFilter.getInventoryFilterEdit(stackMainhand), itemFilter.getInventoryFilterResult(stackMainhand), player);
 			}
 		}
 
@@ -60,7 +62,9 @@ public class ChastMobGuiHandler implements IGuiHandler
 
 			if (stackMainhand.getItem() == ChastMobItems.FILTER)
 			{
-				return new GuiFilterEdit(new InventoryBasic("", true, 9), stackMainhand, player);
+				ItemFilter itemFilter = (ItemFilter) stackMainhand.getItem();
+
+				return new GuiFilterEdit(stackMainhand, itemFilter.getInventoryFilterEdit(stackMainhand), itemFilter.getInventoryFilterResult(stackMainhand), player);
 			}
 		}
 

@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import schr0.chastmob.gui.filteredit.ContainerFilterEdit;
-import schr0.chastmob.inventory.InventoryFilter;
+import schr0.chastmob.inventory.InventoryFilterResult;
 
 public class MessageHandlerButtonEdit implements IMessageHandler<MessageButtonEdit, IMessage>
 {
@@ -24,25 +24,25 @@ public class MessageHandlerButtonEdit implements IMessageHandler<MessageButtonEd
 			ContainerFilterEdit containerFilterEdit = (ContainerFilterEdit) entityPlayer.openContainer;
 			ItemStack stackMainhand = entityPlayer.getHeldItemMainhand();
 
-			IInventory inventoryCraft = containerFilterEdit.getInventoryEdit();
-			InventoryFilter inventoryFilter = new InventoryFilter(stackMainhand);
+			IInventory inventoryFilterEdit = containerFilterEdit.getInventoryFilterEdit();
+			InventoryFilterResult inventoryFilterResult = new InventoryFilterResult(stackMainhand);
 
-			for (int slot = 0; slot < inventoryCraft.getSizeInventory(); ++slot)
+			for (int slot = 0; slot < inventoryFilterEdit.getSizeInventory(); ++slot)
 			{
-				ItemStack stackSlot = inventoryCraft.getStackInSlot(slot);
+				ItemStack stackSlot = inventoryFilterEdit.getStackInSlot(slot);
 				int meta = stackSlot.isItemStackDamageable() ? (0) : stackSlot.getItemDamage();
 
 				stackSlot.setItemDamage(meta);
 
-				inventoryFilter.addItem(stackSlot);
+				inventoryFilterResult.addItem(stackSlot);
 			}
 
-			for (int countCheck = 0; countCheck < inventoryFilter.getSizeInventory(); ++countCheck)
+			for (int countCheck = 0; countCheck < inventoryFilterResult.getSizeInventory(); ++countCheck)
 			{
-				inventoryFilter.getStackInSlot(countCheck).setCount(1);
+				inventoryFilterResult.getStackInSlot(countCheck).setCount(1);
 			}
 
-			inventoryFilter.closeInventory(entityPlayer);
+			inventoryFilterResult.closeInventory(entityPlayer);
 
 			entityPlayer.closeScreen();
 		}

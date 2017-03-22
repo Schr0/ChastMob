@@ -152,7 +152,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 				{
 					ItemStack stackB = inventoryFilter.getStackInSlot(slot);
 
-					if (inventoryFilter.getFilterType() == ItemFilter.Type.WHITE)
+					if (inventoryFilter.getType() == ItemFilter.Type.WHITE)
 					{
 						if (!stackB.isEmpty() && ItemStack.areItemStackTagsEqual(stackA, stackB))
 						{

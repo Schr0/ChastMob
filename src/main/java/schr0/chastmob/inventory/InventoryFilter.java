@@ -1,6 +1,5 @@
 package schr0.chastmob.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -9,30 +8,36 @@ import net.minecraft.nbt.NBTTagList;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.item.ItemFilter;
 
-public class InventoryFilter extends InventoryBasic
+public abstract class InventoryFilter extends InventoryBasic
 {
 
-	private ItemStack stackFilter;
+	private ItemStack stackItemFilter;
 
 	public InventoryFilter(ItemStack stack)
 	{
 		super(stack.getDisplayName(), true, 9);
 
-		this.stackFilter = stack;
-	}
-
-	@Override
-	public void closeInventory(EntityPlayer player)
-	{
-		Item item = this.stackFilter.getItem();
-
-		if (item instanceof ItemFilter)
-		{
-			((ItemFilter) item).setInventoryFilter(this.stackFilter, this);
-		}
+		this.stackItemFilter = stack;
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
+
+	public ItemFilter.Type getType()
+	{
+		Item item = this.stackItemFilter.getItem();
+
+		if (item instanceof ItemFilter)
+		{
+			return ((ItemFilter) item).getFilterType(stackItemFilter);
+		}
+
+		return ItemFilter.Type.WHITE;
+	}
+
+	public ItemStack getContainerItem()
+	{
+		return this.stackItemFilter;
+	}
 
 	public void readInventoryFromNBT(NBTTagList nbtList)
 	{
@@ -68,18 +73,6 @@ public class InventoryFilter extends InventoryBasic
 		}
 
 		return nbtList;
-	}
-
-	public ItemFilter.Type getFilterType()
-	{
-		Item item = this.stackFilter.getItem();
-
-		if (item instanceof ItemFilter)
-		{
-			return ((ItemFilter) item).getFilterType(stackFilter);
-		}
-
-		return ItemFilter.Type.WHITE;
 	}
 
 }

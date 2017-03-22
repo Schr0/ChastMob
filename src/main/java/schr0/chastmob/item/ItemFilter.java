@@ -20,10 +20,17 @@ import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobGui;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
-import schr0.chastmob.inventory.InventoryFilter;
+import schr0.chastmob.inventory.InventoryFilterEdit;
+import schr0.chastmob.inventory.InventoryFilterResult;
 
 public class ItemFilter extends Item
 {
+
+	public static enum Type
+	{
+		WHITE,
+		BLACK
+	}
 
 	public ItemFilter()
 	{
@@ -41,7 +48,7 @@ public class ItemFilter extends Item
 	@Override
 	public boolean hasEffect(ItemStack stack)
 	{
-		return this.hasInventoryFilter(stack);
+		return this.hasInventoryFilterResult(stack);
 	}
 
 	@Override
@@ -65,20 +72,20 @@ public class ItemFilter extends Item
 
 		tooltip.add("");
 
-		if (this.hasInventoryFilter(stack))
+		if (this.hasInventoryFilterResult(stack))
 		{
-			InventoryFilter inventoryFilter = this.getInventoryFilter(stack);
+			InventoryFilterResult inventoryFilterResult = this.getInventoryFilterResult(stack);
 			int num = 1;
 
-			for (int slot = 0; slot < inventoryFilter.getSizeInventory(); ++slot)
+			for (int slot = 0; slot < inventoryFilterResult.getSizeInventory(); ++slot)
 			{
-				ItemStack stackSlot = inventoryFilter.getStackInSlot(slot);
+				ItemStack stackSlot = inventoryFilterResult.getStackInSlot(slot);
 
 				if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
 				{
 					String nameItemSlot = stackSlot.getDisplayName();
 
-					if (inventoryFilter.getFilterType() == ItemFilter.Type.BLACK)
+					if (inventoryFilterResult.getType() == ItemFilter.Type.BLACK)
 					{
 						nameItemSlot = (TextFormatting.RED + nameItemSlot);
 					}
@@ -135,33 +142,32 @@ public class ItemFilter extends Item
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public static enum Type
+	public InventoryFilterEdit getInventoryFilterEdit(ItemStack stack)
 	{
-		WHITE,
-		BLACK
+		return new InventoryFilterEdit(stack);
 	}
 
-	public boolean hasInventoryFilter(ItemStack stack)
+	public InventoryFilterResult getInventoryFilterResult(ItemStack stack)
 	{
-		return !this.getInventoryFilter(stack).isEmpty();
-	}
-
-	public InventoryFilter getInventoryFilter(ItemStack stack)
-	{
-		InventoryFilter inventoryFilter = new InventoryFilter(stack);
+		InventoryFilterResult inventoryFilterResult = new InventoryFilterResult(stack);
 		NBTTagCompound nbtItemStack = stack.getTagCompound();
 
 		if ((nbtItemStack != null) && nbtItemStack.hasKey(ChastMobNBTs.ITEM_FILTER_INVENTORY))
 		{
-			inventoryFilter.readInventoryFromNBT(nbtItemStack.getTagList(ChastMobNBTs.ITEM_FILTER_INVENTORY, 10));
+			inventoryFilterResult.readInventoryFromNBT(nbtItemStack.getTagList(ChastMobNBTs.ITEM_FILTER_INVENTORY, 10));
 
-			return inventoryFilter;
+			return inventoryFilterResult;
 		}
 
-		return inventoryFilter;
+		return inventoryFilterResult;
 	}
 
-	public void setInventoryFilter(ItemStack stack, InventoryFilter inventoryFilter)
+	public boolean hasInventoryFilterResult(ItemStack stack)
+	{
+		return !this.getInventoryFilterResult(stack).isEmpty();
+	}
+
+	public void saveInventoryFilterResult(ItemStack stack, InventoryFilterResult inventoryFilterResult)
 	{
 		NBTTagCompound nbtItemStack = stack.getTagCompound();
 
@@ -170,7 +176,7 @@ public class ItemFilter extends Item
 			nbtItemStack = new NBTTagCompound();
 		}
 
-		nbtItemStack.setTag(ChastMobNBTs.ITEM_FILTER_INVENTORY, inventoryFilter.writeInventoryToNBT());
+		nbtItemStack.setTag(ChastMobNBTs.ITEM_FILTER_INVENTORY, inventoryFilterResult.writeInventoryToNBT());
 
 		stack.setTagCompound(nbtItemStack);
 	}

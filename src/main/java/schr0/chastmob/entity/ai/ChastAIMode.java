@@ -1,9 +1,9 @@
-package schr0.chastmob.entity;
+package schr0.chastmob.entity.ai;
 
 import net.minecraft.util.text.TextComponentTranslation;
 import schr0.chastmob.init.ChastMobLang;
 
-public enum EnumAIMode
+public enum ChastAIMode
 {
 
 	FREEDOM(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_AIMODE_FREEDOM, new Object[0]).getFormattedText()),
@@ -13,7 +13,7 @@ public enum EnumAIMode
 
 	private final String label;
 
-	private EnumAIMode(String label)
+	private ChastAIMode(String label)
 	{
 		this.label = label;
 	}

@@ -100,7 +100,7 @@ public class GuiChastInventory extends GuiContainer
 	{
 		int healthTextureY;
 
-		switch (this.entityChast.getHealthState())
+		switch (this.entityChast.getCondition())
 		{
 			case HURT :
 

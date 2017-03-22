@@ -67,7 +67,7 @@ public class ContainerChastInventory extends Container
 						{
 							if (stack.getItem() instanceof ItemFilter)
 							{
-								if (((ItemFilter) stack.getItem()).hasInventoryFilter(stack))
+								if (((ItemFilter) stack.getItem()).hasInventoryFilterResult(stack))
 								{
 									return true;
 								}

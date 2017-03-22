@@ -46,7 +46,7 @@ public class LayerChastCore extends LayerChast
 	{
 		EnumDyeColor enumDyeColor;
 
-		switch (entityChast.getHealthState())
+		switch (entityChast.getCondition())
 		{
 			case HURT :
 

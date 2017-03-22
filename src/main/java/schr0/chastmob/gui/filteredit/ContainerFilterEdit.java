@@ -6,21 +6,23 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.inventory.InventoryFilterEdit;
+import schr0.chastmob.inventory.InventoryFilterResult;
 
 public class ContainerFilterEdit extends Container
 {
 
-	private IInventory inventoryEdit;
+	private InventoryFilterEdit inventoryFilterEdit;
 	private ItemStack stackItemFilter;
 	private EntityPlayer entityPlayer;
 
-	public ContainerFilterEdit(IInventory inventory, ItemStack stack, EntityPlayer entityPlayer)
+	public ContainerFilterEdit(ItemStack stack, InventoryFilterEdit inventoryFilterEdit, InventoryFilterResult inventoryFilterResult, EntityPlayer entityPlayer)
 	{
 		int column;
 		int row;
 		int index;
 
-		inventory.openInventory(entityPlayer);
+		inventoryFilterEdit.openInventory(entityPlayer);
 
 		for (column = 0; column < 3; ++column)
 		{
@@ -28,7 +30,7 @@ public class ContainerFilterEdit extends Container
 			{
 				index = (row + column * 3);
 
-				this.addSlotToContainer(new Slot(inventory, index, (row * 20) + 12, (column * 20) + 22)
+				this.addSlotToContainer(new Slot(inventoryFilterEdit, index, (row * 20) + 12, (column * 20) + 22)
 				{
 
 					@Override
@@ -60,7 +62,7 @@ public class ContainerFilterEdit extends Container
 			this.addSlotToContainer(new Slot(entityPlayer.inventory, index, (row * 18) + 8, 154));
 		}
 
-		this.inventoryEdit = inventory;
+		this.inventoryFilterEdit = inventoryFilterEdit;
 		this.stackItemFilter = stack;
 		this.entityPlayer = entityPlayer;
 	}
@@ -128,9 +130,9 @@ public class ContainerFilterEdit extends Container
 	@Override
 	public void onContainerClosed(EntityPlayer playerIn)
 	{
-		for (int slot = 0; slot < this.inventoryEdit.getSizeInventory(); ++slot)
+		for (int slot = 0; slot < this.inventoryFilterEdit.getSizeInventory(); ++slot)
 		{
-			ItemStack stackSlot = this.inventoryEdit.getStackInSlot(slot);
+			ItemStack stackSlot = this.inventoryFilterEdit.getStackInSlot(slot);
 
 			if (!this.entityPlayer.inventory.addItemStackToInventory(stackSlot))
 			{
@@ -138,16 +140,16 @@ public class ContainerFilterEdit extends Container
 			}
 		}
 
-		this.inventoryEdit.clear();
+		this.inventoryFilterEdit.clear();
 
 		super.onContainerClosed(playerIn);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public IInventory getInventoryEdit()
+	public IInventory getInventoryFilterEdit()
 	{
-		return this.inventoryEdit;
+		return this.inventoryFilterEdit;
 	}
 
 }

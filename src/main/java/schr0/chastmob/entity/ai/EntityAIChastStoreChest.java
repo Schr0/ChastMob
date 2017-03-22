@@ -13,7 +13,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.EnumAIMode;
 
 public class EntityAIChastStoreChest extends EntityAIChast
 {
@@ -36,7 +35,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if ((this.getOwnerAIMode() == EnumAIMode.FOLLOW) || (this.getOwnerAIMode() == EnumAIMode.SUPPLY))
+		if ((this.getOwnerAIMode() == ChastAIMode.FOLLOW) || (this.getOwnerAIMode() == ChastAIMode.SUPPLY))
 		{
 			return false;
 		}

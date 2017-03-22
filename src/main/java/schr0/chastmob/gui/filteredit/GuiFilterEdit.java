@@ -20,7 +20,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobPacket;
-import schr0.chastmob.inventory.InventoryFilter;
+import schr0.chastmob.inventory.InventoryFilterEdit;
+import schr0.chastmob.inventory.InventoryFilterResult;
 import schr0.chastmob.item.ItemFilter;
 import schr0.chastmob.packet.buttonedit.MessageButtonEdit;
 
@@ -30,18 +31,18 @@ public class GuiFilterEdit extends GuiContainer
 
 	private static final ResourceLocation RES_FILTER_EDIT = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/gui/filter_edit.png");
 
-	private IInventory inventoryEdit;
-	private InventoryFilter inventoryFilter;
+	private InventoryFilterEdit inventoryFilterEdit;
+	private InventoryFilterResult inventoryFilterResult;
 	private EntityPlayer entityPlayer;
 	private GuiFilterEdit.RegistryButton buttonRegistry;
 
-	public GuiFilterEdit(IInventory inventory, ItemStack stack, EntityPlayer entityPlayer)
+	public GuiFilterEdit(ItemStack stack, InventoryFilterEdit inventoryFilterEdit, InventoryFilterResult inventoryFilterResult, EntityPlayer entityPlayer)
 	{
-		super(new ContainerFilterEdit(inventory, stack, entityPlayer));
+		super(new ContainerFilterEdit(stack, inventoryFilterEdit, inventoryFilterResult, entityPlayer));
 
 		this.ySize = 178;
-		this.inventoryEdit = inventory;
-		this.inventoryFilter = ((ItemFilter) stack.getItem()).getInventoryFilter(stack);
+		this.inventoryFilterEdit = inventoryFilterEdit;
+		this.inventoryFilterResult = inventoryFilterResult;
 		this.entityPlayer = entityPlayer;
 	}
 
@@ -52,7 +53,7 @@ public class GuiFilterEdit extends GuiContainer
 
 		int buttonPosX = ((this.width - this.xSize) / 2) + 74;
 		int buttonPosY = ((this.height - this.ySize) / 2) + 42;
-		this.buttonRegistry = (GuiFilterEdit.RegistryButton) this.addButton(new GuiFilterEdit.RegistryButton(this.inventoryEdit, 0, buttonPosX, buttonPosY));
+		this.buttonRegistry = (GuiFilterEdit.RegistryButton) this.addButton(new GuiFilterEdit.RegistryButton(this.inventoryFilterEdit, 0, buttonPosX, buttonPosY));
 	}
 
 	@Override
@@ -69,7 +70,7 @@ public class GuiFilterEdit extends GuiContainer
 
 		int resultTextureY;
 
-		if (this.inventoryFilter.getFilterType() == ItemFilter.Type.BLACK)
+		if (this.inventoryFilterResult.getType() == ItemFilter.Type.BLACK)
 		{
 			resultTextureY = 80;
 		}
@@ -84,7 +85,7 @@ public class GuiFilterEdit extends GuiContainer
 	@Override
 	protected void drawGuiContainerForegroundLayer(int xMouse, int yMouse)
 	{
-		String nameChast = this.inventoryFilter.getName();
+		String nameChast = this.inventoryFilterResult.getName();
 		this.fontRendererObj.drawString(nameChast, this.xSize / 2 - this.fontRendererObj.getStringWidth(nameChast) / 2, 6, 4210752);
 		this.fontRendererObj.drawString(this.entityPlayer.inventory.getDisplayName().getUnformattedText(), 8, 84, 4210752);
 	}
@@ -96,7 +97,7 @@ public class GuiFilterEdit extends GuiContainer
 		int originPosX = (this.width - this.xSize) / 2;
 		int originPosY = (this.height - this.ySize) / 2;
 
-		if (!this.inventoryFilter.isEmpty())
+		if (!this.inventoryFilterResult.isEmpty())
 		{
 			int column;
 			int row;
@@ -116,7 +117,7 @@ public class GuiFilterEdit extends GuiContainer
 					int slotPosX = originPosX + (107 + row * 20);
 					int slotPosY = originPosY + (22 + column * 20);
 					slot = (row + column * 3);
-					ItemStack stackSlot = this.inventoryFilter.getStackInSlot(slot);
+					ItemStack stackSlot = this.inventoryFilterResult.getStackInSlot(slot);
 
 					this.itemRender.zLevel = 100.0F;
 					this.itemRender.renderItemAndEffectIntoGUI(stackSlot, slotPosX, slotPosY);
@@ -132,7 +133,7 @@ public class GuiFilterEdit extends GuiContainer
 					int slotPosX = originPosX + (107 + row * 20);
 					int slotPosY = originPosY + (22 + column * 20);
 					slot = (row + column * 3);
-					ItemStack stackSlot = this.inventoryFilter.getStackInSlot(slot);
+					ItemStack stackSlot = this.inventoryFilterResult.getStackInSlot(slot);
 
 					if (this.isPointInRegion((107 + row * 20), (22 + column * 20), 16, 16, mouseX, mouseY) && !stackSlot.isEmpty())
 					{
@@ -152,7 +153,7 @@ public class GuiFilterEdit extends GuiContainer
 		{
 			List<String> textLines = Lists.<String> newArrayList();
 
-			if (((ContainerFilterEdit) this.inventorySlots).getInventoryEdit().isEmpty())
+			if (((ContainerFilterEdit) this.inventorySlots).getInventoryFilterEdit().isEmpty())
 			{
 				textLines.add(new TextComponentTranslation(ChastMobLang.ITEM_FILTER_BUTTON_CLEAR, new Object[0]).getFormattedText());
 			}

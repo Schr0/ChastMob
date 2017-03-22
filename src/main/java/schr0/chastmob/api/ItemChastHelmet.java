@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.entity.EntityChast;
 
 public abstract class ItemChastHelmet extends Item
 {
@@ -21,15 +22,11 @@ public abstract class ItemChastHelmet extends Item
 
 	public ItemChastHelmet(ItemChastHelmet.ChastHelmetMaterial material)
 	{
-		this.setMaxDamage(material.getMaxUses());
 		this.setMaxStackSize(1);
-
+		this.setMaxDamage(material.getMaxUses());
 		this.damageReduceAmount = material.getDamageReduceAmount();
 		this.enchantability = material.getEnchantability();
 	}
-
-	@SideOnly(Side.CLIENT)
-	public abstract ResourceLocation getHelmetTexture(ItemStack stack);
 
 	@Override
 	public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack)
@@ -98,6 +95,19 @@ public abstract class ItemChastHelmet extends Item
 			return this.enchantability;
 		}
 
+	}
+
+	@SideOnly(Side.CLIENT)
+	public abstract ResourceLocation getHelmetTexture(ItemStack stack);
+
+	public void onDmagedOwner(float damage, ItemStack stack, EntityChast owner)
+	{
+		stack.damageItem(Math.max(1, (int) (damage / 4)), owner);
+	}
+
+	public void onUpdateOwner(ItemStack stack, EntityChast owner)
+	{
+		// none
 	}
 
 }

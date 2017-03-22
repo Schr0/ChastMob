@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.EnumAIMode;
 
 public class EntityAIChastFollowOwner extends EntityAIChast
 {
@@ -28,7 +27,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if ((this.getOwnerAIMode() == EnumAIMode.FREEDOM) || (this.getOwnerAIMode() == EnumAIMode.PATROL))
+		if ((this.getOwnerAIMode() == ChastAIMode.FREEDOM) || (this.getOwnerAIMode() == ChastAIMode.PATROL))
 		{
 			return false;
 		}
