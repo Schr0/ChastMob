@@ -17,7 +17,7 @@ public class MessageHandlerButtonChange implements IMessageHandler<MessageButton
 
 		if (entityChast != null)
 		{
-			entityChast.changeAIState();
+			entityChast.setOwnerFollow(!entityChast.isOwnerFollow());
 		}
 
 		return (IMessage) null;

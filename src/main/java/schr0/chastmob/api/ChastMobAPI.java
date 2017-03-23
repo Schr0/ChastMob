@@ -3,7 +3,7 @@ package schr0.chastmob.api;
 import net.minecraftforge.common.util.EnumHelper;
 import schr0.chastmob.api.ItemChastHelmet.ChastHelmetMaterial;
 
-public class ChastMobManager
+public class ChastMobAPI
 {
 
 	public static ChastHelmetMaterial addChastHelmetMaterial(String name, int maxUses, int damageReduceAmount, int enchantability)

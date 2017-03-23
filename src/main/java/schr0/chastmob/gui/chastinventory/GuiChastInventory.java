@@ -96,40 +96,6 @@ public class GuiChastInventory extends GuiContainer
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private int getHealthTextureY()
-	{
-		int healthTextureY;
-
-		switch (this.entityChast.getCondition())
-		{
-			case HURT :
-
-				healthTextureY = 24;
-
-				break;
-
-			case DYING :
-
-				healthTextureY = 40;
-
-				break;
-
-			default :
-
-				healthTextureY = 8;
-		}
-
-		return healthTextureY;
-	}
-
-	private int getHealthBar()
-	{
-		int health = (int) this.entityChast.getHealth();
-		int healthMax = (int) this.entityChast.getMaxHealth();
-
-		return Math.min(60, (60 - ((healthMax - health) * 3)));
-	}
-
 	@SideOnly(Side.CLIENT)
 	private static class ChangeButton extends GuiButton
 	{
@@ -168,6 +134,40 @@ public class GuiChastInventory extends GuiContainer
 			this.buttonTextureY = 88;
 		}
 
+	}
+
+	private int getHealthTextureY()
+	{
+		int healthTextureY;
+
+		switch (this.entityChast.getCondition())
+		{
+			case HURT :
+
+				healthTextureY = 24;
+
+				break;
+
+			case DYING :
+
+				healthTextureY = 40;
+
+				break;
+
+			default :
+
+				healthTextureY = 8;
+		}
+
+		return healthTextureY;
+	}
+
+	private int getHealthBar()
+	{
+		int health = (int) this.entityChast.getHealth();
+		int healthMax = (int) this.entityChast.getMaxHealth();
+
+		return Math.min(60, (60 - ((healthMax - health) * 3)));
 	}
 
 }

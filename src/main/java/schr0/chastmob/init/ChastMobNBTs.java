@@ -12,7 +12,7 @@ public class ChastMobNBTs
 	public static final String ENTITY_CHAST_EQUIPMENT = ENTITY_CHAST + "equipment";
 	public static final String ENTITY_CHAST_ARM_COLOR = ENTITY_CHAST + "arm_color";
 	public static final String ENTITY_CHAST_OWNER_UUID = ENTITY_CHAST + "owner_uuid";
-	public static final String ENTITY_CHAST_AI_MODE = ENTITY_CHAST + "ai_mode";
+	public static final String ENTITY_CHAST_OWNER_FOLLOW = ENTITY_CHAST + "owner_follow";
 	public static final String ENTITY_CHAST_STATE_SIT = ENTITY_CHAST + "state_sit";
 
 	private static final String ITEM_MODE_PATROL = TAG + "item.mode_patrol" + ".";
@@ -20,6 +20,7 @@ public class ChastMobNBTs
 	public static final String ITEM_MODE_PATROL_POS_Y = ITEM_MODE_PATROL + "pos_y";
 	public static final String ITEM_MODE_PATROL_POS_Z = ITEM_MODE_PATROL + "pos_z";
 
-	public static final String ITEM_FILTER_INVENTORY = TAG + "item.filter.inventory";
+	public static final String ITEM_FILTER = TAG + "item.filter" + ".";
+	public static final String ITEM_FILTER_INVENTORY = ITEM_FILTER + "inventory";
 
 }

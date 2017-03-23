@@ -68,7 +68,7 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.entityChast.getInventoryChastMain();
 	}
 
-	public InventoryChastEquipment getOwnerInventoryChastEquipment()
+	public InventoryChastEquipment getOwnerInventoryEquipment()
 	{
 		return this.entityChast.getInventoryChastEquipment();
 	}

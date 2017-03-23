@@ -26,12 +26,6 @@ import schr0.chastmob.inventory.InventoryFilterResult;
 public class ItemFilter extends Item
 {
 
-	public static enum Type
-	{
-		WHITE,
-		BLACK
-	}
-
 	public ItemFilter()
 	{
 		this.setHasSubtypes(true);
@@ -141,6 +135,12 @@ public class ItemFilter extends Item
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
+
+	public static enum Type
+	{
+		WHITE,
+		BLACK
+	}
 
 	public InventoryFilterEdit getInventoryFilterEdit(ItemStack stack)
 	{

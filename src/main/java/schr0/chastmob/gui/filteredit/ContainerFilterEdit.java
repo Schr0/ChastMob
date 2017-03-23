@@ -12,8 +12,8 @@ import schr0.chastmob.inventory.InventoryFilterResult;
 public class ContainerFilterEdit extends Container
 {
 
-	private InventoryFilterEdit inventoryFilterEdit;
 	private ItemStack stackItemFilter;
+	private InventoryFilterEdit inventoryFilterEdit;
 	private EntityPlayer entityPlayer;
 
 	public ContainerFilterEdit(ItemStack stack, InventoryFilterEdit inventoryFilterEdit, InventoryFilterResult inventoryFilterResult, EntityPlayer entityPlayer)
@@ -62,8 +62,8 @@ public class ContainerFilterEdit extends Container
 			this.addSlotToContainer(new Slot(entityPlayer.inventory, index, (row * 18) + 8, 154));
 		}
 
-		this.inventoryFilterEdit = inventoryFilterEdit;
 		this.stackItemFilter = stack;
+		this.inventoryFilterEdit = inventoryFilterEdit;
 		this.entityPlayer = entityPlayer;
 	}
 

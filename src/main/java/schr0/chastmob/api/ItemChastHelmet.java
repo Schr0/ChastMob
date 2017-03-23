@@ -9,6 +9,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -100,9 +101,11 @@ public abstract class ItemChastHelmet extends Item
 	@SideOnly(Side.CLIENT)
 	public abstract ResourceLocation getHelmetTexture(ItemStack stack);
 
-	public void onDmagedOwner(float damage, ItemStack stack, EntityChast owner)
+	public boolean onDmageOwner(DamageSource source, float damage, ItemStack stack, EntityChast owner)
 	{
 		stack.damageItem(Math.max(1, (int) (damage / 4)), owner);
+
+		return true;
 	}
 
 	public void onUpdateOwner(ItemStack stack, EntityChast owner)
