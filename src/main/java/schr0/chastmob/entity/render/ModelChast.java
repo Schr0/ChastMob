@@ -129,6 +129,8 @@ public class ModelChast extends ModelBase
 		}
 
 		EntityChast entityChast = (EntityChast) entityIn;
+		boolean isDefending = (entityChast.isStateKnockback() && entityChast.isEquipHelmet());
+		boolean isPanicking = (entityChast.isStateKnockback() && !entityChast.isEquipHelmet());
 
 		if (entityChast.isRiding() || !entityChast.getPassengers().isEmpty())
 		{
@@ -164,16 +166,35 @@ public class ModelChast extends ModelBase
 		}
 		else
 		{
-			this.body.setRotationPoint(0F, 10F, 0F);
-			this.armRight.setRotationPoint(-7F, 8F, 0F);
-			this.armLeft.setRotationPoint(7F, 8F, 0F);
-			this.legRight.setRotationPoint(-3F, 15F, 0F);
-			this.legLeft.setRotationPoint(3F, 15F, 0F);
+			if (isDefending)
+			{
+				this.armRight.showModel = false;
+				this.armLeft.showModel = false;
+				this.legRight.showModel = false;
+				this.legLeft.showModel = false;
+
+				this.body.setRotationPoint(0F, (10F + 8.0F), 0F);
+
+				return;
+			}
+			else
+			{
+				this.armRight.showModel = true;
+				this.armLeft.showModel = true;
+				this.legRight.showModel = true;
+				this.legLeft.showModel = true;
+
+				this.body.setRotationPoint(0F, 10F, 0F);
+				this.armRight.setRotationPoint(-7F, 8F, 0F);
+				this.armLeft.setRotationPoint(7F, 8F, 0F);
+				this.legRight.setRotationPoint(-3F, 15F, 0F);
+				this.legLeft.setRotationPoint(3F, 15F, 0F);
+			}
 
 			float angleSwingArmRightLegLeftX = (MathHelper.cos(limbSwing * 0.6662F) * 1.5F * limbSwingAmount);
 			float angleSwingArmLeftLegRightX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.5F * limbSwingAmount);
 
-			if (entityChast.isStatePanic())
+			if (isPanicking)
 			{
 				float anglePanicArmX = 3.0F;
 				float anglePanicArmRightX = (MathHelper.cos(limbSwing * 0.6662F) * 0.5F * limbSwingAmount) - anglePanicArmX;
@@ -198,7 +219,7 @@ public class ModelChast extends ModelBase
 
 		float angleArmZ = 0.35F;
 
-		if (entityChast.isStatePanic())
+		if (isPanicking)
 		{
 			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmZ;
 			this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + angleArmZ;

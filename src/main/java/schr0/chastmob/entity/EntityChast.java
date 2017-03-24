@@ -47,7 +47,7 @@ import schr0.chastmob.entity.ai.ChastAIMode;
 import schr0.chastmob.entity.ai.EntityAIChastCollectItem;
 import schr0.chastmob.entity.ai.EntityAIChastFollowOwner;
 import schr0.chastmob.entity.ai.EntityAIChastGoHome;
-import schr0.chastmob.entity.ai.EntityAIChastPanic;
+import schr0.chastmob.entity.ai.EntityAIChastKnockback;
 import schr0.chastmob.entity.ai.EntityAIChastSit;
 import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
 import schr0.chastmob.entity.ai.EntityAIChastTrade;
@@ -75,11 +75,11 @@ public class EntityChast extends EntityGolem
 	private static final DataParameter<Optional<UUID>> OWNER_UUID = EntityDataManager.<Optional<UUID>> createKey(EntityChast.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 	private static final DataParameter<Byte> OWNER_TAME = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> OWNER_FOLLOW = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
-	private static final DataParameter<Byte> STATE_PANIC = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+	private static final DataParameter<Byte> STATE_KNOCKBACK = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> STATE_SIT = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> STATE_TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 
-	private EntityAIChastPanic aiChastPanic;
+	private EntityAIChastKnockback aiChastKnockback;
 	private EntityAIChastSit aiChastSit;
 	private EntityAIChastTrade aiChastTrade;
 	private InventoryChastMain inventoryChastMain;
@@ -103,7 +103,7 @@ public class EntityChast extends EntityGolem
 
 		// BASE
 		EntityAIBase aiSwimming = new EntityAISwimming(this);
-		this.aiChastPanic = new EntityAIChastPanic(this, (speed * 2), distance);
+		this.aiChastKnockback = new EntityAIChastKnockback(this, (speed * 2), distance);
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
 		// FREEDOM (PATROL) || FOLLOW (SUPPLY)
@@ -118,7 +118,7 @@ public class EntityChast extends EntityGolem
 		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
 
 		aiSwimming.setMutexBits(0);
-		this.aiChastPanic.setMutexBits(1);
+		this.aiChastKnockback.setMutexBits(1);
 		this.aiChastSit.setMutexBits(1);
 		this.aiChastTrade.setMutexBits(1);
 		aiChastStoreChest.setMutexBits(1);
@@ -131,7 +131,7 @@ public class EntityChast extends EntityGolem
 		aiLookIdle.setMutexBits(2);
 
 		this.tasks.addTask(0, aiSwimming);
-		this.tasks.addTask(1, this.aiChastPanic);
+		this.tasks.addTask(1, this.aiChastKnockback);
 		this.tasks.addTask(2, this.aiChastSit);
 		this.tasks.addTask(3, this.aiChastTrade);
 		this.tasks.addTask(4, aiChastStoreChest);
@@ -161,7 +161,7 @@ public class EntityChast extends EntityGolem
 		this.getDataManager().register(OWNER_UUID, Optional.<UUID> absent());
 		this.getDataManager().register(OWNER_TAME, Byte.valueOf((byte) 0));
 		this.getDataManager().register(OWNER_FOLLOW, Byte.valueOf((byte) 0));
-		this.getDataManager().register(STATE_PANIC, Byte.valueOf((byte) 0));
+		this.getDataManager().register(STATE_KNOCKBACK, Byte.valueOf((byte) 0));
 		this.getDataManager().register(STATE_SIT, Byte.valueOf((byte) 0));
 		this.getDataManager().register(STATE_TRADE, Byte.valueOf((byte) 0));
 	}
@@ -230,9 +230,9 @@ public class EntityChast extends EntityGolem
 
 		this.setOwnerFollow(compound.getBoolean(ChastMobNBTs.ENTITY_CHAST_OWNER_FOLLOW));
 
-		this.setAIPanicking(0);
+		this.setAIKnockbacking(0);
 
-		this.setStatePanic(false);
+		this.setStateKnockback(false);
 
 		this.setAISitting(compound.getBoolean(ChastMobNBTs.ENTITY_CHAST_STATE_SIT));
 
@@ -353,12 +353,28 @@ public class EntityChast extends EntityGolem
 			return false;
 		}
 
+		World world = this.getEntityWorld();
+
 		if (this.isEquipHelmet())
 		{
 			ItemStack stackHelmet = this.getInventoryChastEquipment().getHeadItem();
 
 			if (!((ItemChastHelmet) stackHelmet.getItem()).onDmageOwner(source, amount, stackHelmet, this))
 			{
+				// this.playSound(SoundEvents.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, 0.5F, 0.8F + world.rand.nextFloat() * 0.4F);
+				// world.spawnParticle(EnumParticleTypes.CRIT, this.posX, this.posY, this.posZ, 15, 0.2D, 0.2D, new int[0]);
+
+				return false;
+			}
+		}
+
+		if (this.isStateKnockback())
+		{
+			if (this.isEquipHelmet())
+			{
+				// this.playSound(SoundEvents.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, 0.5F, 0.8F + world.rand.nextFloat() * 0.4F);
+				// world.spawnParticle(EnumParticleTypes.CRIT, this.posX, this.posY, this.posZ, 15, 0.2D, 0.2D, new int[0]);
+
 				return false;
 			}
 		}
@@ -366,7 +382,7 @@ public class EntityChast extends EntityGolem
 		{
 			if ((source.getSourceOfDamage() instanceof EntityLivingBase) && !this.getEntityWorld().isRemote)
 			{
-				this.setAIPanicking((int) amount);
+				this.setAIKnockbacking((int) amount);
 			}
 		}
 
@@ -404,7 +420,7 @@ public class EntityChast extends EntityGolem
 	@Override
 	public boolean processInteract(EntityPlayer player, EnumHand hand)
 	{
-		if (this.isStatePanic())
+		if (this.isStateKnockback())
 		{
 			return false;
 		}
@@ -505,7 +521,7 @@ public class EntityChast extends EntityGolem
 	{
 		super.updatePassenger(passenger);
 
-		if (this.isStatePanic() && !this.getEntityWorld().isRemote)
+		if (this.isStateKnockback() && !this.getEntityWorld().isRemote)
 		{
 			passenger.dismountRidingEntity();
 		}
@@ -665,22 +681,22 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public boolean isStatePanic()
+	public boolean isStateKnockback()
 	{
-		return (((Byte) this.getDataManager().get(STATE_PANIC)).byteValue() & 1) != 0;
+		return (((Byte) this.getDataManager().get(STATE_KNOCKBACK)).byteValue() & 1) != 0;
 	}
 
-	public void setStatePanic(boolean isStatePanic)
+	public void setStateKnockback(boolean isStatePanic)
 	{
-		byte b0 = ((Byte) this.getDataManager().get(STATE_PANIC)).byteValue();
+		byte b0 = ((Byte) this.getDataManager().get(STATE_KNOCKBACK)).byteValue();
 
 		if (isStatePanic)
 		{
-			this.getDataManager().set(STATE_PANIC, Byte.valueOf((byte) (b0 | 1)));
+			this.getDataManager().set(STATE_KNOCKBACK, Byte.valueOf((byte) (b0 | 1)));
 		}
 		else
 		{
-			this.getDataManager().set(STATE_PANIC, Byte.valueOf((byte) (b0 & -2)));
+			this.getDataManager().set(STATE_KNOCKBACK, Byte.valueOf((byte) (b0 & -2)));
 		}
 	}
 
@@ -862,11 +878,11 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public void setAIPanicking(int panicTime)
+	public void setAIKnockbacking(int panicTime)
 	{
-		if (this.aiChastPanic != null)
+		if (this.aiChastKnockback != null)
 		{
-			this.aiChastPanic.setPanicking(panicTime);
+			this.aiChastKnockback.setKnockbacking(panicTime);
 
 			if (0 < panicTime)
 			{

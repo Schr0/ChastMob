@@ -15,7 +15,7 @@ import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.inventory.InventoryChastEquipment;
 import schr0.chastmob.inventory.InventoryChastMain;
 
-public class EntityAIChastPanic extends EntityAIChast
+public class EntityAIChastKnockback extends EntityAIChast
 {
 
 	private static final int IDEL_TIME = (3 * 20);
@@ -27,7 +27,7 @@ public class EntityAIChastPanic extends EntityAIChast
 	private double randPosY;
 	private double randPosZ;
 
-	public EntityAIChastPanic(EntityChast entityChast, double speed, int distance)
+	public EntityAIChastKnockback(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
 
@@ -38,7 +38,7 @@ public class EntityAIChastPanic extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.isPanicking())
+		if (this.isKnockbacking())
 		{
 			return true;
 		}
@@ -51,8 +51,7 @@ public class EntityAIChastPanic extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getOwnerEntity().setStatePanic(true);
-		this.getOwnerEntity().setCoverOpen(true);
+		this.getOwnerEntity().setStateKnockback(true);
 	}
 
 	@Override
@@ -60,9 +59,9 @@ public class EntityAIChastPanic extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getOwnerEntity().setStatePanic(false);
+		this.getOwnerEntity().setStateKnockback(false);
 		this.getOwnerEntity().setCoverOpen(false);
-		this.setPanicking(0);
+		this.setKnockbacking(0);
 	}
 
 	@Override
@@ -75,53 +74,62 @@ public class EntityAIChastPanic extends EntityAIChast
 			return;
 		}
 
-		if ((this.getOwnerEntity().getRNG().nextInt(10) == 0) && !this.getOwnerWorld().isRemote)
+		if (this.getOwnerEntity().isEquipHelmet())
 		{
-			this.onPanicDropItem(this.getOwnerEntity());
-		}
-
-		if (this.getOwnerEntity().isBurning())
-		{
-			BlockPos blockPos = this.getNearWaterBlockPos(this.getOwnerEntity(), this.distance);
-
-			if (blockPos == null)
-			{
-				return;
-			}
-			else
-			{
-				this.randPosX = (double) blockPos.getX();
-				this.randPosY = (double) blockPos.getY();
-				this.randPosZ = (double) blockPos.getZ();
-			}
+			// none
 		}
 		else
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getOwnerEntity(), this.distance, this.distance);
+			this.getOwnerEntity().setCoverOpen(true);
 
-			if (vec3d == null)
+			if ((this.getOwnerEntity().getRNG().nextInt(10) == 0) && !this.getOwnerWorld().isRemote)
 			{
-				return;
+				this.onPanicDropItem(this.getOwnerEntity());
+			}
+
+			if (this.getOwnerEntity().isBurning())
+			{
+				BlockPos blockPos = this.getNearWaterBlockPos(this.getOwnerEntity(), this.distance);
+
+				if (blockPos == null)
+				{
+					return;
+				}
+				else
+				{
+					this.randPosX = (double) blockPos.getX();
+					this.randPosY = (double) blockPos.getY();
+					this.randPosZ = (double) blockPos.getZ();
+				}
 			}
 			else
 			{
-				this.randPosX = vec3d.xCoord;
-				this.randPosY = vec3d.yCoord;
-				this.randPosZ = vec3d.zCoord;
-			}
-		}
+				Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getOwnerEntity(), this.distance, this.distance);
 
-		this.getOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
+				if (vec3d == null)
+				{
+					return;
+				}
+				else
+				{
+					this.randPosX = vec3d.xCoord;
+					this.randPosY = vec3d.yCoord;
+					this.randPosZ = vec3d.zCoord;
+				}
+			}
+
+			this.getOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
+		}
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public boolean isPanicking()
+	public boolean isKnockbacking()
 	{
 		return (0 < this.timeCounter);
 	}
 
-	public void setPanicking(int timeCounter)
+	public void setKnockbacking(int timeCounter)
 	{
 		if (0 < timeCounter)
 		{
