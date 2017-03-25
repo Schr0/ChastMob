@@ -41,7 +41,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.api.ItemChastHelmet;
 import schr0.chastmob.entity.ai.ChastAIMode;
 import schr0.chastmob.entity.ai.EntityAIChastCollectItem;
@@ -106,7 +105,7 @@ public class EntityChast extends EntityGolem
 		this.aiChastKnockback = new EntityAIChastKnockback(this, (speed * 2), distance);
 		this.aiChastSit = new EntityAIChastSit(this);
 		this.aiChastTrade = new EntityAIChastTrade(this);
-		// FREEDOM (PATROL) || FOLLOW (SUPPLY)
+		// MODE
 		EntityAIBase aiChastStoreChest = new EntityAIChastStoreChest(this, speed, distance);
 		EntityAIBase aiChastCollectItem = new EntityAIChastCollectItem(this, speed, (double) distance);
 		EntityAIBase aiChastGoHome = new EntityAIChastGoHome(this, speed, distance);
@@ -311,7 +310,7 @@ public class EntityChast extends EntityGolem
 
 			default :
 
-				itemStack = ChastMobHelper.getEmptyItemStack();
+				itemStack = ItemStack.EMPTY;
 				break;
 		}
 
@@ -354,6 +353,7 @@ public class EntityChast extends EntityGolem
 		}
 
 		World world = this.getEntityWorld();
+		boolean isServerWorld = !world.isRemote;
 
 		if (this.isEquipHelmet())
 		{
@@ -361,9 +361,6 @@ public class EntityChast extends EntityGolem
 
 			if (!((ItemChastHelmet) stackHelmet.getItem()).onDmageOwner(source, amount, stackHelmet, this))
 			{
-				// this.playSound(SoundEvents.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, 0.5F, 0.8F + world.rand.nextFloat() * 0.4F);
-				// world.spawnParticle(EnumParticleTypes.CRIT, this.posX, this.posY, this.posZ, 15, 0.2D, 0.2D, new int[0]);
-
 				return false;
 			}
 		}
@@ -372,15 +369,19 @@ public class EntityChast extends EntityGolem
 		{
 			if (this.isEquipHelmet())
 			{
-				// this.playSound(SoundEvents.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD, 0.5F, 0.8F + world.rand.nextFloat() * 0.4F);
-				// world.spawnParticle(EnumParticleTypes.CRIT, this.posX, this.posY, this.posZ, 15, 0.2D, 0.2D, new int[0]);
+				if (isServerWorld)
+				{
+					this.playSound(SoundEvents.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.5F, (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F + 1.0F);
+
+					ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(this, 1));
+				}
 
 				return false;
 			}
 		}
 		else
 		{
-			if ((source.getSourceOfDamage() instanceof EntityLivingBase) && !this.getEntityWorld().isRemote)
+			if ((source.getSourceOfDamage() instanceof EntityLivingBase) && isServerWorld)
 			{
 				this.setAIKnockbacking((int) amount);
 			}
@@ -433,7 +434,7 @@ public class EntityChast extends EntityGolem
 			}
 
 			boolean isServerWorld = !this.getEntityWorld().isRemote;
-			ItemStack stackHeld = player.getHeldItem(hand);
+			ItemStack stackHeldItem = player.getHeldItem(hand);
 
 			for (Entity passenger : this.getPassengers())
 			{
@@ -448,11 +449,11 @@ public class EntityChast extends EntityGolem
 				}
 			}
 
-			if (ChastMobHelper.isNotEmptyItemStack(stackHeld))
+			if (!stackHeldItem.isEmpty())
 			{
-				if (stackHeld.getItem() == Items.DYE)
+				if (stackHeldItem.getItem() == Items.DYE)
 				{
-					EnumDyeColor enumDyeColor = EnumDyeColor.byDyeDamage(stackHeld.getMetadata());
+					EnumDyeColor enumDyeColor = EnumDyeColor.byDyeDamage(stackHeldItem.getMetadata());
 
 					if (enumDyeColor != this.getArmColor())
 					{
@@ -462,7 +463,7 @@ public class EntityChast extends EntityGolem
 
 							if (!player.capabilities.isCreativeMode)
 							{
-								stackHeld.shrink(1);
+								stackHeldItem.shrink(1);
 							}
 						}
 
@@ -470,7 +471,7 @@ public class EntityChast extends EntityGolem
 					}
 				}
 
-				if (stackHeld.interactWithEntity(player, this, hand))
+				if (stackHeldItem.interactWithEntity(player, this, hand))
 				{
 					return this.onSuccessProcessInteract(player, (SoundEvent) null);
 				}
@@ -831,7 +832,7 @@ public class EntityChast extends EntityGolem
 
 	public boolean isEquipHelmet()
 	{
-		return ChastMobHelper.isNotEmptyItemStack(this.getInventoryChastEquipment().getHeadItem());
+		return !this.getInventoryChastEquipment().getHeadItem().isEmpty();
 	}
 
 	public void onSpawnByPlayer(EntityPlayer player)

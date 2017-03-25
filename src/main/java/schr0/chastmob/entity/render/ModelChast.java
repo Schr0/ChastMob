@@ -146,7 +146,7 @@ public class ModelChast extends ModelBase
 
 		if (entityChast.isStateSit() || entityChast.isRiding())
 		{
-			float pointSitY = 8.0F;
+			float pointSitY = 7.0F;
 
 			this.body.setRotationPoint(0F, (10F + pointSitY), 0F);
 			this.armRight.setRotationPoint(-7F, (8F + pointSitY), 0F);

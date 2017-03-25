@@ -16,7 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.init.ChastMobLang;
 
@@ -59,12 +58,12 @@ public class ItemCore extends Item
 			{
 				ItemStack stackTileChest = inventoryTileChest.getStackInSlot(slot);
 
-				if (ChastMobHelper.isNotEmptyItemStack(stackTileChest))
+				if (!stackTileChest.isEmpty())
 				{
 					entityChast.getInventoryChastMain().setInventorySlotContents(slot, stackTileChest);
 				}
 
-				inventoryTileChest.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());
+				inventoryTileChest.setInventorySlotContents(slot, ItemStack.EMPTY);
 			}
 
 			if (!worldIn.isRemote)

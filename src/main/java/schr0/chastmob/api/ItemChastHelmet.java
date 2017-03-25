@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -13,7 +14,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import schr0.chastmob.entity.EntityChast;
 
 public abstract class ItemChastHelmet extends Item
 {
@@ -101,14 +101,14 @@ public abstract class ItemChastHelmet extends Item
 	@SideOnly(Side.CLIENT)
 	public abstract ResourceLocation getHelmetTexture(ItemStack stack);
 
-	public boolean onDmageOwner(DamageSource source, float damage, ItemStack stack, EntityChast owner)
+	public boolean onDmageOwner(DamageSource source, float damage, ItemStack stack, EntityLiving owner)
 	{
 		stack.damageItem(Math.max(1, (int) (damage / 4)), owner);
 
 		return true;
 	}
 
-	public void onUpdateOwner(ItemStack stack, EntityChast owner)
+	public void onUpdateOwner(ItemStack stack, EntityLiving owner)
 	{
 		// none
 	}

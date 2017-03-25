@@ -16,7 +16,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import schr0.chastmob.ChastMob;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobGui;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
@@ -75,7 +74,7 @@ public class ItemFilter extends Item
 			{
 				ItemStack stackSlot = inventoryFilterResult.getStackInSlot(slot);
 
-				if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
+				if (!stackSlot.isEmpty())
 				{
 					String nameItemSlot = stackSlot.getDisplayName();
 

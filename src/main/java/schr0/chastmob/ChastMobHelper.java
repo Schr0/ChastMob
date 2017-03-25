@@ -1,18 +1,16 @@
 package schr0.chastmob;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 public class ChastMobHelper
 {
 
-	public static boolean canStoreInventory(IInventory inventory, @Nullable ItemStack stack)
+	public static boolean canStoreInventory(IInventory inventory, ItemStack stack)
 	{
 		boolean hasEmptySlot = (getFirstEmptySlot(inventory) != -1);
 
-		if (isNotEmptyItemStack(stack))
+		if (!stack.isEmpty())
 		{
 			boolean hasCanStoreSlot = (getCanStoreSlot(inventory, stack) != -1);
 
@@ -35,7 +33,7 @@ public class ChastMobHelper
 	{
 		for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
 		{
-			if (isNotEmptyItemStack(inventory.getStackInSlot(slot)) == false)
+			if (inventory.getStackInSlot(slot).isEmpty())
 			{
 				return slot;
 			}
@@ -48,12 +46,12 @@ public class ChastMobHelper
 	{
 		for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
 		{
-			ItemStack stackInv = inventory.getStackInSlot(slot);
+			ItemStack stackSlot = inventory.getStackInSlot(slot);
 
-			if (isNotEmptyItemStack(stackInv))
+			if (!stackSlot.isEmpty())
 			{
-				boolean isItemEqual = (stackInv.getItem() == stack.getItem() && (!stackInv.getHasSubtypes() || stackInv.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackInv, stack));
-				boolean isStackSizeEqual = (stackInv.isStackable() && (stackInv.getCount() < stackInv.getMaxStackSize()) && (stackInv.getCount() < inventory.getInventoryStackLimit()));
+				boolean isItemEqual = (stackSlot.getItem() == stack.getItem() && (!stackSlot.getHasSubtypes() || stackSlot.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackSlot, stack));
+				boolean isStackSizeEqual = (stackSlot.isStackable() && (stackSlot.getCount() < stackSlot.getMaxStackSize()) && (stackSlot.getCount() < inventory.getInventoryStackLimit()));
 
 				if (isItemEqual && isStackSizeEqual)
 				{
@@ -63,18 +61,6 @@ public class ChastMobHelper
 		}
 
 		return -1;
-	}
-
-	// TODO /* ======================================== for 1.11.2 =====================================*/
-
-	public static boolean isNotEmptyItemStack(ItemStack stack)
-	{
-		return !stack.isEmpty();
-	}
-
-	public static ItemStack getEmptyItemStack()
-	{
-		return ItemStack.EMPTY;
 	}
 
 }

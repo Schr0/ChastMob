@@ -40,7 +40,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 			return false;
 		}
 
-		if (!ChastMobHelper.canStoreInventory(this.getOwnerInventoryMain(), ChastMobHelper.getEmptyItemStack()))
+		if (!ChastMobHelper.canStoreInventory(this.getOwnerInventoryMain(), ItemStack.EMPTY))
 		{
 			TileEntityChest homeChest = (TileEntityChest) this.getOwnerWorld().getTileEntity(this.getOwnerHomePosition());
 
@@ -111,11 +111,11 @@ public class EntityAIChastStoreChest extends EntityAIChast
 			{
 				for (int slot = 0; slot < this.getOwnerInventoryMain().getSizeInventory(); ++slot)
 				{
-					ItemStack stackInv = this.getOwnerInventoryMain().getStackInSlot(slot);
+					ItemStack stackSlot = this.getOwnerInventoryMain().getStackInSlot(slot);
 
-					if (ChastMobHelper.isNotEmptyItemStack(stackInv))
+					if (!stackSlot.isEmpty())
 					{
-						this.getOwnerInventoryMain().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) null, (IInventory) nearChest, stackInv, EnumFacing.UP));
+						this.getOwnerInventoryMain().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) null, (IInventory) nearChest, stackSlot, EnumFacing.UP));
 
 						this.getOwnerEntity().setCoverOpen(true);
 					}

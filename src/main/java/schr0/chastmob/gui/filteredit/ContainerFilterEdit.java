@@ -5,7 +5,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.inventory.InventoryFilterEdit;
 import schr0.chastmob.inventory.InventoryFilterResult;
 
@@ -85,7 +84,7 @@ public class ContainerFilterEdit extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int index)
 	{
-		ItemStack stackEmpty = ChastMobHelper.getEmptyItemStack();
+		ItemStack stackEmpty = ItemStack.EMPTY;
 		Slot slot = (Slot) this.inventorySlots.get(index);
 
 		if (slot == null || slot.getHasStack() == false)
@@ -110,7 +109,7 @@ public class ContainerFilterEdit extends Container
 
 		if (dstItemStack.isEmpty())
 		{
-			slot.putStack(ChastMobHelper.getEmptyItemStack());
+			slot.putStack(stackEmpty);
 		}
 		else
 		{
