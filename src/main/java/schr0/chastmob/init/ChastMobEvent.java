@@ -8,14 +8,19 @@ import net.minecraft.entity.ai.EntityAIOcelotSit;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import schr0.chastmob.item.ItemFilter;
+import schr0.chastmob.item.ItemModePatrol;
 import schr0.chastmob.item.ItemSoulBottleFull;
 import schr0.chastmob.item.ItemSoulFragment;
 import schr0.chastmob.vanilla.EntityAIOcelotSitChast;
@@ -90,15 +95,42 @@ public class ChastMobEvent
 		}
 	}
 
+	@SubscribeEvent
+	public void onAnvilUpdateEvent(AnvilUpdateEvent event)
+	{
+		ItemStack leftStack = event.getLeft();
+		ItemStack rightStack = event.getRight();
+
+		if (this.canAnvilUpdateItems(leftStack, rightStack))
+		{
+			event.setCost(1);
+			event.setMaterialCost(1);
+			event.setOutput(leftStack.copy());
+		}
+	}
+
+	@SubscribeEvent
+	public void onAnvilRepairEvent(AnvilRepairEvent event)
+	{
+		ItemStack leftStack = event.getItemInput();
+		ItemStack rightStack = event.getIngredientInput();
+		EntityPlayer player = event.getEntityPlayer();
+
+		if (this.canAnvilUpdateItems(leftStack, rightStack))
+		{
+			event.setBreakChance(0.0F);
+
+			if (!player.inventory.addItemStackToInventory(leftStack))
+			{
+				player.dropItem(leftStack, false);
+			}
+		}
+	}
+
 	// TODO /* ======================================== MOD START =====================================*/
 
 	private EnumHand getHandHasItemSoulBottleFullFriendly(EntityLivingBase entityLivingBase)
 	{
-		if (this.isItemSoulBottleFullFriendly(entityLivingBase.getHeldItemMainhand()))
-		{
-			return EnumHand.MAIN_HAND;
-		}
-
 		if (this.isItemSoulBottleFullFriendly(entityLivingBase.getHeldItemOffhand()))
 		{
 			return EnumHand.OFF_HAND;
@@ -112,6 +144,27 @@ public class ChastMobEvent
 		if ((stack.getItem() instanceof ItemSoulBottleFull) && (stack.getItemDamage() == 0))
 		{
 			return true;
+		}
+
+		return false;
+	}
+
+	private boolean canAnvilUpdateItems(ItemStack left, ItemStack right)
+	{
+		if ((left.getItem() == ChastMobItems.MODE_PATROL) && ((ItemModePatrol) left.getItem()).hasHomeChest(left))
+		{
+			if (right.getItem() == Items.PAPER)
+			{
+				return true;
+			}
+		}
+
+		if ((left.getItem() == ChastMobItems.FILTER) && ((ItemFilter) left.getItem()).hasInventoryFilterResult(left))
+		{
+			if (right.getItem() == Items.PAPER)
+			{
+				return true;
+			}
 		}
 
 		return false;

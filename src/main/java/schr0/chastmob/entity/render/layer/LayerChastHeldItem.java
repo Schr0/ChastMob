@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHandSide;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.render.ModelChast;
 import schr0.chastmob.entity.render.RenderChast;
@@ -27,7 +28,7 @@ public class LayerChastHeldItem extends LayerChast
 		ItemStack stackMain = isPrimaryHand ? entityChast.getHeldItemOffhand() : entityChast.getHeldItemMainhand();
 		ItemStack stackOff = isPrimaryHand ? entityChast.getHeldItemMainhand() : entityChast.getHeldItemOffhand();
 
-		if (!stackMain.isEmpty() || !stackOff.isEmpty())
+		if (ChastMobHelper.isNotEmptyItemStack(stackMain) || ChastMobHelper.isNotEmptyItemStack(stackOff))
 		{
 			GlStateManager.pushMatrix();
 
@@ -48,11 +49,11 @@ public class LayerChastHeldItem extends LayerChast
 
 	private void renderHeldItem(EntityChast entityChast, ItemStack stack, ItemCameraTransforms.TransformType transformType, EnumHandSide handSide)
 	{
-		if (!stack.isEmpty())
+		if (ChastMobHelper.isNotEmptyItemStack(stack))
 		{
 			GlStateManager.pushMatrix();
 
-			((ModelChast) this.getRenderChast().getMainModel()).postRenderArm(0.0625F, handSide);
+			((ModelChast) this.getRender().getMainModel()).postRenderArm(0.0625F, handSide);
 
 			GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);

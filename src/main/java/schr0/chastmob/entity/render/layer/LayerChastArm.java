@@ -24,14 +24,14 @@ public class LayerChastArm extends LayerChast
 	@Override
 	public void doRenderLayer(EntityChast entityChast, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
 	{
-		this.getRenderChast().bindTexture(RES_CHAST_ARM);
+		this.getRender().bindTexture(RES_CHAST_ARM);
 
 		float[] dyeRgb = this.getArmRgb(entityChast);
 		GlStateManager.color(dyeRgb[0], dyeRgb[1], dyeRgb[2]);
 
-		this.getModelChast().setModelAttributes(this.getModelChast());
-		this.getModelChast().render(entityChast, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-		this.getModelChast().setLivingAnimations(entityChast, limbSwing, limbSwingAmount, partialTicks);
+		this.getModel().setModelAttributes(this.getModel());
+		this.getModel().render(entityChast, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+		this.getModel().setLivingAnimations(entityChast, limbSwing, limbSwingAmount, partialTicks);
 	}
 
 	@Override

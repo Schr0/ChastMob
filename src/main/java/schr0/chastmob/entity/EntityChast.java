@@ -41,6 +41,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
+import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.api.ItemChastHelmet;
 import schr0.chastmob.entity.ai.ChastAIMode;
 import schr0.chastmob.entity.ai.EntityAIChastCollectItem;
@@ -126,8 +127,8 @@ public class EntityChast extends EntityGolem
 		aiChastFollowOwner.setMutexBits(1);
 		aiChastWander.setMutexBits(1);
 		aiWatchClosestEntityPlayer.setMutexBits(2);
-		aiWatchClosestEntityGolem.setMutexBits(2);
-		aiLookIdle.setMutexBits(2);
+		aiWatchClosestEntityGolem.setMutexBits(3);
+		aiLookIdle.setMutexBits(4);
 
 		this.tasks.addTask(0, aiSwimming);
 		this.tasks.addTask(1, this.aiChastKnockback);
@@ -449,7 +450,7 @@ public class EntityChast extends EntityGolem
 				}
 			}
 
-			if (!stackHeldItem.isEmpty())
+			if (ChastMobHelper.isNotEmptyItemStack(stackHeldItem))
 			{
 				if (stackHeldItem.getItem() == Items.DYE)
 				{
@@ -832,7 +833,7 @@ public class EntityChast extends EntityGolem
 
 	public boolean isEquipHelmet()
 	{
-		return !this.getInventoryChastEquipment().getHeadItem().isEmpty();
+		return ChastMobHelper.isNotEmptyItemStack(this.getInventoryChastEquipment().getHeadItem());
 	}
 
 	public void onSpawnByPlayer(EntityPlayer player)
@@ -841,7 +842,6 @@ public class EntityChast extends EntityGolem
 		{
 			this.setOwnerTame(true);
 			this.setOwnerUUID(player.getUniqueID());
-
 			this.setOwnerFollow(true);
 			this.setAISitting(false);
 

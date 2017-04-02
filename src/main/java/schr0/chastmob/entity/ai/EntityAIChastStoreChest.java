@@ -113,7 +113,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 				{
 					ItemStack stackSlot = this.getOwnerInventoryMain().getStackInSlot(slot);
 
-					if (!stackSlot.isEmpty())
+					if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
 					{
 						this.getOwnerInventoryMain().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) null, (IInventory) nearChest, stackSlot, EnumFacing.UP));
 
@@ -126,7 +126,14 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		}
 		else
 		{
-			this.forceMoveToTargetBlockPos(targetBlockPos, this.speed);
+			if (this.timeCounter < 20)
+			{
+				this.forceMoveToTargetBlockPos(targetBlockPos, this.speed);
+			}
+			else
+			{
+				this.getOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.speed);
+			}
 		}
 	}
 

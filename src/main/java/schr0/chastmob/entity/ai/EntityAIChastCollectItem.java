@@ -154,14 +154,14 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 					if (inventoryFilter.getType() == ItemFilter.Type.WHITE)
 					{
-						if (!stackB.isEmpty() && ItemStack.areItemStackTagsEqual(stackA, stackB))
+						if (ChastMobHelper.isNotEmptyItemStack(stackB) && ItemStack.areItemStackTagsEqual(stackA, stackB))
 						{
 							return true;
 						}
 					}
 					else
 					{
-						if (!stackB.isEmpty() && ItemStack.areItemStackTagsEqual(stackA, stackB))
+						if (ChastMobHelper.isNotEmptyItemStack(stackB) && ItemStack.areItemStackTagsEqual(stackA, stackB))
 						{
 							return false;
 						}

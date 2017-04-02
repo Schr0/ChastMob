@@ -10,6 +10,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.inventory.InventoryChastEquipment;
 import schr0.chastmob.inventory.InventoryChastMain;
@@ -161,18 +162,18 @@ public class EntityAIChastKnockback extends EntityAIChast
 
 			ItemStack stackSlot = inventoryChastEquipment.getStackInSlot(slot);
 
-			if (!stackSlot.isEmpty())
+			if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
 			{
 				if (entityChast.getRNG().nextInt(2) == 0)
 				{
 					continue;
 				}
 
-				ItemStack stackInvCopy = stackSlot.copy();
+				ItemStack stackSlotCopy = stackSlot.copy();
 
-				stackInvCopy.setCount(1);
+				stackSlotCopy.setCount(1);
 
-				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackInvCopy);
+				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackSlotCopy);
 
 				stackSlot.shrink(1);
 
@@ -188,18 +189,18 @@ public class EntityAIChastKnockback extends EntityAIChast
 		{
 			ItemStack stackSlot = inventoryChastMain.getStackInSlot(slot);
 
-			if (!stackSlot.isEmpty())
+			if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
 			{
 				if (entityChast.getRNG().nextInt(2) == 0)
 				{
 					continue;
 				}
 
-				ItemStack stackInvCopy = stackSlot.copy();
+				ItemStack stackSlotCopy = stackSlot.copy();
 
-				stackInvCopy.setCount(1);
+				stackSlotCopy.setCount(1);
 
-				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackInvCopy);
+				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackSlotCopy);
 
 				stackSlot.shrink(1);
 

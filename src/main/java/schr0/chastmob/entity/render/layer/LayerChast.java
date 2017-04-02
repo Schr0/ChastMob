@@ -20,12 +20,12 @@ public abstract class LayerChast implements LayerRenderer<EntityChast>
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public RenderChast getRenderChast()
+	public RenderChast getRender()
 	{
 		return this.renderChast;
 	}
 
-	public ModelChast getModelChast()
+	public ModelChast getModel()
 	{
 		return (ModelChast) renderChast.getMainModel();
 	}

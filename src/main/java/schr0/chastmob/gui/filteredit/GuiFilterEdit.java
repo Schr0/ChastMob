@@ -18,6 +18,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
+import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobPacket;
 import schr0.chastmob.inventory.InventoryFilterEdit;
@@ -135,7 +136,7 @@ public class GuiFilterEdit extends GuiContainer
 					slot = (row + column * 3);
 					ItemStack stackSlot = this.inventoryFilterResult.getStackInSlot(slot);
 
-					if (this.isPointInRegion((107 + row * 20), (22 + column * 20), 16, 16, mouseX, mouseY) && !stackSlot.isEmpty())
+					if (this.isPointInRegion((107 + row * 20), (22 + column * 20), 16, 16, mouseX, mouseY) && ChastMobHelper.isNotEmptyItemStack(stackSlot))
 					{
 						this.renderToolTip(stackSlot, mouseX, mouseY);
 					}

@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,6 +15,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import schr0.chastmob.ChastMob;
+import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobGui;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
@@ -74,7 +74,7 @@ public class ItemFilter extends Item
 			{
 				ItemStack stackSlot = inventoryFilterResult.getStackInSlot(slot);
 
-				if (!stackSlot.isEmpty())
+				if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
 				{
 					String nameItemSlot = stackSlot.getDisplayName();
 
@@ -105,29 +105,9 @@ public class ItemFilter extends Item
 
 		ItemStack stack = playerIn.getHeldItem(handIn);
 
-		if (playerIn.isSneaking())
+		if (!worldIn.isRemote)
 		{
-			switch (stack.getItemDamage())
-			{
-				case 0 :
-
-					stack.setItemDamage(1);
-					break;
-
-				case 1 :
-
-					stack.setItemDamage(0);
-					break;
-			}
-
-			playerIn.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
-		}
-		else
-		{
-			if (!worldIn.isRemote)
-			{
-				playerIn.openGui(ChastMob.instance, ChastMobGui.ID_FILTER_EDIT, worldIn, 0, 0, 0);
-			}
+			playerIn.openGui(ChastMob.instance, ChastMobGui.ID_FILTER_EDIT, worldIn, 0, 0, 0);
 		}
 
 		return new ActionResult(EnumActionResult.SUCCESS, stack);

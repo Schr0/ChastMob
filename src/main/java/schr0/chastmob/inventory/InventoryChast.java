@@ -5,6 +5,7 @@ import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 
 public abstract class InventoryChast extends InventoryBasic
@@ -77,7 +78,7 @@ public abstract class InventoryChast extends InventoryBasic
 		{
 			ItemStack stackSlot = this.getStackInSlot(slot);
 
-			if (!stackSlot.isEmpty())
+			if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
 			{
 				NBTTagCompound nbt = new NBTTagCompound();
 				nbt.setByte("Slot", (byte) slot);

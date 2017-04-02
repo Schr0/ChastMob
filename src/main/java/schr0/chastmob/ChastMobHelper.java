@@ -6,11 +6,16 @@ import net.minecraft.item.ItemStack;
 public class ChastMobHelper
 {
 
+	public static boolean isNotEmptyItemStack(ItemStack stack)
+	{
+		return !stack.isEmpty();
+	}
+
 	public static boolean canStoreInventory(IInventory inventory, ItemStack stack)
 	{
 		boolean hasEmptySlot = (getFirstEmptySlot(inventory) != -1);
 
-		if (!stack.isEmpty())
+		if (isNotEmptyItemStack(stack))
 		{
 			boolean hasCanStoreSlot = (getCanStoreSlot(inventory, stack) != -1);
 
@@ -29,7 +34,9 @@ public class ChastMobHelper
 		}
 	}
 
-	public static int getFirstEmptySlot(IInventory inventory)
+	// TODO /* ======================================== MOD START =====================================*/
+
+	private static int getFirstEmptySlot(IInventory inventory)
 	{
 		for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
 		{
@@ -42,7 +49,7 @@ public class ChastMobHelper
 		return -1;
 	}
 
-	public static int getCanStoreSlot(IInventory inventory, ItemStack stack)
+	private static int getCanStoreSlot(IInventory inventory, ItemStack stack)
 	{
 		for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
 		{
