@@ -243,7 +243,7 @@ public class ModelChast extends ModelBase
 
 		EntityChast entityChast = (EntityChast) entitylivingbaseIn;
 
-		this.coverMain.rotateAngleX = -(entityChast.getAngleCoverX(partialTickTime));
+		this.coverMain.rotateAngleX = -(entityChast.getCoverRotateAngleX(partialTickTime));
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

@@ -27,10 +27,10 @@ item.helmet_gold.name=Chast Gold Helmet
 item.helmet_diamond.name=Chast Diamond Helmet
 
 item.filter_0.name=White Filter Sheet
-item.filter_0.tips="Whitelist" Filter.
+item.filter_0.tips="Whitelist" Filter. When it is used at sneaking, it turns into "Blacklist".
 
 item.filter_1.name=Black Filter Sheet
-item.filter_1.tips="Blacklist" Filter.
+item.filter_1.tips="Blacklist" Filter. When it is used at sneaking, it turns into "Whitelist".
 
 item.filter.button.clear=CLEAR
 item.filter.button.registry=REGISTRY

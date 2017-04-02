@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -105,9 +106,22 @@ public class ItemFilter extends Item
 
 		ItemStack stack = playerIn.getHeldItem(handIn);
 
-		if (!worldIn.isRemote)
+		if (playerIn.isSneaking())
 		{
-			playerIn.openGui(ChastMob.instance, ChastMobGui.ID_FILTER_EDIT, worldIn, 0, 0, 0);
+			int meta = (stack.getItemDamage() == 0) ? (1) : (0);
+
+			stack.setItemDamage(meta);
+
+			playerIn.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+		}
+		else
+		{
+			if (!worldIn.isRemote)
+			{
+				playerIn.openGui(ChastMob.instance, ChastMobGui.ID_FILTER_EDIT, worldIn, 0, 0, 0);
+			}
+
+			playerIn.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);
 		}
 
 		return new ActionResult(EnumActionResult.SUCCESS, stack);

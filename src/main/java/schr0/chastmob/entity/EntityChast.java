@@ -752,7 +752,7 @@ public class EntityChast extends EntityGolem
 	}
 
 	@SideOnly(Side.CLIENT)
-	public float getAngleCoverX(float partialTickTime)
+	public float getCoverRotateAngleX(float partialTickTime)
 	{
 		return ((this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * partialTickTime) * 0.5F * (float) Math.PI);
 	}
@@ -879,13 +879,13 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public void setAIKnockbacking(int panicTime)
+	public void setAIKnockbacking(int timeCounter)
 	{
 		if (this.aiChastKnockback != null)
 		{
-			this.aiChastKnockback.setKnockbacking(panicTime);
+			this.aiChastKnockback.setKnockbacking(timeCounter);
 
-			if (0 < panicTime)
+			if (0 < timeCounter)
 			{
 				this.aiChastSit.setSitting(false);
 				this.aiChastTrade.setTrading(null);

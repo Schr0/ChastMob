@@ -142,9 +142,11 @@ public class EntityAIChastCollectItem extends EntityAIChast
 			if (inventoryFilter != null)
 			{
 				ItemStack stackA = entityItem.getEntityItem().copy();
-				int meta = stackA.isItemStackDamageable() ? (0) : stackA.getItemDamage();
 
-				stackA.setItemDamage(meta);
+				if (stackA.isItemStackDamageable())
+				{
+					stackA.setItemDamage(0);
+				}
 
 				stackA.setCount(1);
 
@@ -152,23 +154,18 @@ public class EntityAIChastCollectItem extends EntityAIChast
 				{
 					ItemStack stackB = inventoryFilter.getStackInSlot(slot);
 
-					if (inventoryFilter.getType() == ItemFilter.Type.WHITE)
+					if (stackB.isEmpty())
 					{
-						if (ChastMobHelper.isNotEmptyItemStack(stackB) && ItemStack.areItemStackTagsEqual(stackA, stackB))
-						{
-							return true;
-						}
+						continue;
 					}
-					else
-					{
-						if (ChastMobHelper.isNotEmptyItemStack(stackB) && ItemStack.areItemStackTagsEqual(stackA, stackB))
-						{
-							return false;
-						}
 
-						return true;
+					if (ItemStack.areItemStacksEqual(stackA, stackB))
+					{
+						return (inventoryFilter.getType() == ItemFilter.Type.WHITE);
 					}
 				}
+
+				return (inventoryFilter.getType() == ItemFilter.Type.BLACK);
 			}
 			else
 			{

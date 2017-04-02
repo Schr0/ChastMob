@@ -30,9 +30,11 @@ public class MessageHandlerButtonEdit implements IMessageHandler<MessageButtonEd
 			for (int slot = 0; slot < inventoryFilterEdit.getSizeInventory(); ++slot)
 			{
 				ItemStack stackSlot = inventoryFilterEdit.getStackInSlot(slot);
-				int meta = stackSlot.isItemStackDamageable() ? (0) : stackSlot.getItemDamage();
 
-				stackSlot.setItemDamage(meta);
+				if (stackSlot.isItemStackDamageable())
+				{
+					stackSlot.setItemDamage(0);
+				}
 
 				inventoryFilterResult.addItem(stackSlot);
 			}
