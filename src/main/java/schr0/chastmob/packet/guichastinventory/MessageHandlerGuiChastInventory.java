@@ -1,4 +1,4 @@
-package schr0.chastmob.packet.buttonchange;
+package schr0.chastmob.packet.guichastinventory;
 
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -6,11 +6,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import schr0.chastmob.entity.EntityChast;
 
-public class MessageHandlerButtonChange implements IMessageHandler<MessageButtonChange, IMessage>
+public class MessageHandlerGuiChastInventory implements IMessageHandler<MessageGuiChastInventory, IMessage>
 {
 
 	@Override
-	public IMessage onMessage(MessageButtonChange message, MessageContext ctx)
+	public IMessage onMessage(MessageGuiChastInventory message, MessageContext ctx)
 	{
 		World world = ctx.getServerHandler().playerEntity.getEntityWorld();
 		EntityChast entityChast = message.getEntityChast(world);

@@ -8,7 +8,6 @@ import net.minecraft.entity.ai.EntityAIOcelotSit;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
@@ -84,12 +83,12 @@ public class ChastMobEvent
 	public void onLivingDeathEvent(LivingDeathEvent event)
 	{
 		EntityLivingBase entityLivingBase = event.getEntityLiving();
-		EnumHand handhHasItemSoulBottleFullFriendly = this.getHandHasItemSoulBottleFullFriendly(entityLivingBase);
-		ItemStack stackHeldItem = entityLivingBase.getHeldItem(handhHasItemSoulBottleFullFriendly);
+		EnumHand handItemSoulBottleFullFriendly = this.getHandSoulBottleFullFriendly(entityLivingBase);
+		ItemStack stackHeldItem = entityLivingBase.getHeldItem(handItemSoulBottleFullFriendly);
 
 		if (this.isItemSoulBottleFullFriendly(stackHeldItem))
 		{
-			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handhHasItemSoulBottleFullFriendly, entityLivingBase);
+			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handItemSoulBottleFullFriendly, entityLivingBase);
 
 			event.setCanceled(true);
 		}
@@ -101,9 +100,9 @@ public class ChastMobEvent
 		ItemStack leftStack = event.getLeft();
 		ItemStack rightStack = event.getRight();
 
-		if (this.canAnvilUpdateItems(leftStack, rightStack))
+		if (this.canAnvilLeftCopyItems(leftStack, rightStack))
 		{
-			event.setCost(1);
+			event.setCost(5);
 			event.setMaterialCost(1);
 			event.setOutput(leftStack.copy());
 		}
@@ -116,9 +115,11 @@ public class ChastMobEvent
 		ItemStack rightStack = event.getIngredientInput();
 		EntityPlayer player = event.getEntityPlayer();
 
-		if (this.canAnvilUpdateItems(leftStack, rightStack))
+		if (this.canAnvilLeftCopyItems(leftStack, rightStack))
 		{
 			event.setBreakChance(0.0F);
+
+			player.addExperienceLevel(5);
 
 			if (!player.inventory.addItemStackToInventory(leftStack))
 			{
@@ -129,7 +130,7 @@ public class ChastMobEvent
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private EnumHand getHandHasItemSoulBottleFullFriendly(EntityLivingBase entityLivingBase)
+	private EnumHand getHandSoulBottleFullFriendly(EntityLivingBase entityLivingBase)
 	{
 		if (this.isItemSoulBottleFullFriendly(entityLivingBase.getHeldItemOffhand()))
 		{
@@ -149,22 +150,18 @@ public class ChastMobEvent
 		return false;
 	}
 
-	private boolean canAnvilUpdateItems(ItemStack left, ItemStack right)
+	private boolean canAnvilLeftCopyItems(ItemStack left, ItemStack right)
 	{
+		boolean isRightItemSoulFragment = (right.getItem() == ChastMobItems.SOUL_FRAGMENT);
+
 		if ((left.getItem() == ChastMobItems.MODE_PATROL) && ((ItemModePatrol) left.getItem()).hasHomeChest(left))
 		{
-			if (right.getItem() == Items.PAPER)
-			{
-				return true;
-			}
+			return isRightItemSoulFragment;
 		}
 
 		if ((left.getItem() == ChastMobItems.FILTER) && ((ItemFilter) left.getItem()).hasInventoryFilterResult(left))
 		{
-			if (right.getItem() == Items.PAPER)
-			{
-				return true;
-			}
+			return isRightItemSoulFragment;
 		}
 
 		return false;

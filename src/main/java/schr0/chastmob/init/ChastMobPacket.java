@@ -5,10 +5,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
-import schr0.chastmob.packet.buttonchange.MessageButtonChange;
-import schr0.chastmob.packet.buttonchange.MessageHandlerButtonChange;
-import schr0.chastmob.packet.buttonedit.MessageButtonEdit;
-import schr0.chastmob.packet.buttonedit.MessageHandlerButtonEdit;
+import schr0.chastmob.packet.guichastinventory.MessageGuiChastInventory;
+import schr0.chastmob.packet.guichastinventory.MessageHandlerGuiChastInventory;
+import schr0.chastmob.packet.guifilteredit.MessageGuiFilterEdit;
+import schr0.chastmob.packet.guifilteredit.MessageHandlerGuiFilterEdit;
 import schr0.chastmob.packet.particleentity.MessageHandlerParticleEntity;
 import schr0.chastmob.packet.particleentity.MessageParticleEntity;
 
@@ -24,8 +24,8 @@ public class ChastMobPacket
 
 	public void init()
 	{
-		DISPATCHER.registerMessage(MessageHandlerButtonChange.class, MessageButtonChange.class, ID_GUI_BUTTON_CHANGE, Side.SERVER);
-		DISPATCHER.registerMessage(MessageHandlerButtonEdit.class, MessageButtonEdit.class, ID_GUI_BUTTON_EDIT, Side.SERVER);
+		DISPATCHER.registerMessage(MessageHandlerGuiChastInventory.class, MessageGuiChastInventory.class, ID_GUI_BUTTON_CHANGE, Side.SERVER);
+		DISPATCHER.registerMessage(MessageHandlerGuiFilterEdit.class, MessageGuiFilterEdit.class, ID_GUI_BUTTON_EDIT, Side.SERVER);
 	}
 
 	@SideOnly(Side.CLIENT)

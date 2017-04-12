@@ -141,25 +141,25 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 			if (inventoryFilter != null)
 			{
-				ItemStack stackA = entityItem.getEntityItem().copy();
+				ItemStack stackEntityItem = entityItem.getEntityItem().copy();
 
-				if (stackA.isItemStackDamageable())
+				if (stackEntityItem.isItemStackDamageable())
 				{
-					stackA.setItemDamage(0);
+					stackEntityItem.setItemDamage(0);
 				}
 
-				stackA.setCount(1);
+				stackEntityItem.setCount(1);
 
 				for (int slot = 0; slot < inventoryFilter.getSizeInventory(); ++slot)
 				{
-					ItemStack stackB = inventoryFilter.getStackInSlot(slot);
+					ItemStack stackSlot = inventoryFilter.getStackInSlot(slot);
 
-					if (stackB.isEmpty())
+					if (stackSlot.isEmpty())
 					{
 						continue;
 					}
 
-					if (ItemStack.areItemStacksEqual(stackA, stackB))
+					if (ItemStack.areItemStacksEqual(stackEntityItem, stackSlot))
 					{
 						return (inventoryFilter.getType() == ItemFilter.Type.WHITE);
 					}

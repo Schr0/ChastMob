@@ -24,7 +24,7 @@ import schr0.chastmob.init.ChastMobPacket;
 import schr0.chastmob.inventory.InventoryFilterEdit;
 import schr0.chastmob.inventory.InventoryFilterResult;
 import schr0.chastmob.item.ItemFilter;
-import schr0.chastmob.packet.buttonedit.MessageButtonEdit;
+import schr0.chastmob.packet.guifilteredit.MessageGuiFilterEdit;
 
 @SideOnly(Side.CLIENT)
 public class GuiFilterEdit extends GuiContainer
@@ -172,7 +172,7 @@ public class GuiFilterEdit extends GuiContainer
 	{
 		if (button == this.buttonRegistry)
 		{
-			ChastMobPacket.DISPATCHER.sendToServer(new MessageButtonEdit(this.entityPlayer));
+			ChastMobPacket.DISPATCHER.sendToServer(new MessageGuiFilterEdit(this.entityPlayer));
 		}
 	}
 

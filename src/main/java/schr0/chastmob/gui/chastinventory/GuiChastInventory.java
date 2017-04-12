@@ -16,13 +16,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.init.ChastMobPacket;
-import schr0.chastmob.packet.buttonchange.MessageButtonChange;
+import schr0.chastmob.packet.guichastinventory.MessageGuiChastInventory;
 
 @SideOnly(Side.CLIENT)
 public class GuiChastInventory extends GuiContainer
 {
 
-	private static final ResourceLocation RES_CHAST_STATUS = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/gui/chast_inventory.png");
+	private static final ResourceLocation RES_CHAST_INVENTORY = new ResourceLocation(ChastMob.MOD_RESOURCE_DOMAIN + "textures/gui/chast_inventory.png");
 
 	private EntityChast entityChast;
 	private EntityPlayer entityPlayer;
@@ -51,7 +51,7 @@ public class GuiChastInventory extends GuiContainer
 	protected void drawGuiContainerBackgroundLayer(float renderPartialTicks, int xMouse, int yMouse)
 	{
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		this.mc.getTextureManager().bindTexture(RES_CHAST_STATUS);
+		this.mc.getTextureManager().bindTexture(RES_CHAST_INVENTORY);
 
 		int originPosX = (this.width - this.xSize) / 2;
 		int originPosY = (this.height - this.ySize) / 2;
@@ -88,7 +88,7 @@ public class GuiChastInventory extends GuiContainer
 	{
 		if (button == this.buttonChange)
 		{
-			ChastMobPacket.DISPATCHER.sendToServer(new MessageButtonChange(this.entityChast));
+			ChastMobPacket.DISPATCHER.sendToServer(new MessageGuiChastInventory(this.entityChast));
 
 			((ChangeButton) button).mouseClicked();
 		}
@@ -115,7 +115,7 @@ public class GuiChastInventory extends GuiContainer
 			{
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-				mc.getTextureManager().bindTexture(RES_CHAST_STATUS);
+				mc.getTextureManager().bindTexture(RES_CHAST_INVENTORY);
 
 				this.drawTexturedModalRect(this.xPosition, this.yPosition, 184, this.buttonTextureY, this.width, this.height);
 			}

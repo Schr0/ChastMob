@@ -1,24 +1,24 @@
-package schr0.chastmob.packet.buttonedit;
+package schr0.chastmob.packet.guichastinventory;
 
 import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import schr0.chastmob.entity.EntityChast;
 
-public class MessageButtonEdit implements IMessage
+public class MessageGuiChastInventory implements IMessage
 {
 
 	private int entitiyID;
 
-	public MessageButtonEdit()
+	public MessageGuiChastInventory()
 	{
 		// none
 	}
 
-	public MessageButtonEdit(Entity entity)
+	public MessageGuiChastInventory(Entity entity)
 	{
 		this.entitiyID = entity.getEntityId();
 	}
@@ -38,16 +38,16 @@ public class MessageButtonEdit implements IMessage
 	// TODO /* ======================================== MOD START =====================================*/
 
 	@Nullable
-	public EntityPlayer getEntityPlayer(World world)
+	public EntityChast getEntityChast(World world)
 	{
 		Entity entity = world.getEntityByID(this.entitiyID);
 
-		if (entity instanceof EntityPlayer)
+		if (entity instanceof EntityChast)
 		{
-			return (EntityPlayer) entity;
+			return (EntityChast) entity;
 		}
 
-		return (EntityPlayer) null;
+		return (EntityChast) null;
 	}
 
 }

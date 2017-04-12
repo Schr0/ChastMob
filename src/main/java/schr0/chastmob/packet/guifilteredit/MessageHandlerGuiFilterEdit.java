@@ -1,4 +1,4 @@
-package schr0.chastmob.packet.buttonedit;
+package schr0.chastmob.packet.guifilteredit;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -10,11 +10,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import schr0.chastmob.gui.filteredit.ContainerFilterEdit;
 import schr0.chastmob.inventory.InventoryFilterResult;
 
-public class MessageHandlerButtonEdit implements IMessageHandler<MessageButtonEdit, IMessage>
+public class MessageHandlerGuiFilterEdit implements IMessageHandler<MessageGuiFilterEdit, IMessage>
 {
 
 	@Override
-	public IMessage onMessage(MessageButtonEdit message, MessageContext ctx)
+	public IMessage onMessage(MessageGuiFilterEdit message, MessageContext ctx)
 	{
 		World world = ctx.getServerHandler().playerEntity.getEntityWorld();
 		EntityPlayer entityPlayer = message.getEntityPlayer(world);
