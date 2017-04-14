@@ -29,14 +29,14 @@ public class MessageHandlerGuiFilterEdit implements IMessageHandler<MessageGuiFi
 
 			for (int slot = 0; slot < inventoryFilterEdit.getSizeInventory(); ++slot)
 			{
-				ItemStack stackSlot = inventoryFilterEdit.getStackInSlot(slot);
+				ItemStack stackSlotCopy = inventoryFilterEdit.getStackInSlot(slot).copy();
 
-				if (stackSlot.isItemStackDamageable())
+				if (stackSlotCopy.isItemStackDamageable())
 				{
-					stackSlot.setItemDamage(0);
+					stackSlotCopy.setItemDamage(0);
 				}
 
-				inventoryFilterResult.addItem(stackSlot);
+				inventoryFilterResult.addItem(stackSlotCopy);
 			}
 
 			for (int countCheck = 0; countCheck < inventoryFilterResult.getSizeInventory(); ++countCheck)

@@ -22,11 +22,8 @@ public class ChastMobEntitys
 	public static final boolean SENDS_VELOCITY_UPDATES = true;
 
 	public static final String NAME_CHAST = "chast";
-
 	public static final int ID_CHAST = 0;
-
 	public static final int EGG_PRIMARY_CHAST = 0xa47227;
-
 	public static final int EGG_SECONDARY_CHAST = 0x000000;
 
 	public void init()

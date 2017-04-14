@@ -34,7 +34,7 @@ public abstract class InventoryFilter extends InventoryBasic
 		return ItemFilter.Type.WHITE;
 	}
 
-	public ItemStack getContainerItem()
+	public ItemStack getContainerItemStack()
 	{
 		return this.stackItemFilter;
 	}

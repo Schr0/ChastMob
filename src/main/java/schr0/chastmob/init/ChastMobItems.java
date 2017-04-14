@@ -27,25 +27,25 @@ public class ChastMobItems
 	public static final Item SOUL_BOTTLE_FULL;
 	public static final Item SOUL_FRAGMENT;
 	public static final Item CORE;
-	public static final Item MODE_PATROL;
 	public static final Item HELMET_WOOD;
 	public static final Item HELMET_STONE;
 	public static final Item HELMET_IRON;
 	public static final Item HELMET_DIAMOND;
 	public static final Item HELMET_GOLD;
 	public static final Item FILTER;
+	public static final Item MODE_PATROL;
 
 	public static final String NAME_SOUL_BOTTLE = "soul_bottle";
 	public static final String NAME_SOUL_BOTTLE_FULL = "soul_bottle_full";
 	public static final String NAME_SOUL_FRAGMENT = "soul_fragment";
 	public static final String NAME_CORE = "core";
-	public static final String NAME_MODE_PATROL = "mode_patrol";
 	public static final String NAME_HELMET_WOOD = "helmet_wood";
 	public static final String NAME_HELMET_STONE = "helmet_stone";
 	public static final String NAME_HELMET_IRON = "helmet_iron";
 	public static final String NAME_HELMET_DIAMOND = "helmet_diamond";
 	public static final String NAME_HELMET_GOLD = "helmet_gold";
 	public static final String NAME_FILTER = "filter";
+	public static final String NAME_MODE_PATROL = "mode_patrol";
 
 	public static final int META = 0;
 	public static final int META_FILTER = 1;
@@ -56,13 +56,13 @@ public class ChastMobItems
 		SOUL_BOTTLE_FULL = new ItemSoulBottleFull().setUnlocalizedName(NAME_SOUL_BOTTLE_FULL).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		SOUL_FRAGMENT = new ItemSoulFragment().setUnlocalizedName(NAME_SOUL_FRAGMENT).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		CORE = new ItemCore().setUnlocalizedName(NAME_CORE).setCreativeTab(ChastMobCreativeTabs.ITEM);
-		MODE_PATROL = new ItemModePatrol().setUnlocalizedName(NAME_MODE_PATROL).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		HELMET_WOOD = new ItemHelmetWood().setUnlocalizedName(NAME_HELMET_WOOD).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		HELMET_STONE = new ItemHelmetStone().setUnlocalizedName(NAME_HELMET_STONE).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		HELMET_IRON = new ItemHelmetIron().setUnlocalizedName(NAME_HELMET_IRON).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		HELMET_DIAMOND = new ItemHelmetDiamond().setUnlocalizedName(NAME_HELMET_DIAMOND).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		HELMET_GOLD = new ItemHelmetGold().setUnlocalizedName(NAME_HELMET_GOLD).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		FILTER = new ItemFilter().setUnlocalizedName(NAME_FILTER).setCreativeTab(ChastMobCreativeTabs.ITEM);
+		MODE_PATROL = new ItemModePatrol().setUnlocalizedName(NAME_MODE_PATROL).setCreativeTab(ChastMobCreativeTabs.ITEM);
 	}
 
 	public void init()
@@ -71,13 +71,13 @@ public class ChastMobItems
 		registerItem(SOUL_BOTTLE_FULL, NAME_SOUL_BOTTLE_FULL, META);
 		registerItem(SOUL_FRAGMENT, NAME_SOUL_FRAGMENT, META);
 		registerItem(CORE, NAME_CORE, META);
-		registerItem(MODE_PATROL, NAME_MODE_PATROL, META);
 		registerItem(HELMET_WOOD, NAME_HELMET_WOOD, META);
 		registerItem(HELMET_STONE, NAME_HELMET_STONE, META);
 		registerItem(HELMET_IRON, NAME_HELMET_IRON, META);
 		registerItem(HELMET_DIAMOND, NAME_HELMET_DIAMOND, META);
 		registerItem(HELMET_GOLD, NAME_HELMET_GOLD, META);
 		registerItem(FILTER, NAME_FILTER, META_FILTER);
+		registerItem(MODE_PATROL, NAME_MODE_PATROL, META);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -87,13 +87,13 @@ public class ChastMobItems
 		ChastMobModelLoader.registerModel(SOUL_BOTTLE_FULL, META);
 		ChastMobModelLoader.registerModel(SOUL_FRAGMENT, META);
 		ChastMobModelLoader.registerModel(CORE, META);
-		ChastMobModelLoader.registerModel(MODE_PATROL, META);
 		ChastMobModelLoader.registerModel(HELMET_WOOD, META);
 		ChastMobModelLoader.registerModel(HELMET_STONE, META);
 		ChastMobModelLoader.registerModel(HELMET_IRON, META);
 		ChastMobModelLoader.registerModel(HELMET_GOLD, META);
 		ChastMobModelLoader.registerModel(HELMET_DIAMOND, META);
 		ChastMobModelLoader.registerModel(FILTER, META_FILTER);
+		ChastMobModelLoader.registerModel(MODE_PATROL, META);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

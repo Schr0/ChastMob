@@ -13,7 +13,7 @@ public class ChastMobCreativeTabs
 		@Override
 		public ItemStack getTabIconItem()
 		{
-			return new ItemStack(ChastMobItems.SOUL_BOTTLE_FULL);
+			return new ItemStack(ChastMobItems.CORE);
 		}
 
 	};

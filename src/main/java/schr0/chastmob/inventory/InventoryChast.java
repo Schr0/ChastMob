@@ -36,23 +36,12 @@ public abstract class InventoryChast extends InventoryBasic
 		return false;
 	}
 
-	@Override
-	public void openInventory(EntityPlayer player)
-	{
-		super.markDirty();
-
-		this.entityChast.setAITrading(player);
-	}
-
-	@Override
-	public void closeInventory(EntityPlayer player)
-	{
-		super.markDirty();
-
-		this.entityChast.setAITrading(null);
-	}
-
 	// TODO /* ======================================== MOD START =====================================*/
+
+	public EntityChast getContainerEntityChast()
+	{
+		return this.entityChast;
+	}
 
 	public void readInventoryFromNBT(NBTTagList nbtList)
 	{

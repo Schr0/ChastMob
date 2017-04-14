@@ -30,7 +30,7 @@ public class ChastMobRecipe
 				'Y', new ItemStack(Items.QUARTZ),
 		}));
 
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(ChastMobItems.SOUL_FRAGMENT, 4), new Object[]
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(ChastMobItems.SOUL_FRAGMENT, 16), new Object[]
 		{
 				new ItemStack(ChastMobItems.SOUL_BOTTLE_FULL),
 		}));
@@ -58,9 +58,9 @@ public class ChastMobRecipe
 				new ItemStack(ChastMobItems.SOUL_FRAGMENT),
 		}));
 
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(ChastMobItems.FILTER, 1, 0), new Object[]
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(ChastMobItems.FILTER, 0, 1), new Object[]
 		{
-				new ItemStack(ChastMobItems.FILTER, 1, 0),
+				new ItemStack(ChastMobItems.FILTER, 0, 1),
 		}));
 
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(ChastMobItems.FILTER, 1, 1), new Object[]

@@ -16,7 +16,9 @@ public class InventoryFilterResult extends InventoryFilter
 	@Override
 	public void closeInventory(EntityPlayer player)
 	{
-		ItemStack stack = this.getContainerItem();
+		super.markDirty();
+
+		ItemStack stack = this.getContainerItemStack();
 		Item item = stack.getItem();
 
 		if (item instanceof ItemFilter)
