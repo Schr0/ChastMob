@@ -1,8 +1,7 @@
-package schr0.chastmob.packet;
+package schr0.chastmob.packet.particleentity;
 
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
@@ -20,8 +19,7 @@ public class MessageHandlerParticleEntity implements IMessageHandler<MessagePart
 	@Override
 	public IMessage onMessage(MessageParticleEntity message, MessageContext ctx)
 	{
-		Minecraft mc = FMLClientHandler.instance().getClient();
-		World world = mc.theWorld;
+		World world = FMLClientHandler.instance().getClient().world;
 		Entity entity = message.getEntity(world);
 
 		if (entity != null)
@@ -31,6 +29,12 @@ public class MessageHandlerParticleEntity implements IMessageHandler<MessagePart
 				case 0 :
 
 					particleHeart(world, world.rand, entity);
+
+					break;
+
+				case 1 :
+
+					particleDefense(world, world.rand, entity);
 
 					break;
 			}
@@ -43,13 +47,19 @@ public class MessageHandlerParticleEntity implements IMessageHandler<MessagePart
 
 	private static void particleHeart(World world, Random random, Entity entity)
 	{
-		for (int i = 0; i < 7; ++i)
+		for (int i = 0; i < 4; ++i)
 		{
 			double randX = random.nextGaussian() * 0.02D;
 			double randY = random.nextGaussian() * 0.02D;
 			double randZ = random.nextGaussian() * 0.02D;
 			world.spawnParticle(EnumParticleTypes.HEART, entity.posX + (double) (random.nextFloat() * entity.width * 2.0F) - (double) entity.width, entity.posY + 0.5D + (double) (random.nextFloat() * entity.height), entity.posZ + (double) (random.nextFloat() * entity.width * 2.0F) - (double) entity.width, randX, randY, randZ, new int[0]);
 		}
+	}
+
+	private static void particleDefense(World world, Random random, Entity entity)
+	{
+		double size = 1.25D;
+		world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, entity.posX + (double) (random.nextFloat() * entity.width * 2.0F) - (double) entity.width, entity.posY + (double) (random.nextFloat() * entity.height), entity.posZ + (double) (random.nextFloat() * entity.width * 2.0F) - (double) entity.width, size, 0.0D, 0.0D, new int[0]);
 	}
 
 }

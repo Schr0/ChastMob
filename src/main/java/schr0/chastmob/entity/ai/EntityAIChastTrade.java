@@ -1,5 +1,7 @@
 package schr0.chastmob.entity.ai;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import schr0.chastmob.entity.EntityChast;
 
@@ -11,7 +13,6 @@ public class EntityAIChastTrade extends EntityAIChast
 	public EntityAIChastTrade(EntityChast entityChast)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 	}
 
 	@Override
@@ -29,22 +30,23 @@ public class EntityAIChastTrade extends EntityAIChast
 	public void startExecuting()
 	{
 		super.startExecuting();
-		this.getAIOwnerEntity().setStateTrade(true);
+
+		this.getOwnerEntity().setStateTrade(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
 		super.resetTask();
-		this.getAIOwnerEntity().setStateTrade(false);
 
+		this.getOwnerEntity().setStateTrade(false);
 		this.setTrading(null);
 	}
 
 	@Override
 	public void updateTask()
 	{
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.tradePlayer, this.getAIOwnerEntity().getHorizontalFaceSpeed(), this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getOwnerEntity().getLookHelper().setLookPositionWithEntity(this.tradePlayer, this.getOwnerEntity().getHorizontalFaceSpeed(), this.getOwnerEntity().getVerticalFaceSpeed());
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -54,7 +56,7 @@ public class EntityAIChastTrade extends EntityAIChast
 		return (this.tradePlayer != null);
 	}
 
-	public void setTrading(EntityPlayer tradePlayer)
+	public void setTrading(@Nullable EntityPlayer tradePlayer)
 	{
 		this.tradePlayer = tradePlayer;
 	}

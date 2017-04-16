@@ -20,30 +20,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobNBTs;
 
-public class ItemMapHomeChest extends Item
+public class ItemModePatrol extends ItemMode
 {
 
-	public ItemMapHomeChest()
+	public ItemModePatrol()
 	{
 		this.setMaxStackSize(1);
 
 		this.addPropertyOverride(new ResourceLocation("empty"), new IItemPropertyGetter()
 		{
+
 			@Override
-			@SideOnly(Side.CLIENT)
 			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
 			{
 				Item item = stack.getItem();
 
-				if (ChastMobHelper.isNotEmptyItemStack(stack) && item instanceof ItemMapHomeChest)
+				if (item instanceof ItemModePatrol)
 				{
-					if (!((ItemMapHomeChest) item).hasHomeChest(stack))
+					if (((ItemModePatrol) item).hasHomeChest(stack) == false)
 					{
 						return 1.0F;
 					}
@@ -51,21 +48,32 @@ public class ItemMapHomeChest extends Item
 
 				return 0.0F;
 			}
+
 		});
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
+	public boolean isItemValidForSlot(ItemStack stack)
+	{
+		if (this.hasHomeChest(stack))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
 	public boolean hasEffect(ItemStack stack)
 	{
 		return this.hasHomeChest(stack);
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_MAP_HOME_CHEST_TIPS, new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_MODE_PATROL_TIPS, new Object[0]).getFormattedText());
+		tooltip.add("");
 
 		BlockPos homeChestPosition = this.getHomeChestPosition(stack);
 
@@ -85,24 +93,31 @@ public class ItemMapHomeChest extends Item
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
+		ItemStack stack = player.getHeldItem(hand);
+
 		if (!this.hasHomeChest(stack))
 		{
 			if (worldIn.getTileEntity(pos) instanceof TileEntityChest)
 			{
 				this.setHomeChestPosition(stack, pos);
 
-				playerIn.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+				player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 
 				return EnumActionResult.SUCCESS;
 			}
 		}
 
-		return super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+		return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
+
+	public boolean hasHomeChest(ItemStack stack)
+	{
+		return (this.getHomeChestPosition(stack) != null);
+	}
 
 	@Nullable
 	public BlockPos getHomeChestPosition(ItemStack stack)
@@ -114,11 +129,11 @@ public class ItemMapHomeChest extends Item
 			return (BlockPos) null;
 		}
 
-		if (nbtItemStack.hasKey(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_X) && nbtItemStack.hasKey(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Y) && nbtItemStack.hasKey(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Z))
+		if (nbtItemStack.hasKey(ChastMobNBTs.ITEM_MODE_PATROL_POS_X) && nbtItemStack.hasKey(ChastMobNBTs.ITEM_MODE_PATROL_POS_Y) && nbtItemStack.hasKey(ChastMobNBTs.ITEM_MODE_PATROL_POS_Z))
 		{
-			int posX = nbtItemStack.getInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_X);
-			int posY = nbtItemStack.getInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Y);
-			int posZ = nbtItemStack.getInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Z);
+			int posX = nbtItemStack.getInteger(ChastMobNBTs.ITEM_MODE_PATROL_POS_X);
+			int posY = nbtItemStack.getInteger(ChastMobNBTs.ITEM_MODE_PATROL_POS_Y);
+			int posZ = nbtItemStack.getInteger(ChastMobNBTs.ITEM_MODE_PATROL_POS_Z);
 
 			return new BlockPos(posX, posY, posZ);
 		}
@@ -135,19 +150,11 @@ public class ItemMapHomeChest extends Item
 			nbtItemStack = new NBTTagCompound();
 		}
 
-		if (blockPos != null)
-		{
-			nbtItemStack.setInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_X, blockPos.getX());
-			nbtItemStack.setInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Y, blockPos.getY());
-			nbtItemStack.setInteger(ChastMobNBTs.ITEM_HOME_CHEST_MAP_POS_Z, blockPos.getZ());
-		}
+		nbtItemStack.setInteger(ChastMobNBTs.ITEM_MODE_PATROL_POS_X, blockPos.getX());
+		nbtItemStack.setInteger(ChastMobNBTs.ITEM_MODE_PATROL_POS_Y, blockPos.getY());
+		nbtItemStack.setInteger(ChastMobNBTs.ITEM_MODE_PATROL_POS_Z, blockPos.getZ());
 
 		stack.setTagCompound(nbtItemStack);
-	}
-
-	public boolean hasHomeChest(ItemStack stack)
-	{
-		return (this.getHomeChestPosition(stack) != null);
 	}
 
 }

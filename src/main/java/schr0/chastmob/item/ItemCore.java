@@ -16,33 +16,31 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.init.ChastMobLang;
 
-public class ItemCoreChast extends Item
+public class ItemCore extends Item
 {
 
-	public ItemCoreChast()
+	public ItemCore()
 	{
 		this.setMaxStackSize(1);
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_CORE_CHAST_TIPS, new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_CORE_TIPS, new Object[0]).getFormattedText());
 	}
 
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
+		ItemStack stack = player.getHeldItem(hand);
 		TileEntity tileEntity = worldIn.getTileEntity(pos);
 
-		if (worldIn.getBlockState(pos).getBlock().equals(Blocks.CHEST) && (tileEntity instanceof TileEntityChest))
+		if ((worldIn.getBlockState(pos).getBlock() == Blocks.CHEST) && (tileEntity instanceof TileEntityChest))
 		{
 			EntityChast entityChast = new EntityChast(worldIn);
 			IInventory inventoryTileChest = (IInventory) tileEntity;
@@ -55,7 +53,7 @@ public class ItemCoreChast extends Item
 				entityChast.enablePersistence();
 			}
 
-			entityChast.onSpawnByPlayer(playerIn);
+			entityChast.onSpawnByPlayer(player);
 
 			for (int slot = 0; slot < inventoryTileChest.getSizeInventory(); ++slot)
 			{
@@ -63,28 +61,28 @@ public class ItemCoreChast extends Item
 
 				if (ChastMobHelper.isNotEmptyItemStack(stackTileChest))
 				{
-					entityChast.getInventoryChast().setInventorySlotContents(slot, stackTileChest);
+					entityChast.getInventoryChastMain().setInventorySlotContents(slot, stackTileChest);
 				}
 
-				inventoryTileChest.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());
+				inventoryTileChest.setInventorySlotContents(slot, ItemStack.EMPTY);
 			}
 
 			if (!worldIn.isRemote)
 			{
-				worldIn.spawnEntityInWorld(entityChast);
+				worldIn.spawnEntity(entityChast);
 			}
 
 			worldIn.destroyBlock(pos, false);
 
-			if (!playerIn.capabilities.isCreativeMode)
+			if (!player.capabilities.isCreativeMode)
 			{
-				--stack.stackSize;
+				stack.shrink(1);
 			}
 
 			return EnumActionResult.SUCCESS;
 		}
 
-		return super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+		return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
 	}
 
 }

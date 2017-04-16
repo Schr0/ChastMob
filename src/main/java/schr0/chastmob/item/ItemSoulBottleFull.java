@@ -13,17 +13,15 @@ import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobPacket;
-import schr0.chastmob.packet.MessageParticleEntity;
+import schr0.chastmob.packet.particleentity.MessageParticleEntity;
 
 public class ItemSoulBottleFull extends Item
 {
@@ -40,10 +38,9 @@ public class ItemSoulBottleFull extends Item
 		this.addPropertyOverride(new ResourceLocation(NAME_FRIENDLY), new IItemPropertyGetter()
 		{
 			@Override
-			@SideOnly(Side.CLIENT)
 			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
 			{
-				if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItemDamage() == 0))
+				if (stack.getItemDamage() == 0)
 				{
 					return 1.0F;
 				}
@@ -54,15 +51,13 @@ public class ItemSoulBottleFull extends Item
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
+	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems)
 	{
 		subItems.add(new ItemStack(itemIn, 1, MAX_DAMAGE));
 		subItems.add(new ItemStack(itemIn, 1));
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
 		if (stack.getItemDamage() == 0)

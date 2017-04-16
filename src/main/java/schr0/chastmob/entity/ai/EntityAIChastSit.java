@@ -10,13 +10,12 @@ public class EntityAIChastSit extends EntityAIChast
 	public EntityAIChastSit(EntityChast entityChast)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().isInWater() || !this.getAIOwnerEntity().onGround)
+		if (this.getOwnerEntity().isInWater())
 		{
 			return false;
 		}
@@ -28,15 +27,16 @@ public class EntityAIChastSit extends EntityAIChast
 	public void startExecuting()
 	{
 		super.startExecuting();
-		this.getAIOwnerEntity().setStateSit(true);
+
+		this.getOwnerEntity().setStateSit(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
 		super.resetTask();
-		this.getAIOwnerEntity().setStateSit(false);
 
+		this.getOwnerEntity().setStateSit(false);
 		this.setSitting(false);
 	}
 

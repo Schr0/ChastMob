@@ -1,30 +1,17 @@
 package schr0.chastmob;
 
-import javax.annotation.Nullable;
-
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 public class ChastMobHelper
 {
 
 	public static boolean isNotEmptyItemStack(ItemStack stack)
 	{
-		return (stack != null);
+		return !stack.isEmpty();
 	}
 
-	public static ItemStack getEmptyItemStack()
-	{
-		return (ItemStack) null;
-	}
-
-	public static boolean canStoreInventory(IInventory inventory, @Nullable ItemStack stack)
+	public static boolean canStoreInventory(IInventory inventory, ItemStack stack)
 	{
 		boolean hasEmptySlot = (getFirstEmptySlot(inventory) != -1);
 
@@ -47,11 +34,13 @@ public class ChastMobHelper
 		}
 	}
 
-	public static int getFirstEmptySlot(IInventory inventory)
+	// TODO /* ======================================== MOD START =====================================*/
+
+	private static int getFirstEmptySlot(IInventory inventory)
 	{
 		for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
 		{
-			if (!isNotEmptyItemStack(inventory.getStackInSlot(slot)))
+			if (inventory.getStackInSlot(slot).isEmpty())
 			{
 				return slot;
 			}
@@ -60,16 +49,16 @@ public class ChastMobHelper
 		return -1;
 	}
 
-	public static int getCanStoreSlot(IInventory inventory, ItemStack stack)
+	private static int getCanStoreSlot(IInventory inventory, ItemStack stack)
 	{
 		for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
 		{
-			ItemStack stackInv = inventory.getStackInSlot(slot);
+			ItemStack stackSlot = inventory.getStackInSlot(slot);
 
-			if (isNotEmptyItemStack(stackInv))
+			if (!stackSlot.isEmpty())
 			{
-				boolean isItemEqual = (stackInv.getItem().equals(stack.getItem()) && (!stackInv.getHasSubtypes() || stackInv.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackInv, stack));
-				boolean isStackSizeEqual = (stackInv.isStackable() && (stackInv.stackSize < stackInv.getMaxStackSize()) && (stackInv.stackSize < inventory.getInventoryStackLimit()));
+				boolean isItemEqual = (stackSlot.getItem() == stack.getItem() && (!stackSlot.getHasSubtypes() || stackSlot.getItemDamage() == stack.getItemDamage()) && ItemStack.areItemStackTagsEqual(stackSlot, stack));
+				boolean isStackSizeEqual = (stackSlot.isStackable() && (stackSlot.getCount() < stackSlot.getMaxStackSize()) && (stackSlot.getCount() < inventory.getInventoryStackLimit()));
 
 				if (isItemEqual && isStackSizeEqual)
 				{
@@ -79,31 +68,6 @@ public class ChastMobHelper
 		}
 
 		return -1;
-	}
-
-	public static boolean canBlockBeSeen(Entity entity, BlockPos blockPos)
-	{
-		World world = entity.getEntityWorld();
-		IBlockState state = world.getBlockState(blockPos);
-
-		if (state == null)
-		{
-			return false;
-		}
-
-		Vec3d entityVec3d = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
-		Vec3d targetVec3d = new Vec3d(((double) blockPos.getX() + 0.5D), ((double) blockPos.getY() + (state.getCollisionBoundingBox(world, blockPos).minY + state.getCollisionBoundingBox(world, blockPos).maxY) * 0.9D), ((double) blockPos.getZ() + 0.5D));
-		RayTraceResult rayTraceResult = world.rayTraceBlocks(entityVec3d, targetVec3d);
-
-		if (rayTraceResult != null && rayTraceResult.typeOfHit.equals(RayTraceResult.Type.BLOCK))
-		{
-			if (rayTraceResult.getBlockPos().equals(blockPos))
-			{
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 }

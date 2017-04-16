@@ -1,4 +1,4 @@
-package schr0.chastmob.api;
+package schr0.chastmob.vanilla;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	private static final int TIME_LIMIT = (5 * 20);
 
-	private EntityOcelot theOwnerEntity;
-	private World theOwnerWorld;
-	private BlockPos theOwnerBlockPos;
+	private EntityOcelot ownerEntityOcelot;
+	private World ownerWorld;
+	private BlockPos ownerPosition;
 	private int timeCounter;
 
 	private boolean isEntityAIOcelotSitChast;
@@ -30,9 +30,9 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		super(entityOcelot, speed);
 
-		this.theOwnerEntity = entityOcelot;
-		this.theOwnerWorld = entityOcelot.getEntityWorld();
-		this.theOwnerBlockPos = entityOcelot.getPosition();
+		this.ownerEntityOcelot = entityOcelot;
+		this.ownerWorld = entityOcelot.getEntityWorld();
+		this.ownerPosition = entityOcelot.getPosition();
 		this.speed = speed;
 		this.distance = distance;
 	}
@@ -48,15 +48,15 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 		{
 			this.isEntityAIOcelotSitChast = false;
 
-			if (this.theOwnerEntity.isTamed())
+			if (this.ownerEntityOcelot.isTamed())
 			{
-				if (this.theOwnerEntity.getRidingEntity() instanceof EntityChast)
+				if (this.ownerEntityOcelot.getRidingEntity() instanceof EntityChast)
 				{
 					this.isEntityAIOcelotSitChast = true;
 				}
 				else
 				{
-					if (!this.theOwnerEntity.isSitting())
+					if (!this.ownerEntityOcelot.isSitting())
 					{
 						for (EntityChast entityChast : this.getAroundEntityChast())
 						{
@@ -95,8 +95,8 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		if (this.isEntityAIOcelotSitChast)
 		{
-			this.theOwnerEntity.getAISit().setSitting(false);
-			this.theOwnerEntity.setSitting(false);
+			this.ownerEntityOcelot.getAISit().setSitting(false);
+			this.ownerEntityOcelot.setSitting(false);
 		}
 		else
 		{
@@ -109,8 +109,8 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		if (this.isEntityAIOcelotSitChast)
 		{
-			this.theOwnerEntity.getAISit().setSitting(false);
-			this.theOwnerEntity.setSitting(false);
+			this.ownerEntityOcelot.getAISit().setSitting(false);
+			this.ownerEntityOcelot.setSitting(false);
 
 			this.setSitting(0, null);
 		}
@@ -125,26 +125,26 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	{
 		if (this.isEntityAIOcelotSitChast)
 		{
-			if (this.theOwnerEntity.getRidingEntity() instanceof EntityChast)
+			if (this.ownerEntityOcelot.getRidingEntity() instanceof EntityChast)
 			{
-				if (!this.theOwnerEntity.isSitting())
+				if (!this.ownerEntityOcelot.isSitting())
 				{
-					this.theOwnerEntity.setSitting(true);
+					this.ownerEntityOcelot.setSitting(true);
 				}
 			}
 			else
 			{
 				--this.timeCounter;
 
-				this.theOwnerEntity.getLookHelper().setLookPositionWithEntity(this.targetEntityChast, this.theOwnerEntity.getHorizontalFaceSpeed(), this.theOwnerEntity.getVerticalFaceSpeed());
+				this.ownerEntityOcelot.getLookHelper().setLookPositionWithEntity(this.targetEntityChast, this.ownerEntityOcelot.getHorizontalFaceSpeed(), this.ownerEntityOcelot.getVerticalFaceSpeed());
 
-				if (this.theOwnerEntity.getDistanceSqToEntity(this.targetEntityChast) < 1.5D)
+				if (this.ownerEntityOcelot.getDistanceSqToEntity(this.targetEntityChast) < 1.5D)
 				{
 					for (EntityChast entityChast : this.getAroundEntityChast())
 					{
 						if (entityChast.equals(this.targetEntityChast) && this.canSittingEntityChast(entityChast))
 						{
-							this.theOwnerEntity.startRiding(entityChast);
+							this.ownerEntityOcelot.startRiding(entityChast);
 
 							this.setSitting(0, null);
 
@@ -154,7 +154,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 				}
 				else
 				{
-					this.theOwnerEntity.getNavigator().tryMoveToEntityLiving(this.targetEntityChast, this.speed);
+					this.ownerEntityOcelot.getNavigator().tryMoveToEntityLiving(this.targetEntityChast, this.speed);
 				}
 			}
 		}
@@ -168,7 +168,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	public boolean isSitting()
 	{
-		if (this.theOwnerEntity.getRidingEntity() instanceof EntityChast)
+		if (this.ownerEntityOcelot.getRidingEntity() instanceof EntityChast)
 		{
 			return true;
 		}
@@ -186,12 +186,12 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	private List<EntityChast> getAroundEntityChast()
 	{
-		return this.theOwnerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.theOwnerBlockPos).expandXyz(this.distance));
+		return this.ownerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.ownerPosition).expandXyz(this.distance));
 	}
 
 	private boolean canSittingEntityChast(EntityChast entityChast)
 	{
-		if (this.theOwnerEntity.getEntitySenses().canSee(entityChast))
+		if (this.ownerEntityOcelot.getEntitySenses().canSee(entityChast))
 		{
 			return (entityChast.isEntityAlive() && !entityChast.isBeingRidden() && entityChast.isStateSit());
 		}

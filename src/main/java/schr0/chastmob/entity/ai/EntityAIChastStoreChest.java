@@ -27,7 +27,6 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	public EntityAIChastStoreChest(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 
 		this.speed = speed;
 		this.distance = distance;
@@ -36,14 +35,14 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (ChastMobHelper.canStoreInventory(this.getAIOwnerInventory(), ChastMobHelper.getEmptyItemStack()))
+		if ((this.getOwnerAIMode() == ChastAIMode.FOLLOW) || (this.getOwnerAIMode() == ChastAIMode.SUPPLY))
 		{
 			return false;
 		}
 
-		if (this.getAIOwnerEntity().getAIMode() == EnumAIMode.FREEDOM)
+		if (!ChastMobHelper.canStoreInventory(this.getOwnerInventoryMain(), ItemStack.EMPTY))
 		{
-			TileEntityChest homeChest = (TileEntityChest) this.getAIOwnerWorld().getTileEntity(this.getAIHomePosition());
+			TileEntityChest homeChest = (TileEntityChest) this.getOwnerWorld().getTileEntity(this.getOwnerHomePosition());
 
 			if (this.canStoringTileEntityChest(homeChest))
 			{
@@ -53,7 +52,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 			}
 			else
 			{
-				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.distance);
+				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getOwnerEntity(), this.distance);
 
 				if (this.canStoringTileEntityChest(nearOpenChest))
 				{
@@ -83,7 +82,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getAIOwnerEntity().setCoverOpen(false);
+		this.getOwnerEntity().setCoverOpen(false);
 	}
 
 	@Override
@@ -91,8 +90,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getAIOwnerEntity().setCoverOpen(false);
-
+		this.getOwnerEntity().setCoverOpen(false);
 		this.setStoring(0, null);
 	}
 
@@ -103,23 +101,23 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		BlockPos targetBlockPos = this.targetChest.getPos();
 
-		this.getAIOwnerEntity().getLookHelper().setLookPosition(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 10.0F, this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getOwnerEntity().getLookHelper().setLookPosition(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 10.0F, this.getOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getAIOwnerEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
+		if (this.getOwnerEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
 		{
-			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getAIOwnerEntity(), this.distance);
+			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getOwnerEntity(), this.distance);
 
-			if ((nearChest != null) && nearChest.equals(this.targetChest))
+			if ((nearChest != null) && (nearChest == this.targetChest))
 			{
-				for (int slot = 0; slot < this.getAIOwnerInventory().getSizeInventory(); ++slot)
+				for (int slot = 0; slot < this.getOwnerInventoryMain().getSizeInventory(); ++slot)
 				{
-					ItemStack stackInv = this.getAIOwnerInventory().getStackInSlot(slot);
+					ItemStack stackSlot = this.getOwnerInventoryMain().getStackInSlot(slot);
 
-					if (ChastMobHelper.isNotEmptyItemStack(stackInv))
+					if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
 					{
-						this.getAIOwnerInventory().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) nearChest, stackInv, EnumFacing.UP));
+						this.getOwnerInventoryMain().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) null, (IInventory) nearChest, stackSlot, EnumFacing.UP));
 
-						this.getAIOwnerEntity().setCoverOpen(true);
+						this.getOwnerEntity().setCoverOpen(true);
 					}
 				}
 
@@ -128,7 +126,14 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		}
 		else
 		{
-			this.forceMoveToTargetBlockPos(targetBlockPos, this.speed);
+			if (this.timeCounter < 20)
+			{
+				this.forceMoveToTargetBlockPos(targetBlockPos, this.speed);
+			}
+			else
+			{
+				this.getOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.speed);
+			}
 		}
 	}
 
@@ -145,11 +150,11 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		this.targetChest = tileEntityChest;
 	}
 
-	private boolean canStoringTileEntityChest(TileEntityChest tileEntityChest)
+	private boolean canStoringTileEntityChest(@Nullable TileEntityChest tileEntityChest)
 	{
 		if (tileEntityChest != null)
 		{
-			return ChastMobHelper.canBlockBeSeen(this.getAIOwnerEntity(), tileEntityChest.getPos());
+			return this.canBlockBeSeen(tileEntityChest.getPos());
 		}
 
 		return false;
@@ -172,7 +177,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 				for (int z = (entityPosZ - searchXYZ); z <= (entityPosZ + searchXYZ); ++z)
 				{
 					blockPosMutable.setPos(x, y, z);
-					World world = entityChast.worldObj;
+					World world = entityChast.getEntityWorld();
 					TileEntity tileEntity = world.getTileEntity(blockPosMutable);
 
 					if (tileEntity instanceof TileEntityChest)
@@ -190,9 +195,9 @@ public class EntityAIChastStoreChest extends EntityAIChast
 						{
 							rangeOrigin = range;
 
-							for (int slot = 0; slot < entityChast.getInventoryChast().getSizeInventory(); ++slot)
+							for (int slot = 0; slot < entityChast.getInventoryChastMain().getSizeInventory(); ++slot)
 							{
-								ItemStack stackInv = entityChast.getInventoryChast().getStackInSlot(slot);
+								ItemStack stackInv = entityChast.getInventoryChastMain().getStackInSlot(slot);
 
 								if (ChastMobHelper.canStoreInventory((IInventory) tileEntity, stackInv))
 								{

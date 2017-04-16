@@ -13,11 +13,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.init.ChastMobLang;
 import schr0.chastmob.init.ChastMobPacket;
-import schr0.chastmob.packet.MessageParticleEntity;
+import schr0.chastmob.packet.particleentity.MessageParticleEntity;
 
 public class ItemSoulFragment extends Item
 {
@@ -28,23 +26,24 @@ public class ItemSoulFragment extends Item
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
 	{
 		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_SOUL_FRAGMENT_TIPS, new Object[0]).getFormattedText());
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
 	{
+		ItemStack stack = playerIn.getHeldItem(handIn);
+
 		if (playerIn.shouldHeal())
 		{
-			this.healLivingBase(itemStackIn, worldIn, playerIn, playerIn);
+			this.healLivingBase(stack, worldIn, playerIn, playerIn);
 
-			return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+			return new ActionResult(EnumActionResult.SUCCESS, stack);
 		}
 
-		return super.onItemRightClick(itemStackIn, worldIn, playerIn, hand);
+		return super.onItemRightClick(worldIn, playerIn, handIn);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -57,7 +56,7 @@ public class ItemSoulFragment extends Item
 
 		if (!player.capabilities.isCreativeMode)
 		{
-			--stack.stackSize;
+			stack.shrink(1);
 		}
 
 		ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(target, 0));

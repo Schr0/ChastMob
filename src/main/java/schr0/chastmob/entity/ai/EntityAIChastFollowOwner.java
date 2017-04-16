@@ -19,7 +19,6 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	public EntityAIChastFollowOwner(EntityChast entityChast, double speed, double distance)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 
 		this.speed = speed;
 		this.distance = (distance * distance);
@@ -28,22 +27,24 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getAIOwnerEntity().getAIMode() == EnumAIMode.FOLLOW)
+		if ((this.getOwnerAIMode() == ChastAIMode.FREEDOM) || (this.getOwnerAIMode() == ChastAIMode.PATROL))
 		{
-			EntityLivingBase entityOwner = this.getAIOwnerEntity().getOwnerEntity();
+			return false;
+		}
 
-			if (this.canFollowEntityLivingBase(entityOwner))
+		EntityLivingBase ownerEntity = this.getOwnerEntity().getOwnerEntity();
+
+		if (this.canFollowEntityLivingBase(ownerEntity))
+		{
+			if (this.getOwnerEntity().getDistanceSqToEntity(ownerEntity) < this.distance)
 			{
-				if (this.getAIOwnerEntity().getDistanceSqToEntity(entityOwner) < this.distance)
-				{
-					return false;
-				}
-				else
-				{
-					this.setFollowing(TIME_LIMIT, entityOwner);
+				return false;
+			}
+			else
+			{
+				this.setFollowing(TIME_LIMIT, ownerEntity);
 
-					return true;
-				}
+				return true;
 			}
 		}
 
@@ -74,9 +75,9 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		--this.timeCounter;
 
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, this.getAIOwnerEntity().getHorizontalFaceSpeed(), this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, this.getOwnerEntity().getHorizontalFaceSpeed(), this.getOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.distance)
+		if (this.getOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.distance)
 		{
 			this.setFollowing(0, null);
 		}
@@ -88,7 +89,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 			}
 			else
 			{
-				this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.speed);
+				this.getOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.speed);
 			}
 		}
 	}

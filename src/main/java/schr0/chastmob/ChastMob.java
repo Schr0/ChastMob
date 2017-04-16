@@ -8,7 +8,9 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobEvent;
+import schr0.chastmob.init.ChastMobGui;
 import schr0.chastmob.init.ChastMobItems;
+import schr0.chastmob.init.ChastMobPacket;
 import schr0.chastmob.init.ChastMobRecipe;
 import schr0.chastmob.proxy.ProxyServer;
 
@@ -29,12 +31,12 @@ public class ChastMob
 	/**
 	 * Modのバージョン.
 	 */
-	public static final String MOD_VERSION = "1.0.0";
+	public static final String MOD_VERSION = "2.0.0";
 
 	/**
 	 * Forgeのバージョン.
 	 */
-	public static final String MOD_DEPENDENCIES = "required-after:Forge@[1.10.2-12.18.3.2185,)";
+	public static final String MOD_DEPENDENCIES = "required-after:forge@[1.11.2-13.20.0.2228,)";
 
 	/**
 	 * ResourceLocationのDomain.
@@ -67,6 +69,10 @@ public class ChastMob
 	public void initEvent(FMLInitializationEvent event)
 	{
 		(new ChastMobRecipe()).init();
+
+		(new ChastMobPacket()).init();
+
+		(new ChastMobGui()).init();
 
 		(new ChastMobEvent()).init();
 

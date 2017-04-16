@@ -12,9 +12,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.entity.InventoryChast;
+import schr0.chastmob.inventory.InventoryChastEquipment;
+import schr0.chastmob.inventory.InventoryChastMain;
 
-public class EntityAIChastPanic extends EntityAIChast
+public class EntityAIChastKnockback extends EntityAIChast
 {
 
 	private static final int IDEL_TIME = (3 * 20);
@@ -26,10 +27,9 @@ public class EntityAIChastPanic extends EntityAIChast
 	private double randPosY;
 	private double randPosZ;
 
-	public EntityAIChastPanic(EntityChast entityChast, double speed, int distance)
+	public EntityAIChastKnockback(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 
 		this.speed = speed;
 		this.distance = distance;
@@ -38,7 +38,7 @@ public class EntityAIChastPanic extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.isPanicking())
+		if (this.isKnockbacking())
 		{
 			return true;
 		}
@@ -50,19 +50,18 @@ public class EntityAIChastPanic extends EntityAIChast
 	public void startExecuting()
 	{
 		super.startExecuting();
-		this.getAIOwnerEntity().setStatePanic(true);
 
-		this.getAIOwnerEntity().setCoverOpen(true);
+		this.getOwnerEntity().setStateKnockback(true);
 	}
 
 	@Override
 	public void resetTask()
 	{
 		super.resetTask();
-		this.getAIOwnerEntity().setStatePanic(false);
 
-		this.getAIOwnerEntity().setCoverOpen(false);
-		this.setPanicking(0);
+		this.getOwnerEntity().setStateKnockback(false);
+		this.getOwnerEntity().setCoverOpen(false);
+		this.setKnockbacking(0);
 	}
 
 	@Override
@@ -75,53 +74,62 @@ public class EntityAIChastPanic extends EntityAIChast
 			return;
 		}
 
-		if ((this.getAIOwnerEntity().getRNG().nextInt(10) == 0) && !this.getAIOwnerWorld().isRemote)
+		if (this.getOwnerEntity().isEquipHelmet())
 		{
-			this.onPanicDropItem(this.getAIOwnerEntity());
-		}
-
-		if (this.getAIOwnerEntity().isBurning())
-		{
-			BlockPos blockPos = this.getNearWaterBlockPos(this.getAIOwnerEntity(), this.distance);
-
-			if (blockPos == null)
-			{
-				return;
-			}
-			else
-			{
-				this.randPosX = (double) blockPos.getX();
-				this.randPosY = (double) blockPos.getY();
-				this.randPosZ = (double) blockPos.getZ();
-			}
+			// none
 		}
 		else
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getAIOwnerEntity(), this.distance, this.distance);
+			this.getOwnerEntity().setCoverOpen(true);
 
-			if (vec3d == null)
+			if ((this.getOwnerEntity().getRNG().nextInt(10) == 0) && !this.getOwnerWorld().isRemote)
 			{
-				return;
+				this.onPanicDropItem(this.getOwnerEntity());
+			}
+
+			if (this.getOwnerEntity().isBurning())
+			{
+				BlockPos blockPos = this.getNearWaterBlockPos(this.getOwnerEntity(), this.distance);
+
+				if (blockPos == null)
+				{
+					return;
+				}
+				else
+				{
+					this.randPosX = (double) blockPos.getX();
+					this.randPosY = (double) blockPos.getY();
+					this.randPosZ = (double) blockPos.getZ();
+				}
 			}
 			else
 			{
-				this.randPosX = vec3d.xCoord;
-				this.randPosY = vec3d.yCoord;
-				this.randPosZ = vec3d.zCoord;
-			}
-		}
+				Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getOwnerEntity(), this.distance, this.distance);
 
-		this.getAIOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
+				if (vec3d == null)
+				{
+					return;
+				}
+				else
+				{
+					this.randPosX = vec3d.xCoord;
+					this.randPosY = vec3d.yCoord;
+					this.randPosZ = vec3d.zCoord;
+				}
+			}
+
+			this.getOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
+		}
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public boolean isPanicking()
+	public boolean isKnockbacking()
 	{
 		return (0 < this.timeCounter);
 	}
 
-	public void setPanicking(int timeCounter)
+	public void setKnockbacking(int timeCounter)
 	{
 		if (0 < timeCounter)
 		{
@@ -143,39 +151,62 @@ public class EntityAIChastPanic extends EntityAIChast
 
 	private void onPanicDropItem(EntityChast entityChast)
 	{
-		InventoryChast inventoryChast = entityChast.getInventoryChast();
+		InventoryChastEquipment inventoryChastEquipment = entityChast.getInventoryChastEquipment();
 
-		for (int slot = 0; slot < inventoryChast.getSizeInventory(); ++slot)
+		for (int slot = 0; slot < inventoryChastEquipment.getSizeInventory(); ++slot)
 		{
-			ItemStack stackInv = inventoryChast.getStackInSlot(slot);
+			if ((slot == 0) || (slot == 3))
+			{
+				continue;
+			}
 
-			if (ChastMobHelper.isNotEmptyItemStack(stackInv))
+			ItemStack stackSlot = inventoryChastEquipment.getStackInSlot(slot);
+
+			if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
 			{
 				if (entityChast.getRNG().nextInt(2) == 0)
 				{
 					continue;
 				}
 
-				ItemStack stackInvCopy = stackInv.copy();
+				ItemStack stackSlotCopy = stackSlot.copy();
 
-				stackInvCopy.stackSize = 1;
+				stackSlotCopy.setCount(1);
 
-				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackInvCopy);
+				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackSlotCopy);
 
-				--stackInv.stackSize;
-
-				if (stackInv.stackSize <= 0)
-				{
-					inventoryChast.setInventorySlotContents(slot, ChastMobHelper.getEmptyItemStack());
-				}
-				else
-				{
-					inventoryChast.setInventorySlotContents(slot, stackInv);
-				}
+				stackSlot.shrink(1);
 
 				entityChast.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 
-				break;
+				return;
+			}
+		}
+
+		InventoryChastMain inventoryChastMain = entityChast.getInventoryChastMain();
+
+		for (int slot = 0; slot < inventoryChastMain.getSizeInventory(); ++slot)
+		{
+			ItemStack stackSlot = inventoryChastMain.getStackInSlot(slot);
+
+			if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
+			{
+				if (entityChast.getRNG().nextInt(2) == 0)
+				{
+					continue;
+				}
+
+				ItemStack stackSlotCopy = stackSlot.copy();
+
+				stackSlotCopy.setCount(1);
+
+				Block.spawnAsEntity(entityChast.getEntityWorld(), entityChast.getPosition(), stackSlotCopy);
+
+				stackSlot.shrink(1);
+
+				entityChast.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+
+				return;
 			}
 		}
 	}
@@ -198,9 +229,9 @@ public class EntityAIChastPanic extends EntityAIChast
 				for (int posZ = (entityPosZ - searchXYZ); posZ <= (entityPosZ + searchXYZ); ++posZ)
 				{
 					blockPosMutable.setPos(posX, posY, posZ);
-					Block block = entity.worldObj.getBlockState(blockPosMutable).getBlock();
+					Block block = entity.getEntityWorld().getBlockState(blockPosMutable).getBlock();
 
-					if (block.equals(Blocks.WATER) || block.equals(Blocks.FLOWING_WATER))
+					if ((block == Blocks.WATER) || (block == Blocks.FLOWING_WATER))
 					{
 						float range = (float) ((posX - entityPosX) * (posX - entityPosX) + (posY - entityPosY) * (posY - entityPosY) + (posZ - entityPosZ) * (posZ - entityPosZ));
 

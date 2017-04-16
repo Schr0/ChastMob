@@ -12,14 +12,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import schr0.chastmob.ChastMobHelper;
-import schr0.chastmob.api.EntityAIOcelotSitChast;
+import schr0.chastmob.item.ItemFilter;
+import schr0.chastmob.item.ItemModePatrol;
 import schr0.chastmob.item.ItemSoulBottleFull;
 import schr0.chastmob.item.ItemSoulFragment;
+import schr0.chastmob.vanilla.EntityAIOcelotSitChast;
 
 public class ChastMobEvent
 {
@@ -34,7 +37,7 @@ public class ChastMobEvent
 	{
 		EntityLivingBase entityLivingBase = event.getEntityLiving();
 
-		if ((entityLivingBase instanceof EntityOcelot) && (entityLivingBase.ticksExisted < 5))
+		if ((entityLivingBase instanceof EntityOcelot) && (entityLivingBase.ticksExisted < 20))
 		{
 			EntityOcelot entityOcelot = (EntityOcelot) entityLivingBase;
 			HashSet<EntityAITaskEntry> hashSetEntityAITaskEntry = new HashSet<EntityAITaskEntry>();
@@ -63,7 +66,7 @@ public class ChastMobEvent
 		ItemStack itemStack = event.getItemStack();
 		World world = entityPlayer.getEntityWorld();
 
-		if (ChastMobHelper.isNotEmptyItemStack(itemStack) && (itemStack.getItem() instanceof ItemSoulFragment) && (entityTarget instanceof EntityLivingBase))
+		if ((itemStack.getItem() instanceof ItemSoulFragment) && (entityTarget instanceof EntityLivingBase))
 		{
 			EntityLivingBase targetLivingBase = (EntityLivingBase) entityTarget;
 
@@ -80,26 +83,55 @@ public class ChastMobEvent
 	public void onLivingDeathEvent(LivingDeathEvent event)
 	{
 		EntityLivingBase entityLivingBase = event.getEntityLiving();
-		EnumHand handhHasItemSoulBottleFullFriendly = this.getHandHasItemSoulBottleFullFriendly(entityLivingBase);
-		ItemStack stackHeldItem = entityLivingBase.getHeldItem(handhHasItemSoulBottleFullFriendly);
+		EnumHand handItemSoulBottleFullFriendly = this.getHandSoulBottleFullFriendly(entityLivingBase);
+		ItemStack stackHeldItem = entityLivingBase.getHeldItem(handItemSoulBottleFullFriendly);
 
 		if (this.isItemSoulBottleFullFriendly(stackHeldItem))
 		{
-			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handhHasItemSoulBottleFullFriendly, entityLivingBase);
+			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handItemSoulBottleFullFriendly, entityLivingBase);
 
 			event.setCanceled(true);
 		}
 	}
 
+	@SubscribeEvent
+	public void onAnvilUpdateEvent(AnvilUpdateEvent event)
+	{
+		ItemStack leftStack = event.getLeft();
+		ItemStack rightStack = event.getRight();
+
+		if (this.canAnvilLeftCopyItems(leftStack, rightStack))
+		{
+			event.setCost(5);
+			event.setMaterialCost(1);
+			event.setOutput(leftStack.copy());
+		}
+	}
+
+	@SubscribeEvent
+	public void onAnvilRepairEvent(AnvilRepairEvent event)
+	{
+		ItemStack leftStack = event.getItemInput();
+		ItemStack rightStack = event.getIngredientInput();
+		EntityPlayer player = event.getEntityPlayer();
+
+		if (this.canAnvilLeftCopyItems(leftStack, rightStack))
+		{
+			event.setBreakChance(0.0F);
+
+			player.addExperienceLevel(5);
+
+			if (!player.inventory.addItemStackToInventory(leftStack))
+			{
+				player.dropItem(leftStack, false);
+			}
+		}
+	}
+
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private EnumHand getHandHasItemSoulBottleFullFriendly(EntityLivingBase entityLivingBase)
+	private EnumHand getHandSoulBottleFullFriendly(EntityLivingBase entityLivingBase)
 	{
-		if (this.isItemSoulBottleFullFriendly(entityLivingBase.getHeldItemMainhand()))
-		{
-			return EnumHand.MAIN_HAND;
-		}
-
 		if (this.isItemSoulBottleFullFriendly(entityLivingBase.getHeldItemOffhand()))
 		{
 			return EnumHand.OFF_HAND;
@@ -110,9 +142,26 @@ public class ChastMobEvent
 
 	private boolean isItemSoulBottleFullFriendly(ItemStack stack)
 	{
-		if (ChastMobHelper.isNotEmptyItemStack(stack) && (stack.getItem() instanceof ItemSoulBottleFull) && (stack.getItemDamage() == 0))
+		if ((stack.getItem() instanceof ItemSoulBottleFull) && (stack.getItemDamage() == 0))
 		{
 			return true;
+		}
+
+		return false;
+	}
+
+	private boolean canAnvilLeftCopyItems(ItemStack left, ItemStack right)
+	{
+		boolean isRightItemSoulFragment = (right.getItem() == ChastMobItems.SOUL_FRAGMENT);
+
+		if ((left.getItem() == ChastMobItems.MODE_PATROL) && ((ItemModePatrol) left.getItem()).hasHomeChest(left))
+		{
+			return isRightItemSoulFragment;
+		}
+
+		if ((left.getItem() == ChastMobItems.FILTER) && ((ItemFilter) left.getItem()).hasInventoryFilterResult(left))
+		{
+			return isRightItemSoulFragment;
 		}
 
 		return false;

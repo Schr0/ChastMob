@@ -14,14 +14,32 @@ item.soul_bottle_full_friendly.tips=Will help you, when you have in your hand.
 item.soul_fragment.name=Soul Fragment
 item.soul_fragment.tips=Can heal Life.
 
-item.core_chast.name=Chast Core
-item.core_chast.tips=Let's right click on the "Chest".
+item.core.name=Chast Core
+item.core.tips=Let's right click on the "Chest".
 
-item.map_home_chest.name=Home Chest Map
-item.map_home_chest.tips=Let's right click on the "Chest".
+item.mode_patrol.name=Home Chest Map
+item.mode_patrol.tips=Let's right click on the "Chest".
+
+item.helmet_wood.name=Wood Chast Helmet
+item.helmet_stone.name=Stone Chast Helmet
+item.helmet_iron.name=Iron Chast Helmet
+item.helmet_diamond.name=Diamond Chast Helmet
+item.helmet_gold.name=Gold Chast Helmet
+
+item.filter_0.name=White Filter Sheet
+item.filter_0.tips="Whitelist" Filter. When it is used at sneaking, it turns into "Blacklist".
+
+item.filter_1.name=Black Filter Sheet
+item.filter_1.tips="Blacklist" Filter. When it is used at sneaking, it turns into "Whitelist".
+
+item.filter.button.clear=CLEAR
+item.filter.button.registry=REGISTRY
 
 // ======================================== ENTITY ===================================== //
-entity.schr0chastmob.chast.name=Chast
-entity.schr0chastmob.chast.inventory=Inventory
-entity.schr0chastmob.chast.thanks=%s " Thanks, %s ! "
-entity.schr0chastmob.chast.goodbye=%s " Goodbye, %s ... "
+entity.chast.name=Chast
+entity.chast.thanks=%s " Thanks, %s ! "
+entity.chast.goodbye=%s " Goodbye, %s ... "
+entity.chast.aimode.freedom=FREEDOM
+entity.chast.aimode.follow=FOLLOW
+entity.chast.aimode.patrol=PATROL
+entity.chast.aimode.supply=SUPPLY

@@ -5,9 +5,14 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
+import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.inventory.InventoryFilter;
+import schr0.chastmob.item.ItemFilter;
 
 public class EntityAIChastCollectItem extends EntityAIChast
 {
@@ -22,7 +27,6 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	public EntityAIChastCollectItem(EntityChast entityChast, double speed, double distance)
 	{
 		super(entityChast);
-		this.setMutexBits(1);
 
 		this.speed = speed;
 		this.distance = distance;
@@ -37,13 +41,16 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		{
 			if (this.canCollectEntityItem(entityItem))
 			{
-				float range = (float) this.getAIOwnerEntity().getDistanceSqToEntity(entityItem);
+				float range = (float) this.getOwnerEntity().getDistanceSqToEntity(entityItem);
 
 				if (range < rangeOrigin)
 				{
 					rangeOrigin = range;
 
-					this.setCollecting(TIME_LIMIT, entityItem);
+					if (ChastMobHelper.canStoreInventory(this.getOwnerInventoryMain(), entityItem.getEntityItem()))
+					{
+						this.setCollecting(TIME_LIMIT, entityItem);
+					}
 				}
 			}
 		}
@@ -67,7 +74,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getAIOwnerEntity().setCoverOpen(false);
+		this.getOwnerEntity().setCoverOpen(false);
 	}
 
 	@Override
@@ -75,7 +82,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getAIOwnerEntity().setCoverOpen(false);
+		this.getOwnerEntity().setCoverOpen(false);
 		this.setCollecting(0, null);
 	}
 
@@ -84,17 +91,17 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		--this.timeCounter;
 
-		this.getAIOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, this.getAIOwnerEntity().getHorizontalFaceSpeed(), this.getAIOwnerEntity().getVerticalFaceSpeed());
+		this.getOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, this.getOwnerEntity().getHorizontalFaceSpeed(), this.getOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getAIOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
+		if (this.getOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
 		{
 			for (EntityItem entityItem : this.getAroundEntityItem())
 			{
 				if (entityItem.equals(this.targetEntityItem) && this.canCollectEntityItem(entityItem))
 				{
-					TileEntityHopper.putDropInInventoryAllSlots(this.getAIOwnerInventory(), entityItem);
+					TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getOwnerInventoryMain(), entityItem);
 
-					this.getAIOwnerEntity().setCoverOpen(true);
+					this.getOwnerEntity().setCoverOpen(true);
 
 					this.setCollecting(0, null);
 
@@ -104,7 +111,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		}
 		else
 		{
-			this.getAIOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.speed);
+			this.getOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.speed);
 		}
 	}
 
@@ -123,14 +130,47 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private List<EntityItem> getAroundEntityItem()
 	{
-		return this.getAIOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getAIHomePosition()).expandXyz(this.distance));
+		return this.getOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getOwnerHomePosition()).expandXyz(this.distance));
 	}
 
 	private boolean canCollectEntityItem(EntityItem entityItem)
 	{
-		if (this.getAIOwnerEntity().getEntitySenses().canSee(entityItem))
+		if (this.getOwnerEntity().getEntitySenses().canSee(entityItem) && entityItem.isEntityAlive() && !entityItem.cannotPickup())
 		{
-			return (entityItem.isEntityAlive() && !entityItem.cannotPickup());
+			InventoryFilter inventoryFilter = this.getOwnerEquipmentInventoryFilter();
+
+			if (inventoryFilter != null)
+			{
+				ItemStack stackEntityItem = entityItem.getEntityItem().copy();
+
+				if (stackEntityItem.isItemStackDamageable())
+				{
+					stackEntityItem.setItemDamage(0);
+				}
+
+				stackEntityItem.setCount(1);
+
+				for (int slot = 0; slot < inventoryFilter.getSizeInventory(); ++slot)
+				{
+					ItemStack stackSlot = inventoryFilter.getStackInSlot(slot);
+
+					if (stackSlot.isEmpty())
+					{
+						continue;
+					}
+
+					if (ItemStack.areItemStacksEqual(stackEntityItem, stackSlot))
+					{
+						return (inventoryFilter.getType() == ItemFilter.Type.WHITE);
+					}
+				}
+
+				return (inventoryFilter.getType() == ItemFilter.Type.BLACK);
+			}
+			else
+			{
+				return true;
+			}
 		}
 
 		return false;

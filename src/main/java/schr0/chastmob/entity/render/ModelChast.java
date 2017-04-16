@@ -13,7 +13,7 @@ import schr0.chastmob.entity.EntityChast;
 public class ModelChast extends ModelBase
 {
 
-	public static final int WIDTH = 64;
+	public static final int WIDTH = 128;
 	public static final int HEIGHT = 64;
 
 	public ModelRenderer body;
@@ -24,6 +24,8 @@ public class ModelChast extends ModelBase
 	public ModelRenderer armLeft;
 	public ModelRenderer legRight;
 	public ModelRenderer legLeft;
+	public ModelRenderer armourUpper;
+	public ModelRenderer armourLower;
 
 	public ModelChast()
 	{
@@ -60,9 +62,15 @@ public class ModelChast extends ModelBase
 		this.legLeft = new ModelRenderer(this, 24, 48).addBox(-1F, 0F, -1F, 2, 9, 2);
 		this.legLeft.setRotationPoint(3F, 15F, 0F);
 
-		this.coverMain.addChild(this.coverHandle);
-		this.body.addChild(this.coverMain);
-		this.body.addChild(this.core);
+		this.armourUpper = new ModelRenderer(this, 64, 0).addBox(-7.5F, -6.5F, -14.5F, 15, 5, 15);
+		this.armourUpper.setRotationPoint(0F, 0F, 0F);
+		// 親：this.coverMain.setRotationPoint(0F, 6F, 7F);
+		// 子：this.armourUpper.setRotationPoint(0F, 6F, 7F);
+
+		this.armourLower = new ModelRenderer(this, 64, 20).addBox(-7.5F, -2.5F, -7.5F, 15, 9, 15);
+		this.armourLower.setRotationPoint(0F, 0F, 0F);
+		// 親：this.body.setRotationPoint(0F, 10F, 0F);
+		// 子：this.armourLower.setRotationPoint(0F, 10F, 0F);
 
 		this.body.mirror = true;
 		this.core.mirror = true;
@@ -72,6 +80,15 @@ public class ModelChast extends ModelBase
 		this.armLeft.mirror = true;
 		this.legRight.mirror = true;
 		this.legLeft.mirror = true;
+		this.armourUpper.mirror = true;
+		this.armourLower.mirror = true;
+
+		this.coverMain.addChild(this.coverHandle);
+		this.body.addChild(this.coverMain);
+		this.body.addChild(this.core);
+
+		this.coverMain.addChild(this.armourUpper);
+		this.body.addChild(this.armourLower);
 	}
 
 	@Override
@@ -82,10 +99,8 @@ public class ModelChast extends ModelBase
 		if (this.isChild)
 		{
 			GL11.glPushMatrix();
-
-			float scaleHalf = (1.0F / 2.0F);
-			GL11.glScalef(scaleHalf, scaleHalf, scaleHalf);
-			GL11.glTranslatef(0.0F, 24.0F * scale, 0.0F);
+			GL11.glScalef(0.5F, 0.5F, 0.5F);
+			GL11.glTranslatef(0.0F, (24.0F * scale), 0.0F);
 
 			this.body.render(scale);
 			this.armRight.render(scale);
@@ -114,6 +129,8 @@ public class ModelChast extends ModelBase
 		}
 
 		EntityChast entityChast = (EntityChast) entityIn;
+		boolean isDefending = (entityChast.isStateKnockback() && entityChast.isEquipHelmet());
+		boolean isPanicking = (entityChast.isStateKnockback() && !entityChast.isEquipHelmet());
 
 		if (entityChast.isRiding() || !entityChast.getPassengers().isEmpty())
 		{
@@ -129,7 +146,8 @@ public class ModelChast extends ModelBase
 
 		if (entityChast.isStateSit() || entityChast.isRiding())
 		{
-			float pointSitY = 8.0F;
+			float pointSitY = 7.0F;
+
 			this.body.setRotationPoint(0F, (10F + pointSitY), 0F);
 			this.armRight.setRotationPoint(-7F, (8F + pointSitY), 0F);
 			this.armLeft.setRotationPoint(7F, (8F + pointSitY), 0F);
@@ -137,28 +155,53 @@ public class ModelChast extends ModelBase
 			this.legLeft.setRotationPoint(3F, (15F + pointSitY), 0F);
 
 			float angleSitArmX = -0.95F;
+
 			this.armRight.rotateAngleX = angleSitArmX;
 			this.armLeft.rotateAngleX = angleSitArmX;
 
 			float angleSitLegX = -1.55F;
+
 			this.legRight.rotateAngleX = angleSitLegX;
 			this.legLeft.rotateAngleX = angleSitLegX;
 		}
 		else
 		{
-			this.body.setRotationPoint(0F, 10F, 0F);
-			this.armRight.setRotationPoint(-7F, 8F, 0F);
-			this.armLeft.setRotationPoint(7F, 8F, 0F);
-			this.legRight.setRotationPoint(-3F, 15F, 0F);
-			this.legLeft.setRotationPoint(3F, 15F, 0F);
-
-			float angleSwingArmRightLegLeftX = (MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount);
-			float angleSwingArmLeftLegRightX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount);
-
-			if (entityChast.isStatePanic())
+			if (isDefending)
 			{
-				this.armRight.rotateAngleX = 0.0F;
-				this.armLeft.rotateAngleX = 0.0F;
+				this.armRight.showModel = false;
+				this.armLeft.showModel = false;
+				this.legRight.showModel = false;
+				this.legLeft.showModel = false;
+
+				this.body.setRotationPoint(0F, (10F + 8.0F), 0F);
+
+				return;
+			}
+			else
+			{
+				this.armRight.showModel = true;
+				this.armLeft.showModel = true;
+				this.legRight.showModel = true;
+				this.legLeft.showModel = true;
+
+				this.body.setRotationPoint(0F, 10F, 0F);
+				this.armRight.setRotationPoint(-7F, 8F, 0F);
+				this.armLeft.setRotationPoint(7F, 8F, 0F);
+				this.legRight.setRotationPoint(-3F, 15F, 0F);
+				this.legLeft.setRotationPoint(3F, 15F, 0F);
+			}
+
+			float angleSwingArmRightLegLeftX = (MathHelper.cos(limbSwing * 0.6662F) * 1.5F * limbSwingAmount);
+			float angleSwingArmLeftLegRightX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.5F * limbSwingAmount);
+
+			if (isPanicking)
+			{
+				float anglePanicArmX = 3.0F;
+				float anglePanicArmRightX = (MathHelper.cos(limbSwing * 0.6662F) * 0.5F * limbSwingAmount) - anglePanicArmX;
+				float anglePanicArmLeftX = (MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 0.5F * limbSwingAmount) - anglePanicArmX;
+
+				this.armRight.rotateAngleX = anglePanicArmRightX;
+				this.armLeft.rotateAngleX = anglePanicArmLeftX;
 			}
 			else
 			{
@@ -174,15 +217,15 @@ public class ModelChast extends ModelBase
 		this.armRight.rotateAngleX += angleArmX;
 		this.armLeft.rotateAngleX -= angleArmX;
 
-		if (entityChast.isStatePanic())
+		float angleArmZ = 0.35F;
+
+		if (isPanicking)
 		{
-			float anglePanicArmZ = 2.5F;
-			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + anglePanicArmZ;
-			this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - anglePanicArmZ;
+			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmZ;
+			this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + angleArmZ;
 		}
 		else
 		{
-			float angleArmZ = 0.35F;
 			this.armRight.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) + angleArmZ;
 			this.armLeft.rotateAngleZ = (MathHelper.sin(ageInTicks * 0.05F) * 0.05F) - angleArmZ;
 		}
@@ -200,7 +243,7 @@ public class ModelChast extends ModelBase
 
 		EntityChast entityChast = (EntityChast) entitylivingbaseIn;
 
-		this.coverMain.rotateAngleX = -(entityChast.getAngleCoverX(partialTickTime));
+		this.coverMain.rotateAngleX = -(entityChast.getCoverRotateAngleX(partialTickTime));
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
