@@ -1,0 +1,36 @@
+// ======================================== CREATIVETABS ===================================== //
+itemGroup.schr0chastmob.item=ChastMob：物品
+
+// ======================================== ITEM ===================================== //
+item.soul_bottle.name=灵魂瓶
+item.soul_bottle.tips=让我们右键一下“灵魂沙”。
+
+item.soul_bottle_full.name=孤独的灵魂瓶
+item.soul_bottle_full.tips=让我们待在一起吧。
+
+item.soul_bottle_full_friendly.name=友好的灵魂瓶
+item.soul_bottle_full_friendly.tips=当手持它的时候，能够帮助你。
+
+item.soul_fragment.name=灵魂碎片
+item.soul_fragment.tips=能够治愈生命。
+
+item.core_chast.name=箱子宝宝核心
+item.core_chast.tips=让我们右击一下"箱子"吧。
+
+item.specification_patrol.name=巡逻规划图
+item.specification_patrol.tips=让我们右击一下"箱子"吧。
+
+item.helmet_chast_wood.name=箱子宝宝用木头盔
+item.helmet_chast_stone.name=箱子宝宝用石头盔
+item.helmet_chast_iron.name=箱子宝宝用铁头盔
+item.helmet_chast_gold.name=箱子宝宝用金头盔
+item.helmet_chast_diamond.name=箱子宝宝用钻石头盔
+
+// ======================================== ENTITY ===================================== //
+entity.schr0chastmob.chast.name=箱子宝宝
+entity.schr0chastmob.chast.thanks=%s “谢谢，%s！”
+entity.schr0chastmob.chast.goodbye=%s “再见，%s……”
+entity.schr0chastmob.chast.aimode.freedom=自由
+entity.schr0chastmob.chast.aimode.follow=跟随
+entity.schr0chastmob.chast.aimode.patrol=巡逻
+entity.schr0chastmob.chast.aimode.supply=供给
