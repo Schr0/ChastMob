@@ -54,7 +54,7 @@ public class ChastMobRecipe
 
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(ChastMobItems.FILTER, 1, 0), new Object[]
 		{
-				new ItemStack(Blocks.IRON_BARS),
+				new ItemStack(Items.PAPER),
 				new ItemStack(ChastMobItems.SOUL_FRAGMENT),
 		}));
 

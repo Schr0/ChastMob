@@ -20,11 +20,11 @@ item.core.tips=Let's right click on the "Chest".
 item.mode_patrol.name=Home Chest Map
 item.mode_patrol.tips=Let's right click on the "Chest".
 
-item.helmet_wood.name=Chast Wood Helmet
-item.helmet_stone.name=Chast Stone Helmet
-item.helmet_iron.name=Chast Iron Helmet
-item.helmet_gold.name=Chast Gold Helmet
-item.helmet_diamond.name=Chast Diamond Helmet
+item.helmet_wood.name=Wood Chast Helmet
+item.helmet_stone.name=Stone Chast Helmet
+item.helmet_iron.name=Iron Chast Helmet
+item.helmet_diamond.name=Diamond Chast Helmet
+item.helmet_gold.name=Gold Chast Helmet
 
 item.filter_0.name=White Filter Sheet
 item.filter_0.tips="Whitelist" Filter. When it is used at sneaking, it turns into "Blacklist".

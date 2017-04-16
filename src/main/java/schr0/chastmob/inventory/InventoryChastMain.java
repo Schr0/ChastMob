@@ -19,7 +19,7 @@ public class InventoryChastMain extends InventoryChast
 
 		this.getContainerEntityChast().setAITrading(player);
 
-		this.getContainerEntityChast().playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, player.getRNG().nextFloat() * 0.1F + 0.9F);
+		this.getContainerEntityChast().playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, this.getContainerEntityChast().getRNG().nextFloat() * 0.1F + 0.9F);
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class InventoryChastMain extends InventoryChast
 
 		this.getContainerEntityChast().setAITrading(null);
 
-		this.getContainerEntityChast().playSound(SoundEvents.BLOCK_CHEST_CLOSE, 0.5F, player.getRNG().nextFloat() * 0.1F + 0.9F);
+		this.getContainerEntityChast().playSound(SoundEvents.BLOCK_CHEST_CLOSE, 0.5F, this.getContainerEntityChast().getRNG().nextFloat() * 0.1F + 0.9F);
 	}
 
 }
