@@ -67,7 +67,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	}
 
 	@Override
-	public boolean continueExecuting()
+	public boolean shouldContinueExecuting()
 	{
 		if (this.isStoring())
 		{

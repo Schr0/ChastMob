@@ -1,0 +1,32 @@
+{
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "recipe_all": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "schr0chastmob:soul_bottle"
+                    }
+                ]
+            }
+        }
+    },
+    "rewards": {
+        "recipes": [
+            "schr0chastmob:soul_bottle",
+            "schr0chastmob:soul_fragment",
+            "schr0chastmob:core",
+            "schr0chastmob:mode_patrol",
+            "schr0chastmob:mode_patrol_reset",
+            "schr0chastmob:filter",
+            "schr0chastmob:filter_white",
+            "schr0chastmob:filter_black",
+            "schr0chastmob:helmet_wood",
+            "schr0chastmob:helmet_stone",
+            "schr0chastmob:helmet_iron",
+            "schr0chastmob:helmet_diamond",
+            "schr0chastmob:helmet_gold"
+         ]
+    }
+}

@@ -1,12 +1,19 @@
 package schr0.chastmob.init;
 
+import java.util.ArrayList;
+
+import com.google.common.collect.Lists;
+
+import net.minecraft.client.renderer.block.model.ModelBakery;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.registries.IForgeRegistry;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.item.ItemCore;
 import schr0.chastmob.item.ItemFilter;
@@ -47,7 +54,6 @@ public class ChastMobItems
 	public static final String NAME_FILTER = "filter";
 	public static final String NAME_MODE_PATROL = "mode_patrol";
 
-	public static final int META = 0;
 	public static final int META_FILTER = 1;
 
 	static
@@ -65,66 +71,92 @@ public class ChastMobItems
 		MODE_PATROL = new ItemModePatrol().setUnlocalizedName(NAME_MODE_PATROL).setCreativeTab(ChastMobCreativeTabs.ITEM);
 	}
 
-	public void init()
+	public void registerItems(IForgeRegistry<Item> registry)
 	{
-		registerItem(SOUL_BOTTLE, NAME_SOUL_BOTTLE, META);
-		registerItem(SOUL_BOTTLE_FULL, NAME_SOUL_BOTTLE_FULL, META);
-		registerItem(SOUL_FRAGMENT, NAME_SOUL_FRAGMENT, META);
-		registerItem(CORE, NAME_CORE, META);
-		registerItem(HELMET_WOOD, NAME_HELMET_WOOD, META);
-		registerItem(HELMET_STONE, NAME_HELMET_STONE, META);
-		registerItem(HELMET_IRON, NAME_HELMET_IRON, META);
-		registerItem(HELMET_DIAMOND, NAME_HELMET_DIAMOND, META);
-		registerItem(HELMET_GOLD, NAME_HELMET_GOLD, META);
-		registerItem(FILTER, NAME_FILTER, META_FILTER);
-		registerItem(MODE_PATROL, NAME_MODE_PATROL, META);
+		registerItem(registry, SOUL_BOTTLE, NAME_SOUL_BOTTLE);
+		registerItem(registry, SOUL_BOTTLE_FULL, NAME_SOUL_BOTTLE_FULL);
+		registerItem(registry, SOUL_FRAGMENT, NAME_SOUL_FRAGMENT);
+		registerItem(registry, CORE, NAME_CORE);
+		registerItem(registry, HELMET_WOOD, NAME_HELMET_WOOD);
+		registerItem(registry, HELMET_STONE, NAME_HELMET_STONE);
+		registerItem(registry, HELMET_IRON, NAME_HELMET_IRON);
+		registerItem(registry, HELMET_DIAMOND, NAME_HELMET_DIAMOND);
+		registerItem(registry, HELMET_GOLD, NAME_HELMET_GOLD);
+		registerItem(registry, FILTER, META_FILTER, NAME_FILTER);
+		registerItem(registry, MODE_PATROL, NAME_MODE_PATROL);
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void initClient()
+	public void registerModels()
 	{
-		ChastMobModelLoader.registerModel(SOUL_BOTTLE, META);
-		ChastMobModelLoader.registerModel(SOUL_BOTTLE_FULL, META);
-		ChastMobModelLoader.registerModel(SOUL_FRAGMENT, META);
-		ChastMobModelLoader.registerModel(CORE, META);
-		ChastMobModelLoader.registerModel(HELMET_WOOD, META);
-		ChastMobModelLoader.registerModel(HELMET_STONE, META);
-		ChastMobModelLoader.registerModel(HELMET_IRON, META);
-		ChastMobModelLoader.registerModel(HELMET_GOLD, META);
-		ChastMobModelLoader.registerModel(HELMET_DIAMOND, META);
-		ChastMobModelLoader.registerModel(FILTER, META_FILTER);
-		ChastMobModelLoader.registerModel(MODE_PATROL, META);
+		registerModel(SOUL_BOTTLE);
+		registerModel(SOUL_BOTTLE_FULL);
+		registerModel(SOUL_FRAGMENT);
+		registerModel(CORE);
+		registerModel(HELMET_WOOD);
+		registerModel(HELMET_STONE);
+		registerModel(HELMET_IRON);
+		registerModel(HELMET_GOLD);
+		registerModel(HELMET_DIAMOND);
+		registerModel(FILTER, META_FILTER);
+		registerModel(MODE_PATROL);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private static void registerItem(Item item, String name, int meta)
+	private static void registerItem(IForgeRegistry<Item> registry, Item item, int meta, String name)
 	{
-		GameRegistry.register(item, new ResourceLocation(ChastMob.MOD_ID, name));
+		item.setRegistryName(ChastMob.MOD_ID, name);
 
-		String modid = ChastMob.MOD_ID + ".";
+		registry.register(item);
 
-		if (meta == 0)
+		String domain = ChastMob.MOD_ID + ".";
+
+		if (meta <= 0)
 		{
-			OreDictionary.registerOre(modid + name, item);
+			OreDictionary.registerOre(domain + name, item);
 		}
 		else
 		{
 			for (int i = 0; i < meta; i++)
 			{
-				OreDictionary.registerOre(modid + name + "_" + i, new ItemStack(item, 1, i));
+				OreDictionary.registerOre(domain + name + "_" + i, new ItemStack(item, 1, i));
 			}
 		}
 	}
 
-	private static void registerItem(Item item, String name, int meta, String[] oreNames)
+	private static void registerItem(IForgeRegistry<Item> registry, Item item, String name)
 	{
-		registerItem(item, name, meta);
+		registerItem(registry, item, 0, name);
+	}
 
-		for (String ore : oreNames)
+	@SideOnly(Side.CLIENT)
+	public static void registerModel(Item item, int meta)
+	{
+		if (meta == 0)
 		{
-			OreDictionary.registerOre(ore, item);
+			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+			ModelBakery.registerItemVariants(item, item.getRegistryName());
 		}
+		else
+		{
+			ArrayList<ResourceLocation> models = Lists.newArrayList();
+
+			for (int i = 0; i <= meta; i++)
+			{
+				ModelLoader.setCustomModelResourceLocation(item, i, new ModelResourceLocation(item.getRegistryName() + "_" + i, "inventory"));
+
+				models.add(new ResourceLocation(item.getRegistryName() + "_" + i));
+			}
+
+			ModelBakery.registerItemVariants(item, models.toArray(new ResourceLocation[models.size()]));
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void registerModel(Item item)
+	{
+		registerModel(item, 0);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -51,14 +52,14 @@ public class ItemSoulBottleFull extends Item
 	}
 
 	@Override
-	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems)
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
 	{
-		subItems.add(new ItemStack(itemIn, 1, MAX_DAMAGE));
-		subItems.add(new ItemStack(itemIn, 1));
+		items.add(new ItemStack(this, 1, MAX_DAMAGE));
+		items.add(new ItemStack(this, 1, 1));
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
 		if (stack.getItemDamage() == 0)
 		{

@@ -1,18 +1,26 @@
 package schr0.chastmob;
 
-import net.minecraftforge.fml.common.FMLLog;
+import net.minecraft.item.Item;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.IForgeRegistry;
 import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobEvent;
 import schr0.chastmob.init.ChastMobGui;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobPacket;
 import schr0.chastmob.init.ChastMobRecipe;
-import schr0.chastmob.proxy.ProxyServer;
 
 @Mod(modid = ChastMob.MOD_ID, name = ChastMob.MOD_NAME, version = ChastMob.MOD_VERSION, dependencies = ChastMob.MOD_DEPENDENCIES)
 public class ChastMob
@@ -31,12 +39,12 @@ public class ChastMob
 	/**
 	 * Modのバージョン.
 	 */
-	public static final String MOD_VERSION = "2.0.0";
+	public static final String MOD_VERSION = "2.1.0";
 
 	/**
 	 * Forgeのバージョン.
 	 */
-	public static final String MOD_DEPENDENCIES = "required-after:forge@[1.11.2-13.20.0.2228,)";
+	public static final String MOD_DEPENDENCIES = "required-after:forge@[1.12-14.21.1.2387,)";
 
 	/**
 	 * ResourceLocationのDomain.
@@ -46,53 +54,107 @@ public class ChastMob
 	@Mod.Instance(ChastMob.MOD_ID)
 	public static ChastMob instance;
 
-	@SidedProxy(clientSide = "schr0.chastmob.proxy.ProxyClient", serverSide = "schr0.chastmob.proxy.ProxyServer")
-	public static ProxyServer proxy;
-
 	/**
-	 * Modの事前・初期設定時イベント.
+	 * 初期・設定イベント.
 	 */
 	@Mod.EventHandler
-	public void preInitEvent(FMLPreInitializationEvent event)
+	public void construction(FMLConstructionEvent event)
 	{
-		(new ChastMobItems()).init();
+		MinecraftForge.EVENT_BUS.register(this);
 
-		(new ChastMobEntitys()).init();
-
-		this.proxy.preInitEventProxy(event);
+		if (event.getSide().isClient())
+		{
+			(new ChastMobEntitys()).registerRenders();
+		}
 	}
 
 	/**
-	 * Modの事中・初期設定時イベント.
+	 * 事前・設定イベント.
 	 */
 	@Mod.EventHandler
-	public void initEvent(FMLInitializationEvent event)
+	public void preInit(FMLPreInitializationEvent event)
 	{
-		(new ChastMobRecipe()).init();
+		// none
 
+		if (event.getSide().isClient())
+		{
+			// none
+		}
+	}
+
+	/**
+	 * 事中・設定イベント.
+	 */
+	@Mod.EventHandler
+	public void init(FMLInitializationEvent event)
+	{
 		(new ChastMobPacket()).init();
 
 		(new ChastMobGui()).init();
 
 		(new ChastMobEvent()).init();
 
-		this.proxy.initEventProxy(event);
+		if (event.getSide().isClient())
+		{
+			(new ChastMobPacket()).initClient();
+		}
 	}
 
 	/**
-	 * Modの事後・初期設定時イベント.
+	 * 事後・設定イベント.
 	 */
 	@Mod.EventHandler
-	public void postInitEvent(FMLPostInitializationEvent event)
+	public void postInit(FMLPostInitializationEvent event)
 	{
-		this.proxy.postInitEventProxy(event);
+		// none
+
+		if (event.getSide().isClient())
+		{
+			// none
+		}
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public void logInfo(String format, Object... data)
+	/**
+	 * Itemの登録.
+	 */
+	@SubscribeEvent
+	public void registerItems(RegistryEvent.Register<Item> event)
 	{
-		FMLLog.info(format, data);
+		IForgeRegistry<Item> registry = event.getRegistry();
+
+		(new ChastMobItems()).registerItems(registry);
+	}
+
+	/**
+	 * Item / Blockモデルの登録.
+	 */
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public void registerModels(ModelRegistryEvent event)
+	{
+		(new ChastMobItems()).registerModels();
+	}
+
+	/**
+	 * Entityの登録.
+	 */
+	@SubscribeEvent
+	public void registerEntitys(RegistryEvent.Register<EntityEntry> event)
+	{
+		(new ChastMobEntitys()).registerEntitys();
+	}
+
+	/**
+	 * Recipeの登録.
+	 */
+	@SubscribeEvent
+	public void registerRecipes(RegistryEvent.Register<IRecipe> event)
+	{
+		IForgeRegistry<IRecipe> registry = event.getRegistry();
+
+		(new ChastMobRecipe()).registerRecipes(registry);
 	}
 
 }

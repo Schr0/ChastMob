@@ -16,7 +16,7 @@ public class MessageHandlerGuiFilterEdit implements IMessageHandler<MessageGuiFi
 	@Override
 	public IMessage onMessage(MessageGuiFilterEdit message, MessageContext ctx)
 	{
-		World world = ctx.getServerHandler().playerEntity.getEntityWorld();
+		World world = ctx.getServerHandler().player.getEntityWorld();
 		EntityPlayer entityPlayer = message.getEntityPlayer(world);
 
 		if (entityPlayer != null)

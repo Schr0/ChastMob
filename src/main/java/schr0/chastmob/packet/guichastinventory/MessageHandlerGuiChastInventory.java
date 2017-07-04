@@ -12,7 +12,7 @@ public class MessageHandlerGuiChastInventory implements IMessageHandler<MessageG
 	@Override
 	public IMessage onMessage(MessageGuiChastInventory message, MessageContext ctx)
 	{
-		World world = ctx.getServerHandler().playerEntity.getEntityWorld();
+		World world = ctx.getServerHandler().player.getEntityWorld();
 		EntityChast entityChast = message.getEntityChast(world);
 
 		if (entityChast != null)

@@ -2,13 +2,14 @@ package schr0.chastmob.entity.ai;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -105,6 +106,7 @@ public abstract class EntityAIChast extends EntityAIBase
 				break;
 
 			default :
+
 				break;
 		}
 
@@ -182,12 +184,15 @@ public abstract class EntityAIChast extends EntityAIBase
 	private boolean teleportTargetPosition(int targetPosX, int targetPosY, int targetPosZ)
 	{
 		World world = this.entityChast.getEntityWorld();
+		int xP = MathHelper.floor(this.entityChast.getOwnerEntity().posX) - 2;
+		int yP = MathHelper.floor(this.entityChast.getOwnerEntity().posZ) - 2;
+		int zP = MathHelper.floor(this.entityChast.getOwnerEntity().getEntityBoundingBox().minY);
 
 		for (int x = 0; x <= 4; ++x)
 		{
 			for (int z = 0; z <= 4; ++z)
 			{
-				if ((x < 1 || z < 1 || x > 3 || z > 3) && world.getBlockState(new BlockPos(targetPosX + x, targetPosY - 1, targetPosZ + z)).isFullyOpaque() && this.isEmptyBlock(new BlockPos(targetPosX + x, targetPosY, targetPosZ + z)) && this.isEmptyBlock(new BlockPos(targetPosX + x, targetPosY + 1, targetPosZ + z)))
+				if ((x < 1 || z < 1 || x > 3 || z > 3) && this.isTeleportFriendlyBlock(xP, yP, zP, x, z))
 				{
 					this.entityChast.setLocationAndAngles((double) ((float) (targetPosX + x) + 0.5F), (double) targetPosY, (double) ((float) (targetPosZ + z) + 0.5F), this.entityChast.rotationYaw, this.entityChast.rotationPitch);
 
@@ -199,10 +204,11 @@ public abstract class EntityAIChast extends EntityAIBase
 		return false;
 	}
 
-	private boolean isEmptyBlock(BlockPos pos)
+	private boolean isTeleportFriendlyBlock(int xP, int yP, int zP, int x, int z)
 	{
-		IBlockState state = this.entityChast.getEntityWorld().getBlockState(pos);
-
-		return (state.getMaterial() == Material.AIR) ? true : !state.isFullCube();
+		World world = this.entityChast.getEntityWorld();
+		BlockPos blockpos = new BlockPos(xP + x, zP - 1, yP + z);
+		IBlockState iblockstate = world.getBlockState(blockpos);
+		return iblockstate.getBlockFaceShape(world, blockpos, EnumFacing.DOWN) == BlockFaceShape.SOLID && iblockstate.canEntitySpawn(this.entityChast) && world.isAirBlock(blockpos.up()) && world.isAirBlock(blockpos.up(2));
 	}
 }

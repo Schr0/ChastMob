@@ -47,7 +47,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 				{
 					rangeOrigin = range;
 
-					if (ChastMobHelper.canStoreInventory(this.getOwnerInventoryMain(), entityItem.getEntityItem()))
+					if (ChastMobHelper.canStoreInventory(this.getOwnerInventoryMain(), entityItem.getItem()))
 					{
 						this.setCollecting(TIME_LIMIT, entityItem);
 					}
@@ -59,7 +59,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	}
 
 	@Override
-	public boolean continueExecuting()
+	public boolean shouldContinueExecuting()
 	{
 		if (this.isCollecting())
 		{
@@ -130,7 +130,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private List<EntityItem> getAroundEntityItem()
 	{
-		return this.getOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getOwnerHomePosition()).expandXyz(this.distance));
+		return this.getOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getOwnerHomePosition()).expand(this.distance, this.distance, this.distance));
 	}
 
 	private boolean canCollectEntityItem(EntityItem entityItem)
@@ -141,7 +141,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 			if (inventoryFilter != null)
 			{
-				ItemStack stackEntityItem = entityItem.getEntityItem().copy();
+				ItemStack stackEntityItem = entityItem.getItem().copy();
 
 				if (stackEntityItem.isItemStackDamageable())
 				{

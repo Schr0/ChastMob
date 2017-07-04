@@ -47,7 +47,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	}
 
 	@Override
-	public boolean continueExecuting()
+	public boolean shouldContinueExecuting()
 	{
 		if (this.isGoing())
 		{
