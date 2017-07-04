@@ -270,7 +270,7 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Override
-	protected SoundEvent getHurtSound()
+	protected SoundEvent getHurtSound(DamageSource damagesource)
 	{
 		return SoundEvents.BLOCK_WOOD_HIT;
 	}
@@ -382,7 +382,7 @@ public class EntityChast extends EntityGolem
 		}
 		else
 		{
-			if ((source.getSourceOfDamage() instanceof EntityLivingBase) && isServerWorld)
+			if ((source.getTrueSource() instanceof EntityLivingBase) && isServerWorld)
 			{
 				this.setAIKnockbacking((int) amount);
 			}

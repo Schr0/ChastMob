@@ -68,8 +68,8 @@ public class GuiChastInventory extends GuiContainer
 	protected void drawGuiContainerForegroundLayer(int xMouse, int yMouse)
 	{
 		String nameChast = this.entityChast.getName() + " / " + this.entityChast.getAIMode().getLabel();
-		this.fontRendererObj.drawString(nameChast, this.xSize / 2 - this.fontRendererObj.getStringWidth(nameChast) / 2, 6, 4210752);
-		this.fontRendererObj.drawString(this.entityPlayer.inventory.getDisplayName().getUnformattedText(), 8, 128, 4210752);
+		this.fontRenderer.drawString(nameChast, this.xSize / 2 - this.fontRenderer.getStringWidth(nameChast) / 2, 6, 4210752);
+		this.fontRenderer.drawString(this.entityPlayer.inventory.getDisplayName().getUnformattedText(), 8, 128, 4210752);
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class GuiChastInventory extends GuiContainer
 		}
 
 		@Override
-		public void drawButton(Minecraft mc, int mouseX, int mouseY)
+		public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
 		{
 			if (this.visible)
 			{
@@ -117,7 +117,7 @@ public class GuiChastInventory extends GuiContainer
 
 				mc.getTextureManager().bindTexture(RES_CHAST_INVENTORY);
 
-				this.drawTexturedModalRect(this.xPosition, this.yPosition, 184, this.buttonTextureY, this.width, this.height);
+				this.drawTexturedModalRect(this.x, this.y, 184, this.buttonTextureY, this.width, this.height);
 			}
 		}
 

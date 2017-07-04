@@ -112,9 +112,9 @@ public class EntityAIChastKnockback extends EntityAIChast
 				}
 				else
 				{
-					this.randPosX = vec3d.xCoord;
-					this.randPosY = vec3d.yCoord;
-					this.randPosZ = vec3d.zCoord;
+					this.randPosX = vec3d.x;
+					this.randPosY = vec3d.y;
+					this.randPosZ = vec3d.z;
 				}
 			}
 

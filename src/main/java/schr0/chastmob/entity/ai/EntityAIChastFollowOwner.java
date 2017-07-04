@@ -52,7 +52,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	}
 
 	@Override
-	public boolean continueExecuting()
+	public boolean shouldContinueExecuting()
 	{
 		if (this.isFollowing())
 		{

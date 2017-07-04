@@ -1,0 +1,20 @@
+{
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "recipe_first": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "minecraft:quartz"
+                    }
+                ]
+            }
+        }
+    },
+    "rewards": {
+        "recipes": [
+            "schr0chastmob:soul_bottle"
+        ]
+    }
+}

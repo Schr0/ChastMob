@@ -78,7 +78,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 	}
 
 	@Override
-	public boolean continueExecuting()
+	public boolean shouldContinueExecuting()
 	{
 		if (this.isEntityAIOcelotSitChast)
 		{
@@ -86,7 +86,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 		}
 		else
 		{
-			return super.continueExecuting();
+			return super.shouldContinueExecuting();
 		}
 	}
 
@@ -186,7 +186,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	private List<EntityChast> getAroundEntityChast()
 	{
-		return this.ownerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.ownerPosition).expandXyz(this.distance));
+		return this.ownerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.ownerPosition).expand(this.distance, this.distance, this.distance));
 	}
 
 	private boolean canSittingEntityChast(EntityChast entityChast)

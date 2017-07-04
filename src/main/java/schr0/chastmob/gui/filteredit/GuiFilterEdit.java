@@ -87,8 +87,8 @@ public class GuiFilterEdit extends GuiContainer
 	protected void drawGuiContainerForegroundLayer(int xMouse, int yMouse)
 	{
 		String nameChast = this.inventoryFilterResult.getName();
-		this.fontRendererObj.drawString(nameChast, this.xSize / 2 - this.fontRendererObj.getStringWidth(nameChast) / 2, 6, 4210752);
-		this.fontRendererObj.drawString(this.entityPlayer.inventory.getDisplayName().getUnformattedText(), 8, 84, 4210752);
+		this.fontRenderer.drawString(nameChast, this.xSize / 2 - this.fontRenderer.getStringWidth(nameChast) / 2, 6, 4210752);
+		this.fontRenderer.drawString(this.entityPlayer.inventory.getDisplayName().getUnformattedText(), 8, 84, 4210752);
 	}
 
 	public void drawScreen(int mouseX, int mouseY, float partialTicks)
@@ -122,7 +122,7 @@ public class GuiFilterEdit extends GuiContainer
 
 					this.itemRender.zLevel = 100.0F;
 					this.itemRender.renderItemAndEffectIntoGUI(stackSlot, slotPosX, slotPosY);
-					this.itemRender.renderItemOverlays(this.fontRendererObj, stackSlot, slotPosX, slotPosY);
+					this.itemRender.renderItemOverlays(this.fontRenderer, stackSlot, slotPosX, slotPosY);
 					this.itemRender.zLevel = 0.0F;
 				}
 			}
@@ -192,7 +192,7 @@ public class GuiFilterEdit extends GuiContainer
 		}
 
 		@Override
-		public void drawButton(Minecraft mc, int mouseX, int mouseY)
+		public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
 		{
 			if (this.visible)
 			{
@@ -211,7 +211,7 @@ public class GuiFilterEdit extends GuiContainer
 					buttonTextureY = 176;
 				}
 
-				this.drawTexturedModalRect(this.xPosition, this.yPosition, 184, buttonTextureY, 27, 19);
+				this.drawTexturedModalRect(this.x, this.y, 184, buttonTextureY, 27, 19);
 
 			}
 		}
