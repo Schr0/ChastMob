@@ -39,7 +39,7 @@ public class ChastMob
 	/**
 	 * Modのバージョン.
 	 */
-	public static final String MOD_VERSION = "2.1.0";
+	public static final String MOD_VERSION = "2.2.0";
 
 	/**
 	 * Forgeのバージョン.
@@ -88,15 +88,15 @@ public class ChastMob
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		(new ChastMobPacket()).init();
+		(new ChastMobPacket()).registerMessages();
 
-		(new ChastMobGui()).init();
+		(new ChastMobGui()).registerGuis();
 
-		(new ChastMobEvent()).init();
+		(new ChastMobEvent()).registerEvents();
 
 		if (event.getSide().isClient())
 		{
-			(new ChastMobPacket()).initClient();
+			(new ChastMobPacket()).registerClientMessages();
 		}
 	}
 
