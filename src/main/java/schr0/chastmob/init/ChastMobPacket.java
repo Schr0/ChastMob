@@ -22,14 +22,14 @@ public class ChastMobPacket
 	public static final int ID_GUI_BUTTON_CHANGE = 1;
 	public static final int ID_GUI_BUTTON_EDIT = 2;
 
-	public void init()
+	public void registerMessages()
 	{
 		DISPATCHER.registerMessage(MessageHandlerGuiChastInventory.class, MessageGuiChastInventory.class, ID_GUI_BUTTON_CHANGE, Side.SERVER);
 		DISPATCHER.registerMessage(MessageHandlerGuiFilterEdit.class, MessageGuiFilterEdit.class, ID_GUI_BUTTON_EDIT, Side.SERVER);
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void initClient()
+	public void registerClientMessages()
 	{
 		DISPATCHER.registerMessage(MessageHandlerParticleEntity.class, MessageParticleEntity.class, ID_PARTICLE_ENTITY, Side.CLIENT);
 	}
