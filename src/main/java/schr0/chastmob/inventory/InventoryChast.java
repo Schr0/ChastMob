@@ -47,10 +47,10 @@ public abstract class InventoryChast extends InventoryBasic
 	{
 		this.clear();
 
-		for (int slot = 0; slot < nbtList.tagCount(); ++slot)
+		for (int i = 0; i < nbtList.tagCount(); ++i)
 		{
-			NBTTagCompound nbt = nbtList.getCompoundTagAt(slot);
-			slot = nbt.getByte("Slot") & 255;
+			NBTTagCompound nbt = nbtList.getCompoundTagAt(i);
+			int slot = nbt.getByte("Slot") & 255;
 
 			if ((0 <= slot) && (slot < this.getSizeInventory()))
 			{
