@@ -22,7 +22,7 @@ import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobPacket;
 import schr0.chastmob.init.ChastMobRecipe;
 
-@Mod(modid = ChastMob.MOD_ID, name = ChastMob.MOD_NAME, version = ChastMob.MOD_VERSION, dependencies = ChastMob.MOD_DEPENDENCIES)
+@Mod(modid = ChastMob.MOD_ID, name = ChastMob.MOD_NAME, version = ChastMob.MOD_VERSION)
 public class ChastMob
 {
 
@@ -39,12 +39,7 @@ public class ChastMob
 	/**
 	 * Modのバージョン.
 	 */
-	public static final String MOD_VERSION = "2.1.1";
-
-	/**
-	 * Forgeのバージョン.
-	 */
-	public static final String MOD_DEPENDENCIES = "required-after:forge@[1.12-14.21.1.2387,)";
+	public static final String MOD_VERSION = "2.1.2";
 
 	/**
 	 * ResourceLocationのDomain.
