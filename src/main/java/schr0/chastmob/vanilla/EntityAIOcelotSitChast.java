@@ -186,7 +186,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 	private List<EntityChast> getAroundEntityChast()
 	{
-		return this.ownerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.ownerPosition).expand(this.distance, this.distance, this.distance));
+		return this.ownerWorld.getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(this.ownerPosition).grow(this.distance, this.distance, this.distance));
 	}
 
 	private boolean canSittingEntityChast(EntityChast entityChast)

@@ -130,7 +130,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private List<EntityItem> getAroundEntityItem()
 	{
-		return this.getOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getOwnerHomePosition()).expand(this.distance, this.distance, this.distance));
+		return this.getOwnerWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getOwnerHomePosition()).grow(this.distance, this.distance, this.distance));
 	}
 
 	private boolean canCollectEntityItem(EntityItem entityItem)
