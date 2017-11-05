@@ -19,12 +19,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.ChastMobHelper;
-import schr0.chastmob.init.ChastMobLang;
-import schr0.chastmob.init.ChastMobPacket;
+import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.inventory.InventoryFilterEdit;
 import schr0.chastmob.inventory.InventoryFilterResult;
 import schr0.chastmob.item.ItemFilter;
 import schr0.chastmob.packet.guifilteredit.MessageGuiFilterEdit;
+import schr0.chastmob.util.ChastMobLangs;
 
 @SideOnly(Side.CLIENT)
 public class GuiFilterEdit extends GuiContainer
@@ -156,11 +156,11 @@ public class GuiFilterEdit extends GuiContainer
 
 			if (((ContainerFilterEdit) this.inventorySlots).getInventoryFilterEdit().isEmpty())
 			{
-				textLines.add(new TextComponentTranslation(ChastMobLang.ITEM_FILTER_BUTTON_CLEAR, new Object[0]).getFormattedText());
+				textLines.add(new TextComponentTranslation(ChastMobLangs.ITEM_FILTER_BUTTON_CLEAR, new Object[0]).getFormattedText());
 			}
 			else
 			{
-				textLines.add(new TextComponentTranslation(ChastMobLang.ITEM_FILTER_BUTTON_REGISTRY, new Object[0]).getFormattedText());
+				textLines.add(new TextComponentTranslation(ChastMobLangs.ITEM_FILTER_BUTTON_REGISTRY, new Object[0]).getFormattedText());
 			}
 
 			this.drawHoveringText(textLines, mouseX, mouseY);
@@ -172,7 +172,7 @@ public class GuiFilterEdit extends GuiContainer
 	{
 		if (button == this.buttonRegistry)
 		{
-			ChastMobPacket.DISPATCHER.sendToServer(new MessageGuiFilterEdit(this.entityPlayer));
+			ChastMobPackets.DISPATCHER.sendToServer(new MessageGuiFilterEdit(this.entityPlayer));
 		}
 	}
 

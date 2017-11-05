@@ -16,11 +16,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 import schr0.chastmob.init.ChastMobEntitys;
-import schr0.chastmob.init.ChastMobEvent;
-import schr0.chastmob.init.ChastMobGui;
+import schr0.chastmob.init.ChastMobEvents;
+import schr0.chastmob.init.ChastMobGuis;
 import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.init.ChastMobPacket;
-import schr0.chastmob.init.ChastMobRecipe;
+import schr0.chastmob.init.ChastMobPackets;
+import schr0.chastmob.init.ChastMobRecipes;
 
 @Mod(modid = ChastMob.MOD_ID, name = ChastMob.MOD_NAME, version = ChastMob.MOD_VERSION)
 public class ChastMob
@@ -39,7 +39,7 @@ public class ChastMob
 	/**
 	 * Modのバージョン.
 	 */
-	public static final String MOD_VERSION = "2.1.3";
+	public static final String MOD_VERSION = "2.1.4";
 
 	/**
 	 * ResourceLocationのDomain.
@@ -83,15 +83,15 @@ public class ChastMob
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		(new ChastMobPacket()).registerMessages();
+		(new ChastMobPackets()).registerMessages();
 
-		(new ChastMobGui()).registerGuis();
+		(new ChastMobGuis()).registerGuis();
 
-		(new ChastMobEvent()).registerEvents();
+		(new ChastMobEvents()).registerEvents();
 
 		if (event.getSide().isClient())
 		{
-			(new ChastMobPacket()).registerClientMessages();
+			(new ChastMobPackets()).registerClientMessages();
 		}
 	}
 
@@ -149,7 +149,7 @@ public class ChastMob
 	{
 		IForgeRegistry<IRecipe> registry = event.getRegistry();
 
-		(new ChastMobRecipe()).registerRecipes(registry);
+		(new ChastMobRecipes()).registerRecipes(registry);
 	}
 
 }

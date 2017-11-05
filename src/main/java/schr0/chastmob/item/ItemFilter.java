@@ -22,11 +22,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.ChastMobHelper;
-import schr0.chastmob.init.ChastMobGui;
-import schr0.chastmob.init.ChastMobLang;
-import schr0.chastmob.init.ChastMobNBTs;
+import schr0.chastmob.init.ChastMobGuis;
 import schr0.chastmob.inventory.InventoryFilterEdit;
 import schr0.chastmob.inventory.InventoryFilterResult;
+import schr0.chastmob.util.ChastMobCreativeTabs;
+import schr0.chastmob.util.ChastMobLangs;
+import schr0.chastmob.util.ChastMobNBTs;
 
 public class ItemFilter extends Item
 {
@@ -53,8 +54,11 @@ public class ItemFilter extends Item
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
 	{
-		items.add(new ItemStack(this, 1, 0));
-		items.add(new ItemStack(this, 1, 1));
+		if (tab == ChastMobCreativeTabs.ITEM)
+		{
+			items.add(new ItemStack(this, 1, 0));
+			items.add(new ItemStack(this, 1, 1));
+		}
 	}
 
 	@Override
@@ -63,11 +67,11 @@ public class ItemFilter extends Item
 	{
 		if (this.getFilterType(stack) == ItemFilter.Type.WHITE)
 		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_FILTER_0_TIPS, new Object[0]).getFormattedText());
+			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_FILTER_0_TIPS, new Object[0]).getFormattedText());
 		}
 		else
 		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_FILTER_1_TIPS, new Object[0]).getFormattedText());
+			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_FILTER_1_TIPS, new Object[0]).getFormattedText());
 		}
 
 		tooltip.add("");
@@ -124,7 +128,7 @@ public class ItemFilter extends Item
 		{
 			if (!worldIn.isRemote)
 			{
-				playerIn.openGui(ChastMob.instance, ChastMobGui.ID_FILTER_EDIT, worldIn, 0, 0, 0);
+				playerIn.openGui(ChastMob.instance, ChastMobGuis.ID_FILTER_EDIT, worldIn, 0, 0, 0);
 			}
 
 			playerIn.playSound(SoundEvents.UI_BUTTON_CLICK, 1.0F, 1.0F);

@@ -1,4 +1,4 @@
-package schr0.chastmob.init;
+package schr0.chastmob.util;
 
 import schr0.chastmob.ChastMob;
 

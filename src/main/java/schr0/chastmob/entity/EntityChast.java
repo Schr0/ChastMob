@@ -52,15 +52,15 @@ import schr0.chastmob.entity.ai.EntityAIChastSit;
 import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
 import schr0.chastmob.entity.ai.EntityAIChastTrade;
 import schr0.chastmob.entity.ai.EntityAIChastWander;
-import schr0.chastmob.init.ChastMobGui;
+import schr0.chastmob.init.ChastMobGuis;
 import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.init.ChastMobLang;
-import schr0.chastmob.init.ChastMobNBTs;
-import schr0.chastmob.init.ChastMobPacket;
+import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.inventory.InventoryChastEquipment;
 import schr0.chastmob.inventory.InventoryChastMain;
 import schr0.chastmob.item.ItemModePatrol;
 import schr0.chastmob.packet.particleentity.MessageParticleEntity;
+import schr0.chastmob.util.ChastMobLangs;
+import schr0.chastmob.util.ChastMobNBTs;
 
 public class EntityChast extends EntityGolem
 {
@@ -374,7 +374,7 @@ public class EntityChast extends EntityGolem
 				{
 					this.playSound(SoundEvents.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.5F, (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F + 1.0F);
 
-					ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(this, 1));
+					ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(this, 1));
 				}
 
 				return false;
@@ -402,7 +402,7 @@ public class EntityChast extends EntityGolem
 
 			if (ownerEntity instanceof EntityPlayerMP)
 			{
-				((EntityPlayerMP) ownerEntity).sendMessage(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_GOODBYE, new Object[]
+				((EntityPlayerMP) ownerEntity).sendMessage(new TextComponentTranslation(ChastMobLangs.ENTITY_CHAST_GOODBYE, new Object[]
 				{
 						TextFormatting.ITALIC.BOLD + this.getName(),
 						TextFormatting.ITALIC.BOLD + ownerEntity.getName(),
@@ -491,7 +491,7 @@ public class EntityChast extends EntityGolem
 			{
 				if (isServerWorld)
 				{
-					player.openGui(ChastMob.instance, ChastMobGui.ID_CHAST_INVENTORY, this.getEntityWorld(), this.getEntityId(), 0, 0);
+					player.openGui(ChastMob.instance, ChastMobGuis.ID_CHAST_INVENTORY, this.getEntityWorld(), this.getEntityId(), 0, 0);
 				}
 
 				return this.onSuccessProcessInteract(player, (SoundEvent) null);
@@ -845,14 +845,14 @@ public class EntityChast extends EntityGolem
 			this.setOwnerFollow(true);
 			this.setAISitting(false);
 
-			player.sendMessage(new TextComponentTranslation(ChastMobLang.ENTITY_CHAST_THANKS, new Object[]
+			player.sendMessage(new TextComponentTranslation(ChastMobLangs.ENTITY_CHAST_THANKS, new Object[]
 			{
 					TextFormatting.ITALIC.BOLD + this.getName(),
 					TextFormatting.ITALIC.BOLD + player.getName(),
 			}));
 		}
 
-		ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(this, 0));
+		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(this, 0));
 
 		this.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 	}

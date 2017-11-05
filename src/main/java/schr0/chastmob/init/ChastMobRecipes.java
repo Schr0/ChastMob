@@ -11,7 +11,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraftforge.registries.IForgeRegistry;
 import schr0.chastmob.ChastMob;
 
-public class ChastMobRecipe
+public class ChastMobRecipes
 {
 
 	public static final String KEY_RES = ChastMob.MOD_ID;

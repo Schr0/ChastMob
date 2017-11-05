@@ -20,9 +20,10 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.init.ChastMobLang;
-import schr0.chastmob.init.ChastMobPacket;
+import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.packet.particleentity.MessageParticleEntity;
+import schr0.chastmob.util.ChastMobCreativeTabs;
+import schr0.chastmob.util.ChastMobLangs;
 
 public class ItemSoulBottleFull extends Item
 {
@@ -54,8 +55,11 @@ public class ItemSoulBottleFull extends Item
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
 	{
-		items.add(new ItemStack(this, 1, MAX_DAMAGE));
-		items.add(new ItemStack(this, 1, 1));
+		if (tab == ChastMobCreativeTabs.ITEM)
+		{
+			items.add(new ItemStack(this, 1, MAX_DAMAGE));
+			items.add(new ItemStack(this, 1, 1));
+		}
 	}
 
 	@Override
@@ -63,11 +67,11 @@ public class ItemSoulBottleFull extends Item
 	{
 		if (stack.getItemDamage() == 0)
 		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_SOUL_BOTTLE_FULL_FRIENDLY_TIPS, new Object[0]).getFormattedText());
+			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_SOUL_BOTTLE_FULL_FRIENDLY_TIPS, new Object[0]).getFormattedText());
 		}
 		else
 		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_SOUL_BOTTLE_FULL_TIPS, new Object[0]).getFormattedText());
+			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_SOUL_BOTTLE_FULL_TIPS, new Object[0]).getFormattedText());
 		}
 	}
 
@@ -120,7 +124,7 @@ public class ItemSoulBottleFull extends Item
 
 		if (stack.getItemDamage() == 0)
 		{
-			ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(entityIn, 0));
+			ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(entityIn, 0));
 
 			entityPlayer.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 		}
@@ -139,7 +143,7 @@ public class ItemSoulBottleFull extends Item
 
 		owner.setHeldItem(hand, new ItemStack(ChastMobItems.SOUL_BOTTLE));
 
-		ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(owner, 0));
+		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(owner, 0));
 
 		owner.getEntityWorld().playSound((EntityPlayer) null, owner.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, owner.getSoundCategory(), 1.0F, 1.0F);
 	}
