@@ -12,7 +12,7 @@ import schr0.chastmob.packet.guifilteredit.MessageHandlerGuiFilterEdit;
 import schr0.chastmob.packet.particleentity.MessageHandlerParticleEntity;
 import schr0.chastmob.packet.particleentity.MessageParticleEntity;
 
-public class ChastMobPacket
+public class ChastMobPackets
 {
 
 	public static final String CHANNEL_NAME = ChastMob.MOD_ID;

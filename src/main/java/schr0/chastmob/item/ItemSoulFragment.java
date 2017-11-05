@@ -16,9 +16,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import schr0.chastmob.init.ChastMobLang;
-import schr0.chastmob.init.ChastMobPacket;
+import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.packet.particleentity.MessageParticleEntity;
+import schr0.chastmob.util.ChastMobLangs;
 
 public class ItemSoulFragment extends Item
 {
@@ -31,7 +31,7 @@ public class ItemSoulFragment extends Item
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_SOUL_FRAGMENT_TIPS, new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_SOUL_FRAGMENT_TIPS, new Object[0]).getFormattedText());
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class ItemSoulFragment extends Item
 			stack.shrink(1);
 		}
 
-		ChastMobPacket.DISPATCHER.sendToAll(new MessageParticleEntity(target, 0));
+		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(target, 0));
 
 		target.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 	}

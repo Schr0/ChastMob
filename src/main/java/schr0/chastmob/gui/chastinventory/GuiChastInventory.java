@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.init.ChastMobPacket;
+import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.packet.guichastinventory.MessageGuiChastInventory;
 
 @SideOnly(Side.CLIENT)
@@ -88,7 +88,7 @@ public class GuiChastInventory extends GuiContainer
 	{
 		if (button == this.buttonChange)
 		{
-			ChastMobPacket.DISPATCHER.sendToServer(new MessageGuiChastInventory(this.entityChast));
+			ChastMobPackets.DISPATCHER.sendToServer(new MessageGuiChastInventory(this.entityChast));
 
 			((ChangeButton) button).mouseClicked();
 		}

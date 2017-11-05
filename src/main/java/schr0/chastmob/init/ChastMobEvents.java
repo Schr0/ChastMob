@@ -20,7 +20,7 @@ import schr0.chastmob.item.ItemSoulBottleFull;
 import schr0.chastmob.item.ItemSoulFragment;
 import schr0.chastmob.vanilla.EntityAIOcelotSitChast;
 
-public class ChastMobEvent
+public class ChastMobEvents
 {
 
 	public void registerEvents()

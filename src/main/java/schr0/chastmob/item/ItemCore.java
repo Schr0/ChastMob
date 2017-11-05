@@ -21,7 +21,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.init.ChastMobLang;
+import schr0.chastmob.util.ChastMobLangs;
 
 public class ItemCore extends Item
 {
@@ -34,7 +34,7 @@ public class ItemCore extends Item
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_CORE_TIPS, new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_CORE_TIPS, new Object[0]).getFormattedText());
 	}
 
 	@Override

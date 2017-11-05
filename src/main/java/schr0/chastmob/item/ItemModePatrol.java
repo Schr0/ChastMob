@@ -21,8 +21,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import schr0.chastmob.init.ChastMobLang;
-import schr0.chastmob.init.ChastMobNBTs;
+import schr0.chastmob.util.ChastMobLangs;
+import schr0.chastmob.util.ChastMobNBTs;
 
 public class ItemModePatrol extends ItemMode
 {
@@ -73,7 +73,7 @@ public class ItemModePatrol extends ItemMode
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLang.ITEM_MODE_PATROL_TIPS, new Object[0]).getFormattedText());
+		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_MODE_PATROL_TIPS, new Object[0]).getFormattedText());
 		tooltip.add("");
 
 		BlockPos homeChestPosition = this.getHomeChestPosition(stack);

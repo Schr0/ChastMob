@@ -26,6 +26,7 @@ import schr0.chastmob.item.ItemModePatrol;
 import schr0.chastmob.item.ItemSoulBottle;
 import schr0.chastmob.item.ItemSoulBottleFull;
 import schr0.chastmob.item.ItemSoulFragment;
+import schr0.chastmob.util.ChastMobCreativeTabs;
 
 public class ChastMobItems
 {

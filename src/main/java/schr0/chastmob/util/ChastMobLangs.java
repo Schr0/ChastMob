@@ -1,6 +1,6 @@
-package schr0.chastmob.init;
+package schr0.chastmob.util;
 
-public class ChastMobLang
+public class ChastMobLangs
 {
 
 	public static final String ITEM_SOUL_BOTTLE_TIPS = "item.soul_bottle.tips";
