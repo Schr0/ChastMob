@@ -41,7 +41,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		{
 			if (this.canCollectEntityItem(entityItem))
 			{
-				float range = (float) this.getOwnerEntity().getDistanceSqToEntity(entityItem);
+				float range = (float) this.getOwnerEntity().getDistanceSq(entityItem);
 
 				if (range < rangeOrigin)
 				{
@@ -93,7 +93,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		this.getOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, this.getOwnerEntity().getHorizontalFaceSpeed(), this.getOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getOwnerEntity().getDistanceSqToEntity(this.targetEntityItem) < 1.5D)
+		if (this.getOwnerEntity().getDistanceSq(this.targetEntityItem) < 1.5D)
 		{
 			for (EntityItem entityItem : this.getAroundEntityItem())
 			{
