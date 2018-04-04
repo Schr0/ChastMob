@@ -9,6 +9,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -38,13 +40,13 @@ public abstract class EntityAIChast extends EntityAIBase
 	@Override
 	public void startExecuting()
 	{
-		this.entityChast.getNavigator().clearPathEntity();
+		this.entityChast.getNavigator().clearPath();
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.entityChast.getNavigator().clearPathEntity();
+		this.entityChast.getNavigator().clearPath();
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
