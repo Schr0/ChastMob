@@ -36,7 +36,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 		if (this.canFollowEntityLivingBase(ownerEntity))
 		{
-			if (this.getOwnerEntity().getDistanceSqToEntity(ownerEntity) < this.distance)
+			if (this.getOwnerEntity().getDistanceSq(ownerEntity) < this.distance)
 			{
 				return false;
 			}
@@ -77,7 +77,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 		this.getOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, this.getOwnerEntity().getHorizontalFaceSpeed(), this.getOwnerEntity().getVerticalFaceSpeed());
 
-		if (this.getOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.distance)
+		if (this.getOwnerEntity().getDistanceSq(this.targetOwner) < this.distance)
 		{
 			this.setFollowing(0, null);
 		}
