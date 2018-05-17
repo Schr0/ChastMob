@@ -22,7 +22,6 @@ import net.minecraft.world.World;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.packet.particleentity.MessageParticleEntity;
-import schr0.chastmob.util.ChastMobCreativeTabs;
 import schr0.chastmob.util.ChastMobLangs;
 
 public class ItemSoulBottleFull extends Item
@@ -55,7 +54,7 @@ public class ItemSoulBottleFull extends Item
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
 	{
-		if (tab == ChastMobCreativeTabs.ITEM)
+		if (this.isInCreativeTab(tab))
 		{
 			items.add(new ItemStack(this, 1, MAX_DAMAGE));
 			items.add(new ItemStack(this, 1, 1));

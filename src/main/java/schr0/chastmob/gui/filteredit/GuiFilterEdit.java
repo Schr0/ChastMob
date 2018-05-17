@@ -98,6 +98,8 @@ public class GuiFilterEdit extends GuiContainer
 		int originPosX = (this.width - this.xSize) / 2;
 		int originPosY = (this.height - this.ySize) / 2;
 
+		this.renderHoveredToolTip(mouseX, mouseY);
+
 		if (!this.inventoryFilterResult.isEmpty())
 		{
 			int column;
