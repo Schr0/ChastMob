@@ -77,6 +77,8 @@ public class GuiChastInventory extends GuiContainer
 	{
 		super.drawScreen(mouseX, mouseY, partialTicks);
 
+		this.renderHoveredToolTip(mouseX, mouseY);
+
 		if (this.isPointInRegion(102, 22, 64, 14, mouseX, mouseY))
 		{
 			this.drawHoveringText(Lists.newArrayList(this.entityChast.getHealth() + " / " + this.entityChast.getMaxHealth()), mouseX, mouseY);

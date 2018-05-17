@@ -25,7 +25,6 @@ import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.init.ChastMobGuis;
 import schr0.chastmob.inventory.InventoryFilterEdit;
 import schr0.chastmob.inventory.InventoryFilterResult;
-import schr0.chastmob.util.ChastMobCreativeTabs;
 import schr0.chastmob.util.ChastMobLangs;
 import schr0.chastmob.util.ChastMobNBTs;
 
@@ -54,7 +53,7 @@ public class ItemFilter extends Item
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
 	{
-		if (tab == ChastMobCreativeTabs.ITEM)
+		if (this.isInCreativeTab(tab))
 		{
 			items.add(new ItemStack(this, 1, 0));
 			items.add(new ItemStack(this, 1, 1));
