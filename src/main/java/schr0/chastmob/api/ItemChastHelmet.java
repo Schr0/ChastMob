@@ -1,7 +1,7 @@
 package schr0.chastmob.api;
 
 import com.google.common.collect.Multimap;
-
+import java.util.UUID;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLiving;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class ItemChastHelmet extends Item
 {
-
+	private static final UUID HELMET_ARMOR_BONUS_ID = UUID.fromString("84d29df2-27c0-11e8-b467-0ed5f89f718b");
 	private final int damageReduceAmount;
 	private final int enchantability;
 
@@ -36,7 +36,7 @@ public abstract class ItemChastHelmet extends Item
 
 		if (slot == EntityEquipmentSlot.HEAD)
 		{
-			multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier("Helmet modifier", (double) this.damageReduceAmount, 0));
+			multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier(HELMET_ARMOR_BONUS_ID,"Helmet modifier", (double) this.damageReduceAmount, 0));
 		}
 
 		return multimap;

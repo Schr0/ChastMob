@@ -30,7 +30,7 @@ public abstract class InventoryChast extends InventoryBasic
 				return false;
 			}
 
-			return (player.getDistanceSqToEntity(this.entityChast) < 64.0D);
+			return (player.getDistanceSq(this.entityChast) < 64.0D);
 		}
 
 		return false;

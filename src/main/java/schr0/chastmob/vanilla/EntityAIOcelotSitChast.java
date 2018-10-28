@@ -138,7 +138,7 @@ public class EntityAIOcelotSitChast extends EntityAIOcelotSit
 
 				this.ownerEntityOcelot.getLookHelper().setLookPositionWithEntity(this.targetEntityChast, this.ownerEntityOcelot.getHorizontalFaceSpeed(), this.ownerEntityOcelot.getVerticalFaceSpeed());
 
-				if (this.ownerEntityOcelot.getDistanceSqToEntity(this.targetEntityChast) < 1.5D)
+				if (this.ownerEntityOcelot.getDistanceSq(this.targetEntityChast) < 1.5D)
 				{
 					for (EntityChast entityChast : this.getAroundEntityChast())
 					{

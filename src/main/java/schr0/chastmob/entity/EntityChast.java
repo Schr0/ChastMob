@@ -30,6 +30,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.pathfinding.PathNavigateGround;													
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
@@ -65,9 +66,9 @@ import schr0.chastmob.util.ChastMobNBTs;
 public class EntityChast extends EntityGolem
 {
 
-	public static void registerFixesChast(DataFixer p_189790_0_)
+	public static void registerFixesChast(DataFixer fixer)
 	{
-		EntityLiving.registerFixesMob(p_189790_0_, EntityChast.class);
+		EntityLiving.registerFixesMob(fixer, EntityChast.class);
 	}
 
 	private static final DataParameter<Integer> ARM_COLOR = EntityDataManager.<Integer> createKey(EntityChast.class, DataSerializers.VARINT);
@@ -546,7 +547,7 @@ public class EntityChast extends EntityGolem
 		{
 			EntityLivingBase ownerEntity = this.getOwnerEntity();
 
-			if ((ownerEntity != null) && (ownerEntity.getDistanceToEntity(this) < 16.0D))
+			if ((ownerEntity != null) && (ownerEntity.getDistance(this) < 16.0D))
 			{
 				this.getLookHelper().setLookPositionWithEntity(ownerEntity, this.getHorizontalFaceSpeed(), this.getVerticalFaceSpeed());
 			}
