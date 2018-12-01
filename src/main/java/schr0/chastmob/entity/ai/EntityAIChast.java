@@ -1,129 +1,100 @@
 package schr0.chastmob.entity.ai;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.inventory.InventoryChastEquipment;
-import schr0.chastmob.inventory.InventoryChastMain;
-import schr0.chastmob.inventory.InventoryFilter;
-import schr0.chastmob.item.ItemFilter;
-import schr0.chastmob.item.ItemModePatrol;
 
 public abstract class EntityAIChast extends EntityAIBase
 {
-
 	private EntityChast entityChast;
+	private int timeCount;
 
 	public EntityAIChast(EntityChast entityChast)
 	{
-		this.setMutexBits(1);
-
 		this.entityChast = entityChast;
+		this.timeCount = 0;
 	}
 
 	@Override
 	public void startExecuting()
 	{
-		this.entityChast.getNavigator().clearPathEntity();
+		this.entityChast.getNavigator().clearPath();
+		this.entityChast.setCoverOpen(false);
+		this.timeCount = this.getTimeLimit();
 	}
 
 	@Override
 	public void resetTask()
 	{
-		this.entityChast.getNavigator().clearPathEntity();
+		this.entityChast.getNavigator().clearPath();
+		this.entityChast.setCoverOpen(false);
+		this.timeCount = 0;
+	}
+
+	@Override
+	public void updateTask()
+	{
+		--this.timeCount;
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public World getOwnerWorld()
+	public World getWorld()
 	{
 		return this.entityChast.getEntityWorld();
 	}
 
-	public EntityChast getOwnerEntity()
+	public EntityChast getEntity()
 	{
 		return this.entityChast;
 	}
 
-	public ChastAIMode getOwnerAIMode()
+	public ChastMode getMode()
 	{
-		return this.entityChast.getAIMode();
+		return this.entityChast.getMode();
 	}
 
-	public InventoryChastMain getOwnerInventoryMain()
-	{
-		return this.entityChast.getInventoryChastMain();
-	}
-
-	public InventoryChastEquipment getOwnerInventoryEquipment()
-	{
-		return this.entityChast.getInventoryChastEquipment();
-	}
-
-	public BlockPos getOwnerHomePosition()
+	public BlockPos getHomePosition()
 	{
 		BlockPos homePosition = this.entityChast.getPosition();
 
-		switch (this.entityChast.getAIMode())
+		if (this.entityChast.getMode() == ChastMode.FOLLOW)
 		{
-			case PATROL :
+			EntityLivingBase ownerEntity = this.entityChast.getOwner();
 
-				ItemStack stackModeItem = this.entityChast.getInventoryChastEquipment().getModeItem();
-
-				if (stackModeItem.getItem() == ChastMobItems.MODE_PATROL)
-				{
-					BlockPos homePositionChest = ((ItemModePatrol) stackModeItem.getItem()).getHomeChestPosition(stackModeItem);
-
-					if (homePositionChest != null)
-					{
-						homePosition = homePositionChest;
-					}
-				}
-				break;
-
-			case FOLLOW :
-
-				EntityLivingBase ownerEntity = this.entityChast.getOwnerEntity();
-
-				if (this.entityChast.isOwnerTame() && (ownerEntity != null))
-				{
-					homePosition = ownerEntity.getPosition();
-				}
-				break;
-
-			default :
-
-				break;
+			if (this.entityChast.isTamed() && (ownerEntity != null))
+			{
+				homePosition = ownerEntity.getPosition();
+			}
 		}
 
 		return homePosition;
 	}
 
-	@Nullable
-	public InventoryFilter getOwnerEquipmentInventoryFilter()
+	public int getTimeLimit()
 	{
-		ItemStack stackFilter = this.entityChast.getInventoryChastEquipment().getFilterItem();
+		return (5 * 20);
+	}
 
-		if (stackFilter.getItem() == ChastMobItems.FILTER)
-		{
-			return ((ItemFilter) stackFilter.getItem()).getInventoryFilterResult(stackFilter);
-		}
+	public void setTimeLimit(int timeCount)
+	{
+		this.timeCount = timeCount;
+	}
 
-		return (InventoryFilter) null;
+	public boolean isExecutingTime()
+	{
+		return (0 < this.timeCount);
 	}
 
 	public boolean canBlockBeSeen(BlockPos blockPos)
@@ -151,42 +122,30 @@ public abstract class EntityAIChast extends EntityAIBase
 		return false;
 	}
 
-	public void forceMoveToTargetBlockPos(BlockPos blockPos, double moveSpeed)
+	public void forceMoveToTargetBlockPos(BlockPos blockPos)
 	{
-		if (!this.entityChast.getNavigator().tryMoveToXYZ(blockPos.getX(), blockPos.getY(), blockPos.getZ(), moveSpeed))
-		{
-			int targetPosX = MathHelper.floor(blockPos.getX()) - 2;
-			int targetPosY = MathHelper.floor(blockPos.getY());
-			int targetPosZ = MathHelper.floor(blockPos.getZ()) - 2;
+		int targetPosX = MathHelper.floor(blockPos.getX()) - 2;
+		int targetPosY = MathHelper.floor(blockPos.getY());
+		int targetPosZ = MathHelper.floor(blockPos.getZ()) - 2;
 
-			if (!this.teleportTargetPosition(targetPosX, targetPosY, targetPosZ))
-			{
-				// none
-			}
-		}
+		this.teleportTargetPosition(targetPosX, targetPosY, targetPosZ);
 	}
 
-	public void forceMoveToTargetEntity(Entity entitiy, double moveSpeed)
+	public void forceMoveToTargetEntity(Entity entitiy)
 	{
-		if (!this.entityChast.getNavigator().tryMoveToEntityLiving(entitiy, moveSpeed))
-		{
-			int targetPosX = MathHelper.floor(entitiy.posX) - 2;
-			int targetPosY = MathHelper.floor(entitiy.getEntityBoundingBox().minY);
-			int targetPosZ = MathHelper.floor(entitiy.posZ) - 2;
+		int targetPosX = MathHelper.floor(entitiy.posX) - 2;
+		int targetPosY = MathHelper.floor(entitiy.getEntityBoundingBox().minY);
+		int targetPosZ = MathHelper.floor(entitiy.posZ) - 2;
 
-			if (!this.teleportTargetPosition(targetPosX, targetPosY, targetPosZ))
-			{
-				// none
-			}
-		}
+		this.teleportTargetPosition(targetPosX, targetPosY, targetPosZ);
 	}
 
 	private boolean teleportTargetPosition(int targetPosX, int targetPosY, int targetPosZ)
 	{
 		World world = this.entityChast.getEntityWorld();
-		int xP = MathHelper.floor(this.entityChast.getOwnerEntity().posX) - 2;
-		int yP = MathHelper.floor(this.entityChast.getOwnerEntity().posZ) - 2;
-		int zP = MathHelper.floor(this.entityChast.getOwnerEntity().getEntityBoundingBox().minY);
+		int xP = MathHelper.floor(this.entityChast.getOwner().posX) - 2;
+		int yP = MathHelper.floor(this.entityChast.getOwner().posZ) - 2;
+		int zP = MathHelper.floor(this.entityChast.getOwner().getEntityBoundingBox().minY);
 
 		for (int x = 0; x <= 4; ++x)
 		{

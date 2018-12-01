@@ -7,7 +7,7 @@ import schr0.chastmob.entity.EntityChast;
 public class EntityAIChastWander extends EntityAIChast
 {
 
-	private static final int CHANCE_WONDER = 100;
+	private static final int CHANCE_WONDER = 120;
 
 	private double speed;
 	private int distance;
@@ -18,17 +18,20 @@ public class EntityAIChastWander extends EntityAIChast
 	public EntityAIChastWander(EntityChast entityChast, double speed, int distance)
 	{
 		super(entityChast);
-
 		this.speed = speed;
 		this.distance = distance;
+		this.randPosX = 0;
+		this.randPosY = 0;
+		this.randPosZ = 0;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.isWandering())
+
+		if (this.getEntity().getRNG().nextInt(CHANCE_WONDER) == 0)
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getOwnerEntity(), this.distance, this.distance);
+			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.distance, this.distance);
 
 			if (vec3d == null)
 			{
@@ -50,7 +53,7 @@ public class EntityAIChastWander extends EntityAIChast
 	@Override
 	public boolean shouldContinueExecuting()
 	{
-		return !this.getOwnerEntity().getNavigator().noPath();
+		return !this.getEntity().getNavigator().noPath();
 	}
 
 	@Override
@@ -58,14 +61,17 @@ public class EntityAIChastWander extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
+		this.getEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
 	}
 
-	// TODO /* ======================================== MOD START =====================================*/
-
-	public boolean isWandering()
+	@Override
+	public void resetTask()
 	{
-		return (this.getOwnerEntity().getRNG().nextInt(CHANCE_WONDER) == 0);
+		super.resetTask();
+
+		this.randPosX = 0;
+		this.randPosY = 0;
+		this.randPosZ = 0;
 	}
 
 }

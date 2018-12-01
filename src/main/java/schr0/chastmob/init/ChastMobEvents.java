@@ -2,23 +2,18 @@ package schr0.chastmob.init;
 
 import java.util.HashSet;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIOcelotSit;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.passive.EntityOcelot;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import schr0.chastmob.item.ItemSoulBottleFull;
-import schr0.chastmob.item.ItemSoulFragment;
-import schr0.chastmob.vanilla.EntityAIOcelotSitChast;
+import schr0.chastmob.util.EntityAIOcelotSitChast;
 
 public class ChastMobEvents
 {
@@ -33,11 +28,11 @@ public class ChastMobEvents
 	@SubscribeEvent
 	public void onLivingUpdateEvent(LivingUpdateEvent event)
 	{
-		EntityLivingBase entityLivingBase = event.getEntityLiving();
+		EntityLivingBase target = event.getEntityLiving();
 
-		if ((entityLivingBase instanceof EntityOcelot) && (entityLivingBase.ticksExisted < 20))
+		if ((target instanceof EntityOcelot) && (target.ticksExisted < 20))
 		{
-			EntityOcelot entityOcelot = (EntityOcelot) entityLivingBase;
+			EntityOcelot entityOcelot = (EntityOcelot) target;
 			HashSet<EntityAITaskEntry> hashSetEntityAITaskEntry = new HashSet<EntityAITaskEntry>();
 
 			for (EntityAITaskEntry taskEntry : entityOcelot.tasks.taskEntries)
@@ -57,36 +52,15 @@ public class ChastMobEvents
 	}
 
 	@SubscribeEvent
-	public void onEntityInteractEvent(PlayerInteractEvent.EntityInteract event)
-	{
-		EntityPlayer entityPlayer = event.getEntityPlayer();
-		Entity entityTarget = event.getTarget();
-		ItemStack itemStack = event.getItemStack();
-		World world = entityPlayer.getEntityWorld();
-
-		if ((itemStack.getItem() instanceof ItemSoulFragment) && (entityTarget instanceof EntityLivingBase))
-		{
-			EntityLivingBase targetLivingBase = (EntityLivingBase) entityTarget;
-
-			if ((0.0F < targetLivingBase.getHealth()) && (targetLivingBase.getHealth() < targetLivingBase.getMaxHealth()))
-			{
-				((ItemSoulFragment) (itemStack.getItem())).healLivingBase(itemStack, world, targetLivingBase, entityPlayer);
-
-				event.setCanceled(true);
-			}
-		}
-	}
-
-	@SubscribeEvent
 	public void onLivingDeathEvent(LivingDeathEvent event)
 	{
-		EntityLivingBase entityLivingBase = event.getEntityLiving();
-		EnumHand handItemSoulBottleFullFriendly = this.getHandSoulBottleFullFriendly(entityLivingBase);
-		ItemStack stackHeldItem = entityLivingBase.getHeldItem(handItemSoulBottleFullFriendly);
+		EntityLivingBase target = event.getEntityLiving();
+		EnumHand handItemSoulBottleFullFriendly = this.getHandSoulBottleFullFriendly(target);
+		ItemStack stackHeldItem = target.getHeldItem(handItemSoulBottleFullFriendly);
 
 		if (this.isItemSoulBottleFullFriendly(stackHeldItem))
 		{
-			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handItemSoulBottleFullFriendly, entityLivingBase);
+			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handItemSoulBottleFullFriendly, target);
 
 			event.setCanceled(true);
 		}

@@ -1,7 +1,12 @@
 package schr0.chastmob.api;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Multimap;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.entity.EntityLiving;
@@ -12,6 +17,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -30,13 +38,24 @@ public abstract class ItemChastHelmet extends Item
 	}
 
 	@Override
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
+	{
+		TextComponentTranslation info = new TextComponentTranslation("item.chast_helmet.tooltip", new Object[0]);
+
+		info.getStyle().setColor(TextFormatting.BLUE);
+		info.getStyle().setItalic(true);
+
+		tooltip.add(info.getFormattedText());
+	}
+
+	@Override
 	public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack)
 	{
 		Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(slot, stack);
 
 		if (slot == EntityEquipmentSlot.HEAD)
 		{
-			multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier("Helmet modifier", (double) this.damageReduceAmount, 0));
+			multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier("Armor modifier", (double) this.damageReduceAmount, 0));
 		}
 
 		return multimap;

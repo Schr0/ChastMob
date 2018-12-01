@@ -129,8 +129,8 @@ public class ModelChast extends ModelBase
 		}
 
 		EntityChast entityChast = (EntityChast) entityIn;
-		boolean isDefending = (entityChast.isStateKnockback() && entityChast.isEquipHelmet());
-		boolean isPanicking = (entityChast.isStateKnockback() && !entityChast.isEquipHelmet());
+		boolean isDefending = (entityChast.isPanic() && entityChast.isEquipHelmet());
+		boolean isPanicking = (entityChast.isPanic() && !entityChast.isEquipHelmet());
 
 		if (entityChast.isRiding() || !entityChast.getPassengers().isEmpty())
 		{
@@ -144,7 +144,7 @@ public class ModelChast extends ModelBase
 		this.body.rotateAngleY = (netHeadYaw / (180F / (float) Math.PI));
 		this.core.rotateAngleZ = (ageInTicks * (entityChast.getHealth() / 50F));
 
-		if (entityChast.isStateSit() || entityChast.isRiding())
+		if (entityChast.isSit() || entityChast.isRiding())
 		{
 			float pointSitY = 7.0F;
 

@@ -21,14 +21,13 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobPackets;
-import schr0.chastmob.packet.particleentity.MessageParticleEntity;
-import schr0.chastmob.util.ChastMobLangs;
+import schr0.chastmob.packet.MessageParticleEntity;
 
 public class ItemSoulBottleFull extends Item
 {
 
-	private static String NAME_FRIENDLY = "friendly";
 	public static final int MAX_DAMAGE = (20 * 60);
+	private static String NAME_FRIENDLY = "friendly";
 
 	public ItemSoulBottleFull()
 	{
@@ -64,14 +63,21 @@ public class ItemSoulBottleFull extends Item
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
+		TextComponentTranslation info;
+
 		if (stack.getItemDamage() == 0)
 		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_SOUL_BOTTLE_FULL_FRIENDLY_TIPS, new Object[0]).getFormattedText());
+			info = new TextComponentTranslation("item.soul_bottle_full_friendly.tooltip", new Object[0]);
 		}
 		else
 		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_SOUL_BOTTLE_FULL_TIPS, new Object[0]).getFormattedText());
+			info = new TextComponentTranslation("item.soul_bottle_full.tooltip", new Object[0]);
 		}
+
+		info.getStyle().setColor(TextFormatting.BLUE);
+		info.getStyle().setItalic(true);
+
+		tooltip.add(info.getFormattedText());
 	}
 
 	@Override

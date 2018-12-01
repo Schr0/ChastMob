@@ -37,7 +37,7 @@ public class RenderChast extends RenderLiving<EntityChast>
 	@Override
 	protected boolean canRenderName(EntityChast entity)
 	{
-		if (entity.isStateTrade())
+		if (entity.isTrade())
 		{
 			return false;
 		}

@@ -19,9 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.util.ChastMobLangs;
 
 public class ItemCore extends Item
 {
@@ -34,7 +32,12 @@ public class ItemCore extends Item
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_CORE_TIPS, new Object[0]).getFormattedText());
+		TextComponentTranslation info = new TextComponentTranslation("item.core.tooltip", new Object[0]);
+
+		info.getStyle().setColor(TextFormatting.BLUE);
+		info.getStyle().setItalic(true);
+
+		tooltip.add(info.getFormattedText());
 	}
 
 	@Override
@@ -62,9 +65,9 @@ public class ItemCore extends Item
 			{
 				ItemStack stackTileChest = inventoryTileChest.getStackInSlot(slot);
 
-				if (ChastMobHelper.isNotEmptyItemStack(stackTileChest))
+				if (!stackTileChest.isEmpty())
 				{
-					entityChast.getInventoryChastMain().setInventorySlotContents(slot, stackTileChest);
+					entityChast.getInventoryMain().setInventorySlotContents(slot, stackTileChest);
 				}
 
 				inventoryTileChest.setInventorySlotContents(slot, ItemStack.EMPTY);

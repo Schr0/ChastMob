@@ -19,7 +19,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.util.ChastMobLangs;
 
 public class ItemSoulBottle extends Item
 {
@@ -32,7 +31,12 @@ public class ItemSoulBottle extends Item
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_SOUL_BOTTLE_TIPS, new Object[0]).getFormattedText());
+		TextComponentTranslation info = new TextComponentTranslation("item.soul_bottle.tooltip", new Object[0]);
+
+		info.getStyle().setColor(TextFormatting.BLUE);
+		info.getStyle().setItalic(true);
+
+		tooltip.add(info.getFormattedText());
 	}
 
 	@Override
