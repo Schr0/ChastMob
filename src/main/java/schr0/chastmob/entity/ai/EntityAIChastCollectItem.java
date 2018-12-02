@@ -12,15 +12,11 @@ import schr0.chastmob.inventory.InventoryChastHelper;
 public class EntityAIChastCollectItem extends EntityAIChast
 {
 
-	private double speed;
-	private double distance;
 	private EntityItem targetEntityItem;
 
-	public EntityAIChastCollectItem(EntityChast entityChast, double speed, double distance)
+	public EntityAIChastCollectItem(EntityChast entityChast)
 	{
 		super(entityChast);
-		this.speed = speed;
-		this.distance = distance;
 		this.targetEntityItem = null;
 	}
 
@@ -29,18 +25,18 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		this.targetEntityItem = null;
 
-		float rangeOrigin = (float) (this.distance * this.distance * this.distance * 2);
+		float rangeOrigin = 0.0F;
 
 		for (EntityItem entityItem : this.getAroundEntityItem())
 		{
-			if (this.canCollectEntityItem(entityItem))
+			float range = (float) this.getEntity().getDistanceSq(entityItem);
+
+			if ((range < rangeOrigin) || (rangeOrigin == 0.0F))
 			{
-				float range = (float) this.getEntity().getDistanceSq(entityItem);
+				rangeOrigin = range;
 
-				if (range < rangeOrigin)
+				if (this.canCollectEntityItem(entityItem))
 				{
-					rangeOrigin = range;
-
 					if (InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), entityItem.getItem()))
 					{
 						this.targetEntityItem = entityItem;
@@ -98,7 +94,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		}
 		else
 		{
-			this.getEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.speed);
+			this.getEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.getSpeed());
 		}
 	}
 
@@ -106,7 +102,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private List<EntityItem> getAroundEntityItem()
 	{
-		return this.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getHomePosition()).grow(this.distance, this.distance, this.distance));
+		return this.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getHomePosition()).grow(this.getRange(), this.getRange(), this.getRange()));
 	}
 
 	private boolean canCollectEntityItem(EntityItem entityItem)

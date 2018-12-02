@@ -19,15 +19,11 @@ import schr0.chastmob.inventory.InventoryChastMain;
 public class EntityAIChastStoreChest extends EntityAIChast
 {
 
-	private double speed;
-	private int distance;
 	private TileEntityChest targetChest;
 
-	public EntityAIChastStoreChest(EntityChast entityChast, double speed, int distance)
+	public EntityAIChastStoreChest(EntityChast entityChast)
 	{
 		super(entityChast);
-		this.speed = speed;
-		this.distance = distance;
 		this.targetChest = null;
 	}
 
@@ -43,7 +39,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		if (!InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), ItemStack.EMPTY))
 		{
-			TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getEntity(), this.distance);
+			TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getEntity(), this.getRange());
 
 			if (this.canStoringTileEntityChest(nearOpenChest))
 			{
@@ -91,7 +87,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		if (this.getEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
 		{
-			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getEntity(), this.distance);
+			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getEntity(), this.getRange());
 
 			if ((nearChest != null) && (nearChest == this.targetChest))
 			{
@@ -114,7 +110,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		}
 		else
 		{
-			this.getEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.speed);
+			this.getEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.getSpeed());
 		}
 	}
 

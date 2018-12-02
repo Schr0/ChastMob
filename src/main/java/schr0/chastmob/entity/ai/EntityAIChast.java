@@ -17,6 +17,7 @@ import schr0.chastmob.entity.EntityChast;
 
 public abstract class EntityAIChast extends EntityAIBase
 {
+
 	private EntityChast entityChast;
 	private int timeCount;
 
@@ -80,6 +81,21 @@ public abstract class EntityAIChast extends EntityAIBase
 		}
 
 		return homePosition;
+	}
+
+	public double getSpeed()
+	{
+		return 1.25D;
+	}
+
+	public int getRange()
+	{
+		return 5;
+	}
+
+	public int getTimeCount()
+	{
+		return this.timeCount;
 	}
 
 	public int getTimeLimit()

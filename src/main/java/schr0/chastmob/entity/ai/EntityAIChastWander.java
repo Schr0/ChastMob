@@ -9,17 +9,13 @@ public class EntityAIChastWander extends EntityAIChast
 
 	private static final int CHANCE_WONDER = 120;
 
-	private double speed;
-	private int distance;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
 
-	public EntityAIChastWander(EntityChast entityChast, double speed, int distance)
+	public EntityAIChastWander(EntityChast entityChast)
 	{
 		super(entityChast);
-		this.speed = speed;
-		this.distance = distance;
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
@@ -28,10 +24,9 @@ public class EntityAIChastWander extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-
 		if (this.getEntity().getRNG().nextInt(CHANCE_WONDER) == 0)
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.distance, this.distance);
+			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.getRange(), this.getRange());
 
 			if (vec3d == null)
 			{
@@ -61,7 +56,7 @@ public class EntityAIChastWander extends EntityAIChast
 	{
 		super.startExecuting();
 
-		this.getEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
+		this.getEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.getSpeed());
 	}
 
 	@Override

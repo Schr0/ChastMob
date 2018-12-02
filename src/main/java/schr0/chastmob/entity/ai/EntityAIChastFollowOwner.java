@@ -8,15 +8,11 @@ import schr0.chastmob.entity.EntityChast;
 public class EntityAIChastFollowOwner extends EntityAIChast
 {
 
-	private double speed;
-	private double distance;
 	private EntityLivingBase targetOwner;
 
-	public EntityAIChastFollowOwner(EntityChast entityChast, double speed, double distance)
+	public EntityAIChastFollowOwner(EntityChast entityChast)
 	{
 		super(entityChast);
-		this.speed = speed;
-		this.distance = (distance * distance);
 		this.targetOwner = null;
 	}
 
@@ -25,7 +21,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		this.targetOwner = null;
 
-		if (this.getMode() != ChastMode.FOLLOW)
+		if (this.getMode() == ChastMode.FREEDOM)
 		{
 			return false;
 		}
@@ -34,7 +30,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 		if (this.canFollowEntityLivingBase(owner))
 		{
-			if (this.getEntity().getDistanceSq(owner) < this.distance)
+			if (this.getEntity().getDistanceSq(owner) < this.getRange())
 			{
 				return false;
 			}
@@ -70,7 +66,9 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		super.resetTask();
 
-		if (this.targetOwner != null)
+		double minRange = (this.getRange() * this.getRange());
+
+		if ((this.targetOwner != null) && (this.getEntity().getDistanceSq(this.targetOwner) < minRange))
 		{
 			this.forceMoveToTargetEntity(this.targetOwner);
 		}
@@ -85,13 +83,13 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 		this.getEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, this.getEntity().getHorizontalFaceSpeed(), this.getEntity().getVerticalFaceSpeed());
 
-		if (this.getEntity().getDistanceSq(this.targetOwner) < this.distance)
+		if (this.getEntity().getDistanceSq(this.targetOwner) < this.getRange())
 		{
 			this.targetOwner = null;
 		}
 		else
 		{
-			this.getEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.speed);
+			this.getEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.getSpeed());
 		}
 	}
 

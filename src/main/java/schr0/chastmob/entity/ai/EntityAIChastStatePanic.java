@@ -17,17 +17,13 @@ import schr0.chastmob.inventory.InventoryChastMain;
 public class EntityAIChastStatePanic extends EntityAIChast
 {
 
-	private double speed;
-	private int distance;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
 
-	public EntityAIChastStatePanic(EntityChast entityChast, double speed, int distance)
+	public EntityAIChastStatePanic(EntityChast entityChast)
 	{
 		super(entityChast);
-		this.speed = speed;
-		this.distance = distance;
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
@@ -71,7 +67,7 @@ public class EntityAIChastStatePanic extends EntityAIChast
 	{
 		super.updateTask();
 
-		if (this.getEntity().isEquipHelmet())
+		if (this.getEntity().isEquipHelmet() || this.isIdleTime())
 		{
 			return;
 		}
@@ -85,7 +81,7 @@ public class EntityAIChastStatePanic extends EntityAIChast
 
 		if (this.getEntity().isBurning())
 		{
-			BlockPos blockPos = this.getNearWaterBlockPos(this.getEntity(), this.distance);
+			BlockPos blockPos = this.getNearWaterBlockPos(this.getEntity(), this.getRange());
 
 			if (blockPos == null)
 			{
@@ -100,7 +96,7 @@ public class EntityAIChastStatePanic extends EntityAIChast
 		}
 		else
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.distance, this.distance);
+			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.getRange(), this.getRange());
 
 			if (vec3d == null)
 			{
@@ -114,15 +110,21 @@ public class EntityAIChastStatePanic extends EntityAIChast
 			}
 		}
 
-		this.getEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
+		this.getEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.getSpeed());
+	}
+
+	@Override
+	public double getSpeed()
+	{
+		return (super.getSpeed() * 2);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
 	public void startTask(int timeCount)
 	{
-		timeCount = Math.max(3, timeCount);
-		timeCount = Math.min(9, timeCount);
+		timeCount = Math.max(2, timeCount);
+		timeCount = Math.min(8, timeCount);
 
 		this.setTimeLimit(timeCount);
 	}
@@ -130,6 +132,11 @@ public class EntityAIChastStatePanic extends EntityAIChast
 	public void stopTask()
 	{
 		this.setTimeLimit(0);
+	}
+
+	private boolean isIdleTime()
+	{
+		return (this.getTimeCount() < (2 * 20));
 	}
 
 	private void onPanicDropItem(EntityChast entityChast)
