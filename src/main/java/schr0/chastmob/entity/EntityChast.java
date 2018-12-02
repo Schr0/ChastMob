@@ -398,14 +398,14 @@ public class EntityChast extends EntityGolem
 
 		if (isServerWorld)
 		{
-			EntityLivingBase ownerEntity = this.getOwner();
+			EntityLivingBase owner = this.getOwner();
 
-			if (ownerEntity instanceof EntityPlayerMP)
+			if (owner instanceof EntityPlayerMP)
 			{
-				((EntityPlayerMP) ownerEntity).sendMessage(new TextComponentTranslation("entity.chast.goodbye", new Object[]
+				((EntityPlayerMP) owner).sendMessage(new TextComponentTranslation("entity.chast.goodbye", new Object[]
 				{
 						TextFormatting.ITALIC.BOLD + this.getName(),
-						TextFormatting.ITALIC.BOLD + ownerEntity.getName(),
+						TextFormatting.ITALIC.BOLD + owner.getName(),
 				}));
 			}
 

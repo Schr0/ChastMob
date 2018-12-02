@@ -23,8 +23,6 @@ public class ChastMobEvents
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	// TODO /* ======================================== MOD START =====================================*/
-
 	@SubscribeEvent
 	public void onLivingUpdateEvent(LivingUpdateEvent event)
 	{
@@ -65,6 +63,8 @@ public class ChastMobEvents
 			event.setCanceled(true);
 		}
 	}
+
+	// TODO /* ======================================== MOD START =====================================*/
 
 	private EnumHand getHandSoulBottleFullFriendly(EntityLivingBase entityLivingBase)
 	{

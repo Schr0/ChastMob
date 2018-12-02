@@ -5,11 +5,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.gui.ContainerChastInventory;
 import schr0.chastmob.gui.GuiChastInventory;
 
+@SideOnly(Side.CLIENT)
 public class ChastMobGuis implements IGuiHandler
 {
 

@@ -68,7 +68,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 		double minRange = (this.getRange() * this.getRange());
 
-		if ((this.targetOwner != null) && (this.getEntity().getDistanceSq(this.targetOwner) < minRange))
+		if ((this.targetOwner != null) && (minRange < this.getEntity().getDistanceSq(this.targetOwner)))
 		{
 			this.forceMoveToTargetEntity(this.targetOwner);
 		}

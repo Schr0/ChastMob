@@ -81,14 +81,15 @@ public class ChastMob
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		(new ChastMobPackets()).registerMessages();
-
 		(new ChastMobGuis()).registerGuis();
 
 		(new ChastMobEvents()).registerEvents();
 
+		(new ChastMobPackets()).registerMessages();
+
 		if (event.getSide().isClient())
 		{
+
 			(new ChastMobPackets()).registerMessagesClient();
 		}
 	}
