@@ -19,6 +19,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.packet.MessageParticleEntity;
@@ -37,6 +39,7 @@ public class ItemSoulBottleFull extends Item
 
 		this.addPropertyOverride(new ResourceLocation(NAME_FRIENDLY), new IItemPropertyGetter()
 		{
+			@SideOnly(Side.CLIENT)
 			@Override
 			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
 			{
@@ -50,16 +53,7 @@ public class ItemSoulBottleFull extends Item
 		});
 	}
 
-	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-	{
-		if (this.isInCreativeTab(tab))
-		{
-			items.add(new ItemStack(this, 1, MAX_DAMAGE));
-			items.add(new ItemStack(this, 1, 1));
-		}
-	}
-
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
@@ -78,6 +72,16 @@ public class ItemSoulBottleFull extends Item
 		info.getStyle().setItalic(true);
 
 		tooltip.add(info.getFormattedText());
+	}
+
+	@Override
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
+	{
+		if (this.isInCreativeTab(tab))
+		{
+			items.add(new ItemStack(this, 1, MAX_DAMAGE));
+			items.add(new ItemStack(this, 1, 1));
+		}
 	}
 
 	@Override

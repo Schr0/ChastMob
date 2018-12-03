@@ -37,6 +37,7 @@ public abstract class ItemChastHelmet extends Item
 		this.enchantability = material.getEnchantability();
 	}
 
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{

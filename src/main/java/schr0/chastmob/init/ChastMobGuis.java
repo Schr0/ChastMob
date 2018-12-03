@@ -12,7 +12,6 @@ import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.gui.ContainerChastInventory;
 import schr0.chastmob.gui.GuiChastInventory;
 
-@SideOnly(Side.CLIENT)
 public class ChastMobGuis implements IGuiHandler
 {
 
@@ -39,6 +38,7 @@ public class ChastMobGuis implements IGuiHandler
 		return null;
 	}
 
+	@SideOnly(Side.CLIENT)
 	@Override
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
 	{

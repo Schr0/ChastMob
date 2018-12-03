@@ -34,64 +34,54 @@ public class ModelChast extends ModelBase
 	{
 		this.textureWidth = WIDTH;
 		this.textureHeight = HEIGHT;
+		this.coverMain = new ModelRenderer(this, 0, 0);
+		this.coverMain.addBox(-7.0F, -5.0F, -14.0F, 14, 5, 14, 0.0F);
+		this.armRight = new ModelRenderer(this, 0, 48);
+		this.armRight.addBox(-1.0F, 0.0F, -1.0F, 2, 9, 2, 0.0F);
+		this.armLeft = new ModelRenderer(this, 8, 48);
+		this.armLeft.addBox(-1.0F, 0.0F, -1.0F, 2, 9, 2, 0.0F);
+		this.legLeft = new ModelRenderer(this, 24, 48);
+		this.legLeft.addBox(-1.0F, 0.0F, -1.0F, 2, 9, 2, 0.0F);
+		this.core = new ModelRenderer(this, 32, 48);
+		this.core.addBox(-2.0F, -2.0F, -1.0F, 4, 4, 2, 0.0F);
+		this.armourLower = new ModelRenderer(this, 64, 20);
+		this.armourLower.addBox(-7.5F, -2.5F, -7.5F, 15, 9, 15, 0.0F);
+		this.legRight = new ModelRenderer(this, 16, 48);
+		this.legRight.addBox(-1.0F, 0.0F, -1.0F, 2, 9, 2, 0.0F);
+		this.coverHandle = new ModelRenderer(this, 0, 0);
+		this.coverHandle.addBox(-1.0F, -2.0F, -15.0F, 2, 4, 1, 0.0F);
+		this.body = new ModelRenderer(this, 0, 19);
+		this.body.addBox(-7.0F, -4.0F, -7.0F, 14, 10, 14, 0.0F);
+		this.armourUpper = new ModelRenderer(this, 64, 0);
+		this.armourUpper.addBox(-7.5F, -6.5F, -14.5F, 15, 5, 15, 0.0F);
 
-		this.body = new ModelRenderer(this, 0, 19).addBox(-7F, -4F, -7F, 14, 10, 14);
 		this.body.setRotationPoint(0F, 10F, 0F);
 
-		this.core = new ModelRenderer(this, 32, 48).addBox(-2F, -2F, -1F, 4, 4, 2);
-		this.core.setRotationPoint(0F, 1F, -7F);
 		// 親：this.body.setRotationPoint(0F, 10F, 0F);
 		// 子：this.core.setRotationPoint(0F, 11F, -7F);
+		this.core.setRotationPoint(0F, 1F, -7F);
 
-		this.coverMain = new ModelRenderer(this, 0, 0).addBox(-7F, -5F, -14F, 14, 5, 14);
-		this.coverMain.setRotationPoint(0F, -4F, 7F);
 		// 親：this.body.setRotationPoint(0F, 10F, 0F);
 		// 子：this.coverMain.setRotationPoint(0F, 6F, 7F);
+		this.coverMain.setRotationPoint(0F, -4F, 7F);
 
-		this.coverHandle = new ModelRenderer(this, 0, 0).addBox(-1F, -2F, -15F, 2, 4, 1);
-		this.coverHandle.setRotationPoint(0F, 0F, 0F);
 		// 親：this.coverMain.setRotationPoint(0F, 6F, 7F);
 		// 子：this.coverHandle.setRotationPoint(0F, 6F, 7F);
+		this.coverHandle.setRotationPoint(0F, 0F, 0F);
 
-		this.armRight = new ModelRenderer(this, 0, 48).addBox(-1F, 0F, -1F, 2, 9, 2);
-		this.armRight.setRotationPoint(-7F, 8F, 0F);
-
-		this.armLeft = new ModelRenderer(this, 8, 48).addBox(-1F, 0F, -1F, 2, 9, 2);
-		this.armLeft.setRotationPoint(7F, 8F, 0F);
-
-		this.legRight = new ModelRenderer(this, 16, 48).addBox(-1F, 0F, -1F, 2, 9, 2);
-		this.legRight.setRotationPoint(-3F, 15F, 0F);
-
-		this.legLeft = new ModelRenderer(this, 24, 48).addBox(-1F, 0F, -1F, 2, 9, 2);
-		this.legLeft.setRotationPoint(3F, 15F, 0F);
-
-		this.armourUpper = new ModelRenderer(this, 64, 0).addBox(-7.5F, -6.5F, -14.5F, 15, 5, 15);
-		this.armourUpper.setRotationPoint(0F, 0F, 0F);
 		// 親：this.coverMain.setRotationPoint(0F, 6F, 7F);
 		// 子：this.armourUpper.setRotationPoint(0F, 6F, 7F);
+		this.armourUpper.setRotationPoint(0F, 0F, 0F);
 
-		this.armourLower = new ModelRenderer(this, 64, 20).addBox(-7.5F, -2.5F, -7.5F, 15, 9, 15);
-		this.armourLower.setRotationPoint(0F, 0F, 0F);
 		// 親：this.body.setRotationPoint(0F, 10F, 0F);
 		// 子：this.armourLower.setRotationPoint(0F, 10F, 0F);
+		this.armourLower.setRotationPoint(0F, 0F, 0F);
 
-		this.body.mirror = true;
-		this.core.mirror = true;
-		this.coverMain.mirror = true;
-		this.coverHandle.mirror = true;
-		this.armRight.mirror = true;
-		this.armLeft.mirror = true;
-		this.legRight.mirror = true;
-		this.legLeft.mirror = true;
-		this.armourUpper.mirror = true;
-		this.armourLower.mirror = true;
-
-		this.coverMain.addChild(this.coverHandle);
-		this.body.addChild(this.coverMain);
 		this.body.addChild(this.core);
-
-		this.coverMain.addChild(this.armourUpper);
+		this.body.addChild(this.coverMain);
 		this.body.addChild(this.armourLower);
+		this.coverMain.addChild(this.coverHandle);
+		this.coverMain.addChild(this.armourUpper);
 	}
 
 	@Override

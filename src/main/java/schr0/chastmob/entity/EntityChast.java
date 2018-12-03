@@ -778,26 +778,6 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public ChastCondition getCondition()
-	{
-		int health = (int) this.getHealth();
-		int healthMax = (int) this.getMaxHealth();
-
-		ChastCondition condition = ChastCondition.FINE;
-
-		if (health < (healthMax / 2))
-		{
-			condition = ChastCondition.HURT;
-
-			if (health < (healthMax / 4))
-			{
-				condition = ChastCondition.DYING;
-			}
-		}
-
-		return condition;
-	}
-
 	public InventoryChastMain getInventoryMain()
 	{
 		if (this.inventoryMain == null)
@@ -833,6 +813,26 @@ public class EntityChast extends EntityGolem
 		{
 			return ChastMode.FREEDOM;
 		}
+	}
+
+	public ChastCondition getCondition()
+	{
+		int health = (int) this.getHealth();
+		int healthMax = (int) this.getMaxHealth();
+
+		ChastCondition condition = ChastCondition.FINE;
+
+		if (health < (healthMax / 2))
+		{
+			condition = ChastCondition.HURT;
+
+			if (health < (healthMax / 4))
+			{
+				condition = ChastCondition.DYING;
+			}
+		}
+
+		return condition;
 	}
 
 	public void setSitting(boolean isSit)
