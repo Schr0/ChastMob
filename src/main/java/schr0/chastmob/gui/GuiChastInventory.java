@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -43,9 +44,10 @@ public class GuiChastInventory extends GuiContainer
 	{
 		super.initGui();
 
+		int buttonId = 0;
 		int buttonPosX = ((this.width - this.xSize) / 2) + 113;
 		int buttonPosY = ((this.height - this.ySize) / 2) + 39;
-		this.buttonChange = (GuiChastInventory.ChangeButton) this.addButton(new GuiChastInventory.ChangeButton(0, buttonPosX, buttonPosY));
+		this.buttonChange = (GuiChastInventory.ChangeButton) this.addButton(new GuiChastInventory.ChangeButton(buttonId, buttonPosX, buttonPosY));
 	}
 
 	@Override
@@ -53,19 +55,37 @@ public class GuiChastInventory extends GuiContainer
 	{
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(RES_CHAST_INVENTORY);
-
 		int originPosX = (this.width - this.xSize) / 2;
 		int originPosY = (this.height - this.ySize) / 2;
-		this.drawTexturedModalRect(originPosX, originPosY, 0, 0, this.xSize, this.ySize);
 
-		this.drawTexturedModalRect((originPosX + 89), (originPosY + 25), 184, this.getHealthTextureY(), this.getHealthBar(), 10);
+		int drawX = originPosX;
+		int drawY = originPosY;
+		int textureX = 0;
+		int textureY = 0;
+		int width = this.xSize;
+		int height = this.ySize;
+		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
+
+		drawX = (originPosX + 89);
+		drawY = (originPosY + 25);
+		textureX = 184;
+		textureY = this.getHealthTextureY();
+		width = this.getHealthBar();
+		height = 10;
+		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
 
 		ItemStack renderItem = entityChast.getMode().getIconItem();
-		this.itemRender.renderItemAndEffectIntoGUI(renderItem, (originPosX + 91), (originPosY + 44));
+		int xPosition = (originPosX + 91);
+		int yPosition = (originPosY + 44);
+		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);
 
 		int entityPosX = (originPosX + 51);
 		int entityPosY = (originPosY + 60);
-		GuiInventory.drawEntityOnScreen(entityPosX, entityPosY, 25, (float) (entityPosX - xMouse), (float) ((entityPosY / 2) - yMouse), this.entityChast);
+		int scale = 25;
+		float mouseX = (float) (entityPosX - xMouse);
+		float mouseY = (float) ((entityPosY / 2) - yMouse);
+		EntityLivingBase screenEntity = this.entityChast;
+		GuiInventory.drawEntityOnScreen(entityPosX, entityPosY, scale, mouseX, mouseY, screenEntity);
 	}
 
 	@Override

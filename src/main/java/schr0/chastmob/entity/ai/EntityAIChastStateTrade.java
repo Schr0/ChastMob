@@ -26,20 +26,12 @@ public class EntityAIChastStateTrade extends EntityAIChast
 	}
 
 	@Override
-	public void startExecuting()
-	{
-		super.startExecuting();
-
-		this.getEntity().setTrade(true);
-	}
-
-	@Override
 	public void resetTask()
 	{
 		super.resetTask();
 
-		this.getEntity().setTrade(false);
 		this.trader = null;
+		this.getEntity().setTrade(false);
 	}
 
 	@Override
@@ -55,12 +47,14 @@ public class EntityAIChastStateTrade extends EntityAIChast
 		if (trader != null)
 		{
 			this.trader = trader;
+			this.getEntity().setTrade(true);
 		}
 	}
 
 	public void stopTask()
 	{
 		this.trader = null;
+		this.getEntity().setTrade(false);
 	}
 
 }

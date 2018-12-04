@@ -910,7 +910,7 @@ public class EntityChast extends EntityGolem
 
 		if (soundEvent != null)
 		{
-			this.playSound(soundEvent, 1.0F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 		}
 
 		return true;

@@ -25,20 +25,12 @@ public class EntityAIChastStateSit extends EntityAIChast
 	}
 
 	@Override
-	public void startExecuting()
-	{
-		super.startExecuting();
-
-		this.getEntity().setSit(true);
-	}
-
-	@Override
 	public void resetTask()
 	{
 		super.resetTask();
 
-		this.getEntity().setSit(false);
 		this.isSitting = false;
+		this.getEntity().setSit(false);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -46,11 +38,13 @@ public class EntityAIChastStateSit extends EntityAIChast
 	public void startTask()
 	{
 		this.isSitting = true;
+		this.getEntity().setSit(true);
 	}
 
 	public void stopTask()
 	{
 		this.isSitting = false;
+		this.getEntity().setSit(false);
 	}
 
 }

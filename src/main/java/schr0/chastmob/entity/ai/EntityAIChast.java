@@ -93,19 +93,9 @@ public abstract class EntityAIChast extends EntityAIBase
 		return 5;
 	}
 
-	public int getTimeCount()
-	{
-		return this.timeCount;
-	}
-
 	public int getTimeLimit()
 	{
 		return (5 * 20);
-	}
-
-	public void setTimeLimit(int timeCount)
-	{
-		this.timeCount = timeCount;
 	}
 
 	public boolean isExecutingTime()

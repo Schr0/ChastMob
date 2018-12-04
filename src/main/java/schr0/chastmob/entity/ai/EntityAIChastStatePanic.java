@@ -17,6 +17,7 @@ import schr0.chastmob.inventory.InventoryChastMain;
 public class EntityAIChastStatePanic extends EntityAIChast
 {
 
+	private int panicTime;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
@@ -24,6 +25,7 @@ public class EntityAIChastStatePanic extends EntityAIChast
 	public EntityAIChastStatePanic(EntityChast entityChast)
 	{
 		super(entityChast);
+		this.panicTime = 0;
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
@@ -32,7 +34,7 @@ public class EntityAIChastStatePanic extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.isExecutingTime())
+		if (this.isPanic())
 		{
 			return true;
 		}
@@ -41,25 +43,15 @@ public class EntityAIChastStatePanic extends EntityAIChast
 	}
 
 	@Override
-	public void startExecuting()
-	{
-		super.startExecuting();
-
-		this.getEntity().setPanic(true);
-		this.randPosX = 0;
-		this.randPosY = 0;
-		this.randPosZ = 0;
-	}
-
-	@Override
 	public void resetTask()
 	{
 		super.resetTask();
 
-		this.getEntity().setPanic(false);
+		this.panicTime = 0;
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
+		this.getEntity().setPanic(false);
 	}
 
 	@Override
@@ -67,7 +59,9 @@ public class EntityAIChastStatePanic extends EntityAIChast
 	{
 		super.updateTask();
 
-		if (this.getEntity().isEquipHelmet() || this.isIdleTime())
+		--this.panicTime;
+
+		if (this.isIdle())
 		{
 			return;
 		}
@@ -121,22 +115,43 @@ public class EntityAIChastStatePanic extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public void startTask(int timeCount)
+	public void startTask(int sec)
 	{
-		timeCount = Math.max(2, timeCount);
-		timeCount = Math.min(8, timeCount);
+		if (!this.getEntity().isEquipHelmet())
+		{
+			sec = Math.max(4, sec);
+			sec = Math.min(8, sec);
 
-		this.setTimeLimit(timeCount);
+			this.panicTime = ((sec * 20) + this.getIdleTime());
+			this.randPosX = 0;
+			this.randPosY = 0;
+			this.randPosZ = 0;
+			this.getEntity().setPanic(true);
+		}
 	}
 
 	public void stopTask()
 	{
-		this.setTimeLimit(0);
+		this.panicTime = 0;
+		this.randPosX = 0;
+		this.randPosY = 0;
+		this.randPosZ = 0;
+		this.getEntity().setPanic(false);
 	}
 
-	private boolean isIdleTime()
+	private boolean isPanic()
 	{
-		return (this.getTimeCount() < (2 * 20));
+		return (0 < this.panicTime);
+	}
+
+	private int getIdleTime()
+	{
+		return (2 * 20);
+	}
+
+	private boolean isIdle()
+	{
+		return (this.panicTime < this.getIdleTime());
 	}
 
 	private void onPanicDropItem(EntityChast entityChast)

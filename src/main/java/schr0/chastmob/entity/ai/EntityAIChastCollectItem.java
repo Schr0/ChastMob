@@ -12,18 +12,23 @@ import schr0.chastmob.inventory.InventoryChastHelper;
 public class EntityAIChastCollectItem extends EntityAIChast
 {
 
+	private static final int OPEN_COUNT_LIMIT = 3;
+
 	private EntityItem targetEntityItem;
+	private int openCount;
 
 	public EntityAIChastCollectItem(EntityChast entityChast)
 	{
 		super(entityChast);
 		this.targetEntityItem = null;
+		this.openCount = 0;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
 		this.targetEntityItem = null;
+		this.openCount = 0;
 
 		float rangeOrigin = 0.0F;
 
@@ -40,6 +45,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 					if (InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), entityItem.getItem()))
 					{
 						this.targetEntityItem = entityItem;
+						this.openCount = OPEN_COUNT_LIMIT;
 
 						return true;
 					}
@@ -67,6 +73,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		super.resetTask();
 
 		this.targetEntityItem = null;
+		this.openCount = 0;
 	}
 
 	@Override
@@ -82,13 +89,19 @@ public class EntityAIChastCollectItem extends EntityAIChast
 			{
 				if (entityItem.equals(this.targetEntityItem) && this.canCollectEntityItem(entityItem))
 				{
-					TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getEntity().getInventoryMain(), entityItem);
-
 					this.getEntity().setCoverOpen(true);
 
-					this.targetEntityItem = null;
+					--this.openCount;
 
-					return;
+					if (this.openCount < 0)
+					{
+						TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getEntity().getInventoryMain(), entityItem);
+
+						this.targetEntityItem = null;
+						this.openCount = 0;
+
+						return;
+					}
 				}
 			}
 		}
