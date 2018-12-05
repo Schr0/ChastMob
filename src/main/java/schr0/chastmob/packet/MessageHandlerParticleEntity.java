@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.chastmob.util.ChastMobParticles;
 
 @SideOnly(Side.CLIENT)
 public class MessageHandlerParticleEntity implements IMessageHandler<MessageParticleEntity, IMessage>
@@ -26,15 +27,21 @@ public class MessageHandlerParticleEntity implements IMessageHandler<MessagePart
 		{
 			switch (message.getParticleType())
 			{
-				case 0 :
+				case ChastMobParticles.HEART :
 
 					particleHeart(world, world.rand, entity);
 
 					break;
 
-				case 1 :
+				case ChastMobParticles.DEFENSE :
 
 					particleDefense(world, world.rand, entity);
+
+					break;
+
+				case ChastMobParticles.MUSIC :
+
+					particleMusic(world, world.rand, entity);
 
 					break;
 			}
@@ -60,6 +67,12 @@ public class MessageHandlerParticleEntity implements IMessageHandler<MessagePart
 	{
 		double size = 1.25D;
 		world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, entity.posX + (double) (random.nextFloat() * entity.width * 2.0F) - (double) entity.width, entity.posY + (double) (random.nextFloat() * entity.height), entity.posZ + (double) (random.nextFloat() * entity.width * 2.0F) - (double) entity.width, size, 0.0D, 0.0D, new int[0]);
+	}
+
+	private static void particleMusic(World world, Random random, Entity entity)
+	{
+		double musicalScaleA = ((double) 7 / 24.0D);
+		world.spawnParticle(EnumParticleTypes.NOTE, entity.posX, (entity.posY + 1.5D), entity.posZ, musicalScaleA, 0.0D, 0.0D, new int[0]);
 	}
 
 }

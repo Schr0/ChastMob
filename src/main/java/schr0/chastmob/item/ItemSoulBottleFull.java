@@ -24,6 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.packet.MessageParticleEntity;
+import schr0.chastmob.util.ChastMobParticles;
 
 public class ItemSoulBottleFull extends Item
 {
@@ -133,7 +134,7 @@ public class ItemSoulBottleFull extends Item
 
 		if (stack.getItemDamage() == 0)
 		{
-			ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(entityIn, 0));
+			ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(entityIn, ChastMobParticles.HEART));
 
 			entityPlayer.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 		}
@@ -152,7 +153,7 @@ public class ItemSoulBottleFull extends Item
 
 		owner.setHeldItem(hand, new ItemStack(ChastMobItems.SOUL_BOTTLE));
 
-		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(owner, 0));
+		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(owner, ChastMobParticles.HEART));
 
 		owner.getEntityWorld().playSound((EntityPlayer) null, owner.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, owner.getSoundCategory(), 1.0F, 1.0F);
 	}

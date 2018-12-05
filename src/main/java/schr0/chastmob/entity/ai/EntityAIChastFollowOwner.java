@@ -19,26 +19,24 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		this.targetOwner = null;
-
-		if (this.getMode() == ChastMode.FREEDOM)
+		if (this.getMode() == ChastMode.FOLLOW)
 		{
-			return false;
-		}
+			this.targetOwner = null;
 
-		EntityLivingBase owner = this.getEntity().getOwner();
+			EntityLivingBase owner = this.getEntity().getOwner();
 
-		if (this.canFollowEntityLivingBase(owner))
-		{
-			if (this.getEntity().getDistanceSq(owner) < this.getRange())
+			if (this.canFollowEntityLivingBase(owner))
 			{
-				return false;
-			}
-			else
-			{
-				this.targetOwner = owner;
+				if (this.getEntity().getDistanceSq(owner) < this.getRange())
+				{
+					return false;
+				}
+				else
+				{
+					this.targetOwner = owner;
 
-				return true;
+					return true;
+				}
 			}
 		}
 
@@ -48,17 +46,12 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	@Override
 	public boolean shouldContinueExecuting()
 	{
-		if (this.getMode() != ChastMode.FOLLOW)
+		if (this.isTimeOut())
 		{
 			return false;
 		}
 
-		if (this.targetOwner != null)
-		{
-			return this.isExecutingTime();
-		}
-
-		return false;
+		return (this.targetOwner != null);
 	}
 
 	@Override

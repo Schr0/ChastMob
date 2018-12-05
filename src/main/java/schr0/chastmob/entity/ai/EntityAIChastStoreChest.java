@@ -13,12 +13,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.inventory.InventoryChastHelper;
 import schr0.chastmob.inventory.InventoryChastMain;
+import schr0.chastmob.packet.MessageParticleEntity;
+import schr0.chastmob.util.ChastMobParticles;
 
 public class EntityAIChastStoreChest extends EntityAIChast
 {
 
+	private static final double STORE_DISTANCE = 2.5D;
 	private TileEntityChest targetChest;
 
 	public EntityAIChastStoreChest(EntityChast entityChast)
@@ -30,22 +34,20 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		this.targetChest = null;
-
-		if (this.getMode() == ChastMode.FOLLOW)
+		if (this.getMode() == ChastMode.FREEDOM)
 		{
-			return false;
-		}
+			this.targetChest = null;
 
-		if (!InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), ItemStack.EMPTY))
-		{
-			TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getEntity(), this.getRange());
-
-			if (this.canStoringTileEntityChest(nearOpenChest))
+			if (!InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), ItemStack.EMPTY))
 			{
-				this.targetChest = nearOpenChest;
+				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getEntity(), this.getRange());
 
-				return true;
+				if (this.canStoringTileEntityChest(nearOpenChest))
+				{
+					this.targetChest = nearOpenChest;
+
+					return true;
+				}
 			}
 		}
 
@@ -55,12 +57,20 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean shouldContinueExecuting()
 	{
-		if (this.targetChest != null)
+		if (this.isTimeOut())
 		{
-			return this.isExecutingTime();
+			return false;
 		}
 
-		return false;
+		return (this.targetChest != null);
+	}
+
+	@Override
+	public void startExecuting()
+	{
+		super.startExecuting();
+
+		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(this.getEntity(), ChastMobParticles.MUSIC));
 	}
 
 	@Override
@@ -85,7 +95,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		this.getEntity().getLookHelper().setLookPosition(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 10.0F, this.getEntity().getVerticalFaceSpeed());
 
-		if (this.getEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
+		if (this.getEntity().getDistanceSqToCenter(targetBlockPos) < STORE_DISTANCE)
 		{
 			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getEntity(), this.getRange());
 

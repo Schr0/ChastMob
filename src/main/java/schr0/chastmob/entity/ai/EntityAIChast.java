@@ -19,12 +19,12 @@ public abstract class EntityAIChast extends EntityAIBase
 {
 
 	private EntityChast entityChast;
-	private int timeCount;
+	private int timer;
 
 	public EntityAIChast(EntityChast entityChast)
 	{
 		this.entityChast = entityChast;
-		this.timeCount = 0;
+		this.timer = 0;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public abstract class EntityAIChast extends EntityAIBase
 	{
 		this.entityChast.getNavigator().clearPath();
 		this.entityChast.setCoverOpen(false);
-		this.timeCount = this.getTimeLimit();
+		this.timer = this.getTimeLimit();
 	}
 
 	@Override
@@ -40,13 +40,13 @@ public abstract class EntityAIChast extends EntityAIBase
 	{
 		this.entityChast.getNavigator().clearPath();
 		this.entityChast.setCoverOpen(false);
-		this.timeCount = 0;
+		this.timer = 0;
 	}
 
 	@Override
 	public void updateTask()
 	{
-		--this.timeCount;
+		--this.timer;
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -68,19 +68,17 @@ public abstract class EntityAIChast extends EntityAIBase
 
 	public BlockPos getHomePosition()
 	{
-		BlockPos homePosition = this.entityChast.getPosition();
-
 		if (this.entityChast.getMode() == ChastMode.FOLLOW)
 		{
 			EntityLivingBase ownerEntity = this.entityChast.getOwner();
 
 			if (this.entityChast.isTamed() && (ownerEntity != null))
 			{
-				homePosition = ownerEntity.getPosition();
+				return ownerEntity.getPosition();
 			}
 		}
 
-		return homePosition;
+		return this.entityChast.getPosition();
 	}
 
 	public double getSpeed()
@@ -98,9 +96,9 @@ public abstract class EntityAIChast extends EntityAIBase
 		return (5 * 20);
 	}
 
-	public boolean isExecutingTime()
+	public boolean isTimeOut()
 	{
-		return (0 < this.timeCount);
+		return (this.timer < 0);
 	}
 
 	public boolean canBlockBeSeen(BlockPos blockPos)

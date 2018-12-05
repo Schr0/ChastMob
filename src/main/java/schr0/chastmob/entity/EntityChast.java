@@ -13,6 +13,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.passive.EntityOcelot;
@@ -46,12 +47,12 @@ import schr0.chastmob.entity.ai.EntityAIChastStatePanic;
 import schr0.chastmob.entity.ai.EntityAIChastStateSit;
 import schr0.chastmob.entity.ai.EntityAIChastStateTrade;
 import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
-import schr0.chastmob.entity.ai.EntityAIChastWander;
 import schr0.chastmob.init.ChastMobGuis;
 import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.inventory.InventoryChastEquipments;
 import schr0.chastmob.inventory.InventoryChastMain;
 import schr0.chastmob.packet.MessageParticleEntity;
+import schr0.chastmob.util.ChastMobParticles;
 
 public class EntityChast extends EntityGolem
 {
@@ -104,9 +105,9 @@ public class EntityChast extends EntityGolem
 		EntityAIBase aiStoreChest = new EntityAIChastStoreChest(this);
 		EntityAIBase aiCollectItem = new EntityAIChastCollectItem(this);
 		EntityAIBase aiFollowOwner = new EntityAIChastFollowOwner(this);
-		EntityAIBase aiWander = new EntityAIChastWander(this);
-		EntityAIBase aiWatchClosestEntityPlayer = new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F);
-		EntityAIBase aiWatchClosestEntityGolem = new EntityAIWatchClosest(this, EntityGolem.class, 6.0F);
+		EntityAIBase aiWanderAvoidWater = new EntityAIWanderAvoidWater(this, 1.0D);;
+		EntityAIBase aiWatchClosestPlayer = new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F);
+		EntityAIBase aiWatchClosestGolem = new EntityAIWatchClosest(this, EntityGolem.class, 6.0F);
 		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
 
 		aiSwimming.setMutexBits(0);
@@ -116,9 +117,9 @@ public class EntityChast extends EntityGolem
 		aiStoreChest.setMutexBits(1);
 		aiCollectItem.setMutexBits(1);
 		aiFollowOwner.setMutexBits(1);
-		aiWander.setMutexBits(1);
-		aiWatchClosestEntityPlayer.setMutexBits(2);
-		aiWatchClosestEntityGolem.setMutexBits(3);
+		aiWanderAvoidWater.setMutexBits(1);
+		aiWatchClosestPlayer.setMutexBits(2);
+		aiWatchClosestGolem.setMutexBits(3);
 		aiLookIdle.setMutexBits(4);
 
 		this.tasks.addTask(0, aiSwimming);
@@ -128,9 +129,9 @@ public class EntityChast extends EntityGolem
 		this.tasks.addTask(4, aiStoreChest);
 		this.tasks.addTask(5, aiCollectItem);
 		this.tasks.addTask(6, aiFollowOwner);
-		this.tasks.addTask(7, aiWander);
-		this.tasks.addTask(8, aiWatchClosestEntityPlayer);
-		this.tasks.addTask(8, aiWatchClosestEntityGolem);
+		this.tasks.addTask(7, aiWanderAvoidWater);
+		this.tasks.addTask(8, aiWatchClosestPlayer);
+		this.tasks.addTask(8, aiWatchClosestGolem);
 		this.tasks.addTask(9, aiLookIdle);
 	}
 
@@ -373,7 +374,7 @@ public class EntityChast extends EntityGolem
 				{
 					this.playSound(SoundEvents.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.5F, (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F + 1.0F);
 
-					ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(this, 1));
+					ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(this, ChastMobParticles.DEFENSE));
 				}
 
 				return false;
@@ -485,7 +486,7 @@ public class EntityChast extends EntityGolem
 					this.setSitting(!this.isSit());
 				}
 
-				return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
+				return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP);
 			}
 			else
 			{
@@ -501,7 +502,7 @@ public class EntityChast extends EntityGolem
 		{
 			this.onSpawnByPlayer(player);
 
-			return this.onSuccessProcessInteract(player, (SoundEvent) null);
+			return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_PLAYER_LEVELUP);
 		}
 	}
 
@@ -899,7 +900,7 @@ public class EntityChast extends EntityGolem
 			}));
 		}
 
-		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(this, 0));
+		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(this, ChastMobParticles.HEART));
 
 		this.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 	}
@@ -910,7 +911,7 @@ public class EntityChast extends EntityGolem
 
 		if (soundEvent != null)
 		{
-			this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
+			this.playSound(soundEvent, 0.5F, 1.0F);
 		}
 
 		return true;
