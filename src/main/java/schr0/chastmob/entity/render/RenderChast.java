@@ -22,10 +22,10 @@ public class RenderChast extends RenderLiving<EntityChast>
 	public RenderChast(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn)
 	{
 		super(renderManagerIn, modelBaseIn, shadowSizeIn);
+		this.addLayer(new LayerChastHeldItem(this));
+		this.addLayer(new LayerChastHelmet(this));
 		this.addLayer(new LayerChastCore(this));
 		this.addLayer(new LayerChastArm(this));
-		this.addLayer(new LayerChastHelmet(this));
-		this.addLayer(new LayerChastHeldItem(this));
 	}
 
 	@Override

@@ -19,8 +19,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.init.ChastMobPackets;
-import schr0.chastmob.packet.MessageParticleEntity;
 import schr0.chastmob.util.ChastMobParticles;
 
 public class ItemSoulFragment extends Item
@@ -105,7 +103,7 @@ public class ItemSoulFragment extends Item
 
 		target.heal(2.0F);
 
-		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(target, ChastMobParticles.HEART));
+		ChastMobParticles.spawnParticleHeart(target);
 
 		target.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 	}

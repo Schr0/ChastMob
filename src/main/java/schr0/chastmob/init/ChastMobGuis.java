@@ -17,7 +17,7 @@ public class ChastMobGuis implements IGuiHandler
 
 	public static final int ID_CHAST_INVENTORY = 0;
 
-	public void registerGuis()
+	public void register()
 	{
 		NetworkRegistry.INSTANCE.registerGuiHandler(ChastMob.instance, this);
 	}

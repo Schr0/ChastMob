@@ -19,12 +19,12 @@ public abstract class EntityAIChast extends EntityAIBase
 {
 
 	private EntityChast entityChast;
-	private int timer;
+	private int time;
 
 	public EntityAIChast(EntityChast entityChast)
 	{
 		this.entityChast = entityChast;
-		this.timer = 0;
+		this.time = 0;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public abstract class EntityAIChast extends EntityAIBase
 	{
 		this.entityChast.getNavigator().clearPath();
 		this.entityChast.setCoverOpen(false);
-		this.timer = this.getTimeLimit();
+		this.time = this.getTimeLimit();
 	}
 
 	@Override
@@ -40,13 +40,13 @@ public abstract class EntityAIChast extends EntityAIBase
 	{
 		this.entityChast.getNavigator().clearPath();
 		this.entityChast.setCoverOpen(false);
-		this.timer = 0;
+		this.time = 0;
 	}
 
 	@Override
 	public void updateTask()
 	{
-		--this.timer;
+		--this.time;
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -98,7 +98,7 @@ public abstract class EntityAIChast extends EntityAIBase
 
 	public boolean isTimeOut()
 	{
-		return (this.timer < 0);
+		return (this.time < 0);
 	}
 
 	public boolean canBlockBeSeen(BlockPos blockPos)

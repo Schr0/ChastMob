@@ -41,10 +41,4 @@ public class EntityAIChastStateSit extends EntityAIChast
 		this.getEntity().setSit(true);
 	}
 
-	public void stopTask()
-	{
-		this.isSitting = false;
-		this.getEntity().setSit(false);
-	}
-
 }

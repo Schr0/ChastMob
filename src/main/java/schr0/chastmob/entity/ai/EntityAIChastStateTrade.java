@@ -51,10 +51,4 @@ public class EntityAIChastStateTrade extends EntityAIChast
 		}
 	}
 
-	public void stopTask()
-	{
-		this.trader = null;
-		this.getEntity().setTrade(false);
-	}
-
 }

@@ -39,9 +39,9 @@ public class MessageHandlerParticleEntity implements IMessageHandler<MessagePart
 
 					break;
 
-				case ChastMobParticles.MUSIC :
+				case ChastMobParticles.NOTE :
 
-					particleMusic(world, world.rand, entity);
+					particleNote(world, world.rand, entity);
 
 					break;
 			}
@@ -69,10 +69,10 @@ public class MessageHandlerParticleEntity implements IMessageHandler<MessagePart
 		world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, entity.posX + (double) (random.nextFloat() * entity.width * 2.0F) - (double) entity.width, entity.posY + (double) (random.nextFloat() * entity.height), entity.posZ + (double) (random.nextFloat() * entity.width * 2.0F) - (double) entity.width, size, 0.0D, 0.0D, new int[0]);
 	}
 
-	private static void particleMusic(World world, Random random, Entity entity)
+	private static void particleNote(World world, Random random, Entity entity)
 	{
 		double musicalScaleA = ((double) 7 / 24.0D);
-		world.spawnParticle(EnumParticleTypes.NOTE, entity.posX, (entity.posY + 1.5D), entity.posZ, musicalScaleA, 0.0D, 0.0D, new int[0]);
+		world.spawnParticle(EnumParticleTypes.NOTE, entity.posX, (entity.posY + 1.55D), entity.posZ, musicalScaleA, 0.0D, 0.0D);
 	}
 
 }

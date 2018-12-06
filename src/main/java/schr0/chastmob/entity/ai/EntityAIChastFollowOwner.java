@@ -25,7 +25,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 			EntityLivingBase owner = this.getEntity().getOwner();
 
-			if (this.canFollowEntityLivingBase(owner))
+			if (this.canFollowOwner(owner))
 			{
 				if (this.getEntity().getDistanceSq(owner) < this.getRange())
 				{
@@ -88,11 +88,11 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private boolean canFollowEntityLivingBase(EntityLivingBase entityLivingBase)
+	private boolean canFollowOwner(EntityLivingBase owner)
 	{
-		if ((entityLivingBase instanceof EntityPlayer) && !((EntityPlayer) entityLivingBase).isSpectator())
+		if (owner instanceof EntityPlayer)
 		{
-			return true;
+			return !((EntityPlayer) owner).isSpectator();
 		}
 
 		return false;

@@ -18,7 +18,7 @@ import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobEvents;
 import schr0.chastmob.init.ChastMobGuis;
 import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.init.ChastMobPackets;
+import schr0.chastmob.init.ChastMobMessages;
 
 @Mod(modid = ChastMob.MOD_ID, name = ChastMob.MOD_NAME, version = ChastMob.MOD_VERSION)
 public class ChastMob
@@ -81,16 +81,16 @@ public class ChastMob
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		(new ChastMobGuis()).registerGuis();
+		(new ChastMobGuis()).register();
 
-		(new ChastMobEvents()).registerEvents();
+		(new ChastMobEvents()).register();
 
-		(new ChastMobPackets()).registerMessages();
+		(new ChastMobMessages()).register();
 
 		if (event.getSide().isClient())
 		{
 
-			(new ChastMobPackets()).registerMessagesClient();
+			(new ChastMobMessages()).registerClient();
 		}
 	}
 

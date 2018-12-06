@@ -7,16 +7,14 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.inventory.InventoryChastHelper;
-import schr0.chastmob.packet.MessageParticleEntity;
 import schr0.chastmob.util.ChastMobParticles;
 
 public class EntityAIChastCollectItem extends EntityAIChast
 {
 
 	private static final double COLLECT_DISTANCE = 1.5D;
-	private static final int OPEN_COUNT_LIMIT = 2;
+	private static final int OPEN_COUNT_LIMIT = 3;
 	private EntityItem targetEntityItem;
 	private int openCount;
 
@@ -75,7 +73,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		super.startExecuting();
 
-		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(this.getEntity(), ChastMobParticles.MUSIC));
+		ChastMobParticles.spawnParticleNote(this.getEntity());
 	}
 
 	@Override

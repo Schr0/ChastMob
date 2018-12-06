@@ -18,7 +18,7 @@ import schr0.chastmob.util.EntityAIOcelotSitChast;
 public class ChastMobEvents
 {
 
-	public void registerEvents()
+	public void register()
 	{
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -53,12 +53,12 @@ public class ChastMobEvents
 	public void onLivingDeathEvent(LivingDeathEvent event)
 	{
 		EntityLivingBase target = event.getEntityLiving();
-		EnumHand handItemSoulBottleFullFriendly = this.getHandSoulBottleFullFriendly(target);
-		ItemStack stackHeldItem = target.getHeldItem(handItemSoulBottleFullFriendly);
+		EnumHand handItemSBFF = this.getHandSoulBottleFullFriendly(target);
+		ItemStack stackHeldItem = target.getHeldItem(handItemSBFF);
 
 		if (this.isItemSoulBottleFullFriendly(stackHeldItem))
 		{
-			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handItemSoulBottleFullFriendly, target);
+			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handItemSBFF, target);
 
 			event.setCanceled(true);
 		}

@@ -1,5 +1,7 @@
 package schr0.chastmob.entity.ai;
 
+import java.util.Random;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
@@ -14,27 +16,27 @@ import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.inventory.InventoryChastEquipments;
 import schr0.chastmob.inventory.InventoryChastMain;
 
-public class EntityAIChastStatePanic extends EntityAIChast
+public class EntityAIChastStateDamage extends EntityAIChast
 {
 
-	private int panicTime;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
+	private int damageTime;
 
-	public EntityAIChastStatePanic(EntityChast entityChast)
+	public EntityAIChastStateDamage(EntityChast entityChast)
 	{
 		super(entityChast);
-		this.panicTime = 0;
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
+		this.damageTime = 0;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.isPanic())
+		if (0 < this.damageTime)
 		{
 			return true;
 		}
@@ -47,11 +49,11 @@ public class EntityAIChastStatePanic extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.panicTime = 0;
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
-		this.getEntity().setPanic(false);
+		this.damageTime = 0;
+		this.getEntity().setDamage(false);
 	}
 
 	@Override
@@ -59,9 +61,9 @@ public class EntityAIChastStatePanic extends EntityAIChast
 	{
 		super.updateTask();
 
-		--this.panicTime;
+		--this.damageTime;
 
-		if (this.isIdle())
+		if (this.isIdle() || this.getEntity().isEquipHelmet())
 		{
 			return;
 		}
@@ -117,31 +119,14 @@ public class EntityAIChastStatePanic extends EntityAIChast
 
 	public void startTask(int sec)
 	{
-		if (!this.getEntity().isEquipHelmet())
-		{
-			sec = Math.max(4, sec);
-			sec = Math.min(8, sec);
+		sec = Math.max(4, sec);
+		sec = Math.min(8, sec);
 
-			this.panicTime = ((sec * 20) + this.getIdleTime());
-			this.randPosX = 0;
-			this.randPosY = 0;
-			this.randPosZ = 0;
-			this.getEntity().setPanic(true);
-		}
-	}
-
-	public void stopTask()
-	{
-		this.panicTime = 0;
+		this.damageTime = ((sec * 20) + this.getIdleTime());
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
-		this.getEntity().setPanic(false);
-	}
-
-	private boolean isPanic()
-	{
-		return (0 < this.panicTime);
+		this.getEntity().setDamage(true);
 	}
 
 	private int getIdleTime()
@@ -151,16 +136,17 @@ public class EntityAIChastStatePanic extends EntityAIChast
 
 	private boolean isIdle()
 	{
-		return (this.panicTime < this.getIdleTime());
+		return (this.damageTime < this.getIdleTime());
 	}
 
 	private void onPanicDropItem(EntityChast entityChast)
 	{
 		InventoryChastEquipments inventoryChastEquipment = entityChast.getInventoryEquipments();
+		Random random = entityChast.getRNG();
 
 		for (int slot = 0; slot < inventoryChastEquipment.getSizeInventory(); ++slot)
 		{
-			if ((slot == 0) || (slot == 3))
+			if (slot == 0)
 			{
 				continue;
 			}
@@ -169,7 +155,7 @@ public class EntityAIChastStatePanic extends EntityAIChast
 
 			if (!stackSlot.isEmpty())
 			{
-				if (entityChast.getRNG().nextInt(2) == 0)
+				if (random.nextFloat() < 0.5F)
 				{
 					continue;
 				}
@@ -196,7 +182,7 @@ public class EntityAIChastStatePanic extends EntityAIChast
 
 			if (!stackSlot.isEmpty())
 			{
-				if (entityChast.getRNG().nextInt(2) == 0)
+				if (random.nextFloat() < 0.5F)
 				{
 					continue;
 				}

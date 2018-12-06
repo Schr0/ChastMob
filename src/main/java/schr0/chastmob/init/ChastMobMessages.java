@@ -10,7 +10,7 @@ import schr0.chastmob.packet.MessageHandlerGuiChastInventory;
 import schr0.chastmob.packet.MessageHandlerParticleEntity;
 import schr0.chastmob.packet.MessageParticleEntity;
 
-public class ChastMobPackets
+public class ChastMobMessages
 {
 
 	public static final String CHANNEL_NAME = ChastMob.MOD_ID;
@@ -20,13 +20,13 @@ public class ChastMobPackets
 	public static final int ID_GUI_BUTTON_CHANGE = 1;
 	public static final int ID_GUI_BUTTON_EDIT = 2;
 
-	public void registerMessages()
+	public void register()
 	{
 		DISPATCHER.registerMessage(MessageHandlerGuiChastInventory.class, MessageGuiChastInventory.class, ID_GUI_BUTTON_CHANGE, Side.SERVER);
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void registerMessagesClient()
+	public void registerClient()
 	{
 		DISPATCHER.registerMessage(MessageHandlerParticleEntity.class, MessageParticleEntity.class, ID_PARTICLE_ENTITY, Side.CLIENT);
 	}

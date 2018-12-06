@@ -24,7 +24,7 @@ public abstract class InventoryChast extends InventoryBasic
 	{
 		if (this.entityChast.isEntityAlive())
 		{
-			if (this.entityChast.isPanic())
+			if (this.entityChast.isDamage())
 			{
 				return false;
 			}

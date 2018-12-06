@@ -13,10 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.init.ChastMobPackets;
 import schr0.chastmob.inventory.InventoryChastHelper;
 import schr0.chastmob.inventory.InventoryChastMain;
-import schr0.chastmob.packet.MessageParticleEntity;
 import schr0.chastmob.util.ChastMobParticles;
 
 public class EntityAIChastStoreChest extends EntityAIChast
@@ -70,7 +68,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		super.startExecuting();
 
-		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(this.getEntity(), ChastMobParticles.MUSIC));
+		ChastMobParticles.spawnParticleNote(this.getEntity());
 	}
 
 	@Override

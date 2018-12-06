@@ -17,7 +17,7 @@ public class InventoryChastMain extends InventoryChast
 	{
 		super.markDirty();
 
-		this.getContainerEntityChast().setTrading(player);
+		this.getContainerEntityChast().setTradeAI(player);
 
 		this.getContainerEntityChast().playSound(SoundEvents.BLOCK_CHEST_OPEN, 0.5F, this.getContainerEntityChast().getRNG().nextFloat() * 0.1F + 0.9F);
 	}
@@ -27,7 +27,7 @@ public class InventoryChastMain extends InventoryChast
 	{
 		super.markDirty();
 
-		this.getContainerEntityChast().setTrading(null);
+		this.getContainerEntityChast().setTradeAI(null);
 
 		this.getContainerEntityChast().playSound(SoundEvents.BLOCK_CHEST_CLOSE, 0.5F, this.getContainerEntityChast().getRNG().nextFloat() * 0.1F + 0.9F);
 	}
