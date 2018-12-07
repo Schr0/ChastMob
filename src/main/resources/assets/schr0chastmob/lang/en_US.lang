@@ -24,9 +24,13 @@ item.chast_helmet_diamond.name=Diamond Chast Helmet
 item.chast_helmet_gold.name=Gold Chast Helmet
 item.chast_helmet.tooltip=Chast can equip.
 
+item.home_map.name=Home Map
+item.home_map.tooltip=Let's right click on the "Chest".
+
 // ======================================== ENTITY ===================================== //
 entity.chast.name=Chast
 entity.chast.thanks=%s " Thanks, %s ! "
 entity.chast.goodbye=%s " Goodbye, %s ... "
 entity.chast.aimode.freedom=FREEDOM
 entity.chast.aimode.follow=FOLLOW
+entity.chast.aimode.patrol=PATROL

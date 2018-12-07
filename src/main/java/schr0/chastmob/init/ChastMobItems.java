@@ -21,6 +21,7 @@ import schr0.chastmob.item.ItemChastHelmetIron;
 import schr0.chastmob.item.ItemChastHelmetStone;
 import schr0.chastmob.item.ItemChastHelmetWood;
 import schr0.chastmob.item.ItemCore;
+import schr0.chastmob.item.ItemHomeMap;
 import schr0.chastmob.item.ItemSoulBottle;
 import schr0.chastmob.item.ItemSoulBottleFull;
 import schr0.chastmob.item.ItemSoulFragment;
@@ -38,6 +39,7 @@ public class ChastMobItems
 	public static final Item CHAST_HELMET_IRON;
 	public static final Item CHAST_HELMET_DIAMOND;
 	public static final Item CHAST_HELMET_GOLD;
+	public static final Item HOME_MAP;
 
 	public static final String NAME_SOUL_BOTTLE = "soul_bottle";
 	public static final String NAME_SOUL_BOTTLE_FULL = "soul_bottle_full";
@@ -48,6 +50,7 @@ public class ChastMobItems
 	public static final String NAME_CHAST_HELMET_IRON = "chast_helmet_iron";
 	public static final String NAME_CHAST_HELMET_DIAMOND = "chast_helmet_diamond";
 	public static final String NAME_CHAST_HELMET_GOLD = "chast_helmet_gold";
+	public static final String NAME_HOME_MAP = "home_map";
 
 	static
 	{
@@ -60,6 +63,7 @@ public class ChastMobItems
 		CHAST_HELMET_IRON = new ItemChastHelmetIron().setUnlocalizedName(NAME_CHAST_HELMET_IRON).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		CHAST_HELMET_DIAMOND = new ItemChastHelmetDiamond().setUnlocalizedName(NAME_CHAST_HELMET_DIAMOND).setCreativeTab(ChastMobCreativeTabs.ITEM);
 		CHAST_HELMET_GOLD = new ItemChastHelmetGold().setUnlocalizedName(NAME_CHAST_HELMET_GOLD).setCreativeTab(ChastMobCreativeTabs.ITEM);
+		HOME_MAP = new ItemHomeMap().setUnlocalizedName(NAME_HOME_MAP).setCreativeTab(ChastMobCreativeTabs.ITEM);
 	}
 
 	public void registerItems(IForgeRegistry<Item> registry)
@@ -73,6 +77,7 @@ public class ChastMobItems
 		registerItem(registry, CHAST_HELMET_IRON, NAME_CHAST_HELMET_IRON);
 		registerItem(registry, CHAST_HELMET_DIAMOND, NAME_CHAST_HELMET_DIAMOND);
 		registerItem(registry, CHAST_HELMET_GOLD, NAME_CHAST_HELMET_GOLD);
+		registerItem(registry, HOME_MAP, NAME_HOME_MAP);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -87,6 +92,7 @@ public class ChastMobItems
 		registerModel(CHAST_HELMET_IRON);
 		registerModel(CHAST_HELMET_GOLD);
 		registerModel(CHAST_HELMET_DIAMOND);
+		registerModel(HOME_MAP);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

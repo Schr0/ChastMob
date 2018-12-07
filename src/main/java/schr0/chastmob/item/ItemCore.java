@@ -52,7 +52,7 @@ public class ItemCore extends Item
 		if ((worldIn.getBlockState(pos).getBlock() == Blocks.CHEST) && (tileEntity instanceof TileEntityChest))
 		{
 			EntityChast entityChast = new EntityChast(worldIn);
-			IInventory inventoryTileChest = (IInventory) tileEntity;
+			IInventory inventory = (IInventory) tileEntity;
 
 			entityChast.setPositionAndRotation(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0F, 0.0F);
 
@@ -64,16 +64,16 @@ public class ItemCore extends Item
 
 			entityChast.onSpawnByPlayer(player);
 
-			for (int slot = 0; slot < inventoryTileChest.getSizeInventory(); ++slot)
+			for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
 			{
-				ItemStack stackTileChest = inventoryTileChest.getStackInSlot(slot);
+				ItemStack stackTileChest = inventory.getStackInSlot(slot);
 
 				if (!stackTileChest.isEmpty())
 				{
 					entityChast.getInventoryMain().setInventorySlotContents(slot, stackTileChest);
 				}
 
-				inventoryTileChest.setInventorySlotContents(slot, ItemStack.EMPTY);
+				inventory.setInventorySlotContents(slot, ItemStack.EMPTY);
 			}
 
 			if (!worldIn.isRemote)

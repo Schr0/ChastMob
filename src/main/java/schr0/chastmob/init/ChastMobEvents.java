@@ -53,10 +53,10 @@ public class ChastMobEvents
 	public void onLivingDeathEvent(LivingDeathEvent event)
 	{
 		EntityLivingBase target = event.getEntityLiving();
-		EnumHand handItemSBFF = this.getHandSoulBottleFullFriendly(target);
+		EnumHand handItemSBFF = this.getHandItemSBFF(target);
 		ItemStack stackHeldItem = target.getHeldItem(handItemSBFF);
 
-		if (this.isItemSoulBottleFullFriendly(stackHeldItem))
+		if (this.isItemSBFF(stackHeldItem))
 		{
 			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handItemSBFF, target);
 
@@ -66,9 +66,9 @@ public class ChastMobEvents
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private EnumHand getHandSoulBottleFullFriendly(EntityLivingBase entityLivingBase)
+	private EnumHand getHandItemSBFF(EntityLivingBase entityLivingBase)
 	{
-		if (this.isItemSoulBottleFullFriendly(entityLivingBase.getHeldItemOffhand()))
+		if (this.isItemSBFF(entityLivingBase.getHeldItemMainhand()))
 		{
 			return EnumHand.OFF_HAND;
 		}
@@ -76,7 +76,7 @@ public class ChastMobEvents
 		return EnumHand.MAIN_HAND;
 	}
 
-	private boolean isItemSoulBottleFullFriendly(ItemStack stack)
+	private boolean isItemSBFF(ItemStack stack)
 	{
 		if ((stack.getItem() instanceof ItemSoulBottleFull) && (stack.getItemDamage() == 0))
 		{

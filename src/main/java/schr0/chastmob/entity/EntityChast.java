@@ -34,6 +34,7 @@ import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -43,6 +44,7 @@ import schr0.chastmob.ChastMob;
 import schr0.chastmob.api.ItemChastHelmet;
 import schr0.chastmob.entity.ai.EntityAIChastCollectItem;
 import schr0.chastmob.entity.ai.EntityAIChastFollowOwner;
+import schr0.chastmob.entity.ai.EntityAIChastGoHome;
 import schr0.chastmob.entity.ai.EntityAIChastStateDamage;
 import schr0.chastmob.entity.ai.EntityAIChastStateSit;
 import schr0.chastmob.entity.ai.EntityAIChastStateTrade;
@@ -50,6 +52,7 @@ import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
 import schr0.chastmob.init.ChastMobGuis;
 import schr0.chastmob.inventory.InventoryChastEquipments;
 import schr0.chastmob.inventory.InventoryChastMain;
+import schr0.chastmob.item.ItemHomeMap;
 import schr0.chastmob.util.ChastMobParticles;
 
 public class EntityChast extends EntityGolem
@@ -100,6 +103,7 @@ public class EntityChast extends EntityGolem
 		this.aiStateDamage = new EntityAIChastStateDamage(this);
 		this.aiStateSit = new EntityAIChastStateSit(this);
 		this.aiStateTrade = new EntityAIChastStateTrade(this);
+		EntityAIBase aiGoHome = new EntityAIChastGoHome(this);
 		EntityAIBase aiStoreChest = new EntityAIChastStoreChest(this);
 		EntityAIBase aiCollectItem = new EntityAIChastCollectItem(this);
 		EntityAIBase aiFollowOwner = new EntityAIChastFollowOwner(this);
@@ -112,6 +116,7 @@ public class EntityChast extends EntityGolem
 		this.aiStateDamage.setMutexBits(1);
 		this.aiStateSit.setMutexBits(1);
 		this.aiStateTrade.setMutexBits(1);
+		aiGoHome.setMutexBits(1);
 		aiStoreChest.setMutexBits(1);
 		aiCollectItem.setMutexBits(1);
 		aiFollowOwner.setMutexBits(1);
@@ -124,13 +129,14 @@ public class EntityChast extends EntityGolem
 		this.tasks.addTask(1, this.aiStateDamage);
 		this.tasks.addTask(2, this.aiStateSit);
 		this.tasks.addTask(3, this.aiStateTrade);
-		this.tasks.addTask(4, aiStoreChest);
-		this.tasks.addTask(5, aiCollectItem);
-		this.tasks.addTask(6, aiFollowOwner);
-		this.tasks.addTask(7, aiWanderAvoidWater);
-		this.tasks.addTask(8, aiWatchClosestPlayer);
-		this.tasks.addTask(8, aiWatchClosestGolem);
-		this.tasks.addTask(9, aiLookIdle);
+		this.tasks.addTask(4, aiGoHome);
+		this.tasks.addTask(5, aiStoreChest);
+		this.tasks.addTask(6, aiCollectItem);
+		this.tasks.addTask(7, aiFollowOwner);
+		this.tasks.addTask(8, aiWanderAvoidWater);
+		this.tasks.addTask(9, aiWatchClosestPlayer);
+		this.tasks.addTask(9, aiWatchClosestGolem);
+		this.tasks.addTask(10, aiLookIdle);
 	}
 
 	@Override
@@ -380,7 +386,7 @@ public class EntityChast extends EntityGolem
 		}
 		else
 		{
-			if ((source.getTrueSource() instanceof EntityLivingBase) && isServerWorld)
+			if (isServerWorld && (source.getTrueSource() instanceof EntityLivingBase))
 			{
 				this.setDamageAI((int) amount);
 			}
@@ -810,6 +816,19 @@ public class EntityChast extends EntityGolem
 		}
 		else
 		{
+			EnumHand handItemHomeMapFill = this.getHandHomeMapFill(this);
+			ItemStack stackHeldItem = this.getHeldItem(handItemHomeMapFill);
+
+			if (this.isItemHomeMapFill(stackHeldItem))
+			{
+				ItemHomeMap itemHomeMap = (ItemHomeMap) stackHeldItem.getItem();
+
+				if (itemHomeMap.hasHomeChest(stackHeldItem))
+				{
+					return ChastMode.PATROL;
+				}
+			}
+
 			return ChastMode.FREEDOM;
 		}
 	}
@@ -832,6 +851,31 @@ public class EntityChast extends EntityGolem
 		}
 
 		return condition;
+	}
+
+	public BlockPos getHomePosition()
+	{
+		if (this.getMode() == ChastMode.FOLLOW)
+		{
+			EntityLivingBase ownerEntity = this.getOwner();
+
+			if (this.isTamed() && (ownerEntity != null))
+			{
+				return ownerEntity.getPosition();
+			}
+		}
+		else
+		{
+			EnumHand handItemHomeMapFill = this.getHandHomeMapFill(this);
+			ItemStack stackHeldItem = this.getHeldItem(handItemHomeMapFill);
+
+			if (this.isItemHomeMapFill(stackHeldItem))
+			{
+				return ((ItemHomeMap) stackHeldItem.getItem()).getHomeChestPosition(stackHeldItem);
+			}
+		}
+
+		return this.getPosition();
 	}
 
 	public void setSitAI(boolean isSit)
@@ -913,6 +957,26 @@ public class EntityChast extends EntityGolem
 		}
 
 		return true;
+	}
+
+	private EnumHand getHandHomeMapFill(EntityLivingBase entity)
+	{
+		if (this.isItemHomeMapFill(entity.getHeldItemOffhand()))
+		{
+			return EnumHand.OFF_HAND;
+		}
+
+		return EnumHand.MAIN_HAND;
+	}
+
+	private boolean isItemHomeMapFill(ItemStack stack)
+	{
+		if (stack.getItem() instanceof ItemHomeMap)
+		{
+			return ((ItemHomeMap) stack.getItem()).hasHomeChest(stack);
+		}
+
+		return false;
 	}
 
 }

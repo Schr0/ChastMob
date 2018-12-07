@@ -27,7 +27,7 @@ import schr0.chastmob.util.ChastMobParticles;
 public class ItemSoulBottleFull extends Item
 {
 
-	public static final int MAX_DAMAGE = (20 * 60);
+	public static final int MAX_DAMAGE = (60 * 20);
 	private static String NAME_FRIENDLY = "friendly";
 
 	public ItemSoulBottleFull()
@@ -78,8 +78,8 @@ public class ItemSoulBottleFull extends Item
 	{
 		if (this.isInCreativeTab(tab))
 		{
+			items.add(new ItemStack(this, 1));
 			items.add(new ItemStack(this, 1, MAX_DAMAGE));
-			items.add(new ItemStack(this, 1, 1));
 		}
 	}
 

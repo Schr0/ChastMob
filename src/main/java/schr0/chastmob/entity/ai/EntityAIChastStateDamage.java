@@ -70,7 +70,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 
 		this.getEntity().setCoverOpen(true);
 
-		if ((this.getEntity().getRNG().nextInt(10) == 0) && !this.getWorld().isRemote)
+		if (this.getEntity().getRNG().nextFloat() < 0.5F)
 		{
 			this.onPanicDropItem(this.getEntity());
 		}
@@ -146,7 +146,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 
 		for (int slot = 0; slot < inventoryChastEquipment.getSizeInventory(); ++slot)
 		{
-			if (slot == 0)
+			if ((slot == 0) || (random.nextFloat() < 0.5F))
 			{
 				continue;
 			}
@@ -155,11 +155,6 @@ public class EntityAIChastStateDamage extends EntityAIChast
 
 			if (!stackSlot.isEmpty())
 			{
-				if (random.nextFloat() < 0.5F)
-				{
-					continue;
-				}
-
 				ItemStack stackSlotCopy = stackSlot.copy();
 
 				stackSlotCopy.setCount(1);
@@ -178,15 +173,15 @@ public class EntityAIChastStateDamage extends EntityAIChast
 
 		for (int slot = 0; slot < inventoryChastMain.getSizeInventory(); ++slot)
 		{
+			if (random.nextFloat() < 0.5F)
+			{
+				continue;
+			}
+
 			ItemStack stackSlot = inventoryChastMain.getStackInSlot(slot);
 
 			if (!stackSlot.isEmpty())
 			{
-				if (random.nextFloat() < 0.5F)
-				{
-					continue;
-				}
-
 				ItemStack stackSlotCopy = stackSlot.copy();
 
 				stackSlotCopy.setCount(1);

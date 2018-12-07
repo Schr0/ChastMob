@@ -3,7 +3,6 @@ package schr0.chastmob.entity.ai;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
@@ -68,17 +67,7 @@ public abstract class EntityAIChast extends EntityAIBase
 
 	public BlockPos getHomePosition()
 	{
-		if (this.entityChast.getMode() == ChastMode.FOLLOW)
-		{
-			EntityLivingBase ownerEntity = this.entityChast.getOwner();
-
-			if (this.entityChast.isTamed() && (ownerEntity != null))
-			{
-				return ownerEntity.getPosition();
-			}
-		}
-
-		return this.entityChast.getPosition();
+		return this.entityChast.getHomePosition();
 	}
 
 	public double getSpeed()

@@ -8,7 +8,6 @@ import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.inventory.InventoryChastHelper;
-import schr0.chastmob.util.ChastMobParticles;
 
 public class EntityAIChastCollectItem extends EntityAIChast
 {
@@ -16,20 +15,17 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	private static final double COLLECT_DISTANCE = 1.5D;
 	private static final int OPEN_COUNT_LIMIT = 3;
 	private EntityItem targetEntityItem;
-	private int openCount;
 
 	public EntityAIChastCollectItem(EntityChast entityChast)
 	{
 		super(entityChast);
 		this.targetEntityItem = null;
-		this.openCount = 0;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
 		this.targetEntityItem = null;
-		this.openCount = 0;
 
 		float rangeOrigin = 0.0F;
 
@@ -46,7 +42,6 @@ public class EntityAIChastCollectItem extends EntityAIChast
 					if (InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), entityItem.getItem()))
 					{
 						this.targetEntityItem = entityItem;
-						this.openCount = OPEN_COUNT_LIMIT;
 
 						return true;
 					}
@@ -69,20 +64,11 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	}
 
 	@Override
-	public void startExecuting()
-	{
-		super.startExecuting();
-
-		ChastMobParticles.spawnParticleNote(this.getEntity());
-	}
-
-	@Override
 	public void resetTask()
 	{
 		super.resetTask();
 
 		this.targetEntityItem = null;
-		this.openCount = 0;
 	}
 
 	@Override
@@ -98,19 +84,19 @@ public class EntityAIChastCollectItem extends EntityAIChast
 			{
 				if (entityItem.equals(this.targetEntityItem) && this.canCollectEntityItem(entityItem))
 				{
-					this.getEntity().setCoverOpen(true);
-
-					--this.openCount;
-
-					if (this.openCount < 0)
+					if (!this.getEntity().isCoverOpen())
 					{
-						TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getEntity().getInventoryMain(), entityItem);
-
-						this.targetEntityItem = null;
-						this.openCount = 0;
+						this.getEntity().setCoverOpen(true);
 
 						return;
+
 					}
+
+					TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getEntity().getInventoryMain(), entityItem);
+
+					this.targetEntityItem = null;
+
+					return;
 				}
 			}
 		}

@@ -15,7 +15,6 @@ import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.inventory.InventoryChastHelper;
 import schr0.chastmob.inventory.InventoryChastMain;
-import schr0.chastmob.util.ChastMobParticles;
 
 public class EntityAIChastStoreChest extends EntityAIChast
 {
@@ -32,19 +31,30 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getMode() == ChastMode.FREEDOM)
+		if ((this.getMode() == ChastMode.FREEDOM) || (this.getMode() == ChastMode.PATROL))
 		{
 			this.targetChest = null;
 
 			if (!InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), ItemStack.EMPTY))
 			{
-				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getEntity(), this.getRange());
+				TileEntityChest homeChest = (TileEntityChest) this.getWorld().getTileEntity(this.getHomePosition());
 
-				if (this.canStoringTileEntityChest(nearOpenChest))
+				if (this.canStoreTileEntityChest(homeChest))
 				{
-					this.targetChest = nearOpenChest;
+					this.targetChest = homeChest;
 
 					return true;
+				}
+				else
+				{
+					TileEntityChest nearOpenChest = this.getNearOpenTileEntityChest(this.getEntity(), this.getRange());
+
+					if (this.canStoreTileEntityChest(nearOpenChest))
+					{
+						this.targetChest = nearOpenChest;
+
+						return true;
+					}
 				}
 			}
 		}
@@ -61,14 +71,6 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		}
 
 		return (this.targetChest != null);
-	}
-
-	@Override
-	public void startExecuting()
-	{
-		super.startExecuting();
-
-		ChastMobParticles.spawnParticleNote(this.getEntity());
 	}
 
 	@Override
@@ -95,7 +97,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		if (this.getEntity().getDistanceSqToCenter(targetBlockPos) < STORE_DISTANCE)
 		{
-			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getEntity(), this.getRange());
+			TileEntityChest nearChest = this.getNearOpenTileEntityChest(this.getEntity(), this.getRange());
 
 			if ((nearChest != null) && (nearChest == this.targetChest))
 			{
@@ -124,7 +126,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private boolean canStoringTileEntityChest(@Nullable TileEntityChest tileEntityChest)
+	private boolean canStoreTileEntityChest(@Nullable TileEntityChest tileEntityChest)
 	{
 		if (tileEntityChest != null)
 		{
@@ -134,7 +136,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		return false;
 	}
 
-	private TileEntityChest getNearOpenChestTileEntity(EntityChast entityChast, int searchXYZ)
+	private TileEntityChest getNearOpenTileEntityChest(EntityChast entityChast, int searchXYZ)
 	{
 		BlockPos blockPos = entityChast.getPosition();
 		int entityPosX = blockPos.getX();
