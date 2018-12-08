@@ -66,7 +66,23 @@ public class ItemHomeMap extends Item
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
-		TextComponentTranslation info = new TextComponentTranslation("item.core.tooltip", new Object[0]);
+		BlockPos homePosition = this.getPosition(stack);
+
+		if (homePosition.equals(BlockPos.ORIGIN))
+		{
+			tooltip.add("posX : " + homePosition.getX());
+			tooltip.add("posY : " + homePosition.getY());
+			tooltip.add("posZ : " + homePosition.getZ());
+		}
+		else
+		{
+			String none = "NONE";
+			tooltip.add("posX : " + none);
+			tooltip.add("posY : " + none);
+			tooltip.add("posZ : " + none);
+		}
+
+		TextComponentTranslation info = new TextComponentTranslation("item.home_map.tooltip", new Object[0]);
 
 		info.getStyle().setColor(TextFormatting.BLUE);
 		info.getStyle().setItalic(true);
@@ -90,7 +106,7 @@ public class ItemHomeMap extends Item
 		{
 			if (worldIn.getTileEntity(pos) instanceof TileEntityChest)
 			{
-				this.setHomeChestPosition(stack, pos);
+				this.setPosition(stack, pos);
 
 				player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 
@@ -103,14 +119,14 @@ public class ItemHomeMap extends Item
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	@Nullable
-	public BlockPos getHomeChestPosition(ItemStack stack)
+	public BlockPos getPosition(ItemStack stack)
 	{
+		BlockPos posOrigin = BlockPos.ORIGIN;
 		NBTTagCompound nbt = stack.getTagCompound();
 
 		if (nbt == null)
 		{
-			return (BlockPos) null;
+			return posOrigin;
 		}
 
 		if (nbt.hasKey(TAG_POS_X) && nbt.hasKey(TAG_POS_Y) && nbt.hasKey(TAG_POS_X))
@@ -122,10 +138,10 @@ public class ItemHomeMap extends Item
 			return new BlockPos(posX, posY, posZ);
 		}
 
-		return (BlockPos) null;
+		return posOrigin;
 	}
 
-	public void setHomeChestPosition(ItemStack stack, BlockPos blockPos)
+	public void setPosition(ItemStack stack, BlockPos blockPos)
 	{
 		NBTTagCompound nbt = stack.getTagCompound();
 
@@ -143,7 +159,12 @@ public class ItemHomeMap extends Item
 
 	public boolean hasHomeChest(ItemStack stack)
 	{
-		return (this.getHomeChestPosition(stack) != null);
+		if (this.getPosition(stack).equals(BlockPos.ORIGIN))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 }

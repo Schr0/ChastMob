@@ -2,6 +2,8 @@ package schr0.chastmob.init;
 
 import java.util.HashSet;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIOcelotSit;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
@@ -54,11 +56,13 @@ public class ChastMobEvents
 	{
 		EntityLivingBase target = event.getEntityLiving();
 		EnumHand handItemSBFF = this.getHandItemSBFF(target);
-		ItemStack stackHeldItem = target.getHeldItem(handItemSBFF);
 
-		if (this.isItemSBFF(stackHeldItem))
+		if (handItemSBFF != null)
 		{
-			((ItemSoulBottleFull) stackHeldItem.getItem()).resurrectionOwner(stackHeldItem, handItemSBFF, target);
+			ItemStack stackHeldItem = target.getHeldItem(handItemSBFF);
+			ItemSoulBottleFull itemSBFF = (ItemSoulBottleFull) stackHeldItem.getItem();
+
+			itemSBFF.resurrectionOwner(stackHeldItem, handItemSBFF, target);
 
 			event.setCanceled(true);
 		}
@@ -66,14 +70,20 @@ public class ChastMobEvents
 
 	// TODO /* ======================================== MOD START =====================================*/
 
+	@Nullable
 	private EnumHand getHandItemSBFF(EntityLivingBase entityLivingBase)
 	{
 		if (this.isItemSBFF(entityLivingBase.getHeldItemMainhand()))
 		{
+			return EnumHand.MAIN_HAND;
+		}
+
+		if (this.isItemSBFF(entityLivingBase.getHeldItemOffhand()))
+		{
 			return EnumHand.OFF_HAND;
 		}
 
-		return EnumHand.MAIN_HAND;
+		return (EnumHand) null;
 	}
 
 	private boolean isItemSBFF(ItemStack stack)

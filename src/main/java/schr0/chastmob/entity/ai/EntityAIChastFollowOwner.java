@@ -27,11 +27,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 			if (this.canFollowOwner(owner))
 			{
-				if (this.getEntity().getDistanceSq(owner) < this.getRange())
-				{
-					return false;
-				}
-				else
+				if (this.getRange() < this.getEntity().getDistanceSq(owner))
 				{
 					this.targetOwner = owner;
 

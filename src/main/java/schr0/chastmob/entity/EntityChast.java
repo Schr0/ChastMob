@@ -7,6 +7,8 @@ import javax.annotation.Nullable;
 import com.google.common.base.Optional;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -31,10 +33,13 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.management.PreYggdrasilConverter;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -105,8 +110,8 @@ public class EntityChast extends EntityGolem
 		this.aiStateTrade = new EntityAIChastStateTrade(this);
 		EntityAIBase aiGoHome = new EntityAIChastGoHome(this);
 		EntityAIBase aiStoreChest = new EntityAIChastStoreChest(this);
-		EntityAIBase aiCollectItem = new EntityAIChastCollectItem(this);
 		EntityAIBase aiFollowOwner = new EntityAIChastFollowOwner(this);
+		EntityAIBase aiCollectItem = new EntityAIChastCollectItem(this);
 		EntityAIBase aiWanderAvoidWater = new EntityAIWanderAvoidWater(this, 1.0D);;
 		EntityAIBase aiWatchClosestPlayer = new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F);
 		EntityAIBase aiWatchClosestGolem = new EntityAIWatchClosest(this, EntityGolem.class, 6.0F);
@@ -118,8 +123,8 @@ public class EntityChast extends EntityGolem
 		this.aiStateTrade.setMutexBits(1);
 		aiGoHome.setMutexBits(1);
 		aiStoreChest.setMutexBits(1);
-		aiCollectItem.setMutexBits(1);
 		aiFollowOwner.setMutexBits(1);
+		aiCollectItem.setMutexBits(1);
 		aiWanderAvoidWater.setMutexBits(1);
 		aiWatchClosestPlayer.setMutexBits(2);
 		aiWatchClosestGolem.setMutexBits(3);
@@ -544,7 +549,7 @@ public class EntityChast extends EntityGolem
 	{
 		super.onUpdate();
 
-		if (this.ticksExisted < (20 * 5))
+		if (this.ticksExisted < 20)
 		{
 			EntityLivingBase ownerEntity = this.getOwner();
 
@@ -552,6 +557,14 @@ public class EntityChast extends EntityGolem
 			{
 				this.getLookHelper().setLookPositionWithEntity(ownerEntity, this.getHorizontalFaceSpeed(), this.getVerticalFaceSpeed());
 			}
+		}
+
+		if (this.isEquipHelmet())
+		{
+			ItemStack stackHelmet = this.getInventoryEquipments().getHeadItem();
+			ItemChastHelmet itemChastHelmet = (ItemChastHelmet) stackHelmet.getItem();
+
+			itemChastHelmet.onUpdateOwner(stackHelmet, this);
 		}
 
 		boolean isCoverOpen = this.isCoverOpen();
@@ -596,17 +609,9 @@ public class EntityChast extends EntityGolem
 				this.lidAngle = 0.0F;
 			}
 		}
-
-		if (this.isEquipHelmet())
-		{
-			ItemStack stackHelmet = this.getInventoryEquipments().getHeadItem();
-			ItemChastHelmet itemChastHelmet = (ItemChastHelmet) stackHelmet.getItem();
-
-			itemChastHelmet.onUpdateOwner(stackHelmet, this);
-		}
 	}
 
-	// TODO /* ======================================== MOD START =====================================*/
+	// TODO /* ======================================== DATAMANAGER START =====================================*/
 
 	@SideOnly(Side.CLIENT)
 	public float getCoverRotateAngleX(float partialTickTime)
@@ -783,6 +788,8 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
+	// TODO /* ======================================== MOD START =====================================*/
+
 	public InventoryChastMain getInventoryMain()
 	{
 		if (this.inventoryMain == null)
@@ -808,31 +815,6 @@ public class EntityChast extends EntityGolem
 		return !this.getInventoryEquipments().getHeadItem().isEmpty();
 	}
 
-	public ChastMode getMode()
-	{
-		if (this.isFollow())
-		{
-			return ChastMode.FOLLOW;
-		}
-		else
-		{
-			EnumHand handItemHomeMapFill = this.getHandHomeMapFill(this);
-			ItemStack stackHeldItem = this.getHeldItem(handItemHomeMapFill);
-
-			if (this.isItemHomeMapFill(stackHeldItem))
-			{
-				ItemHomeMap itemHomeMap = (ItemHomeMap) stackHeldItem.getItem();
-
-				if (itemHomeMap.hasHomeChest(stackHeldItem))
-				{
-					return ChastMode.PATROL;
-				}
-			}
-
-			return ChastMode.FREEDOM;
-		}
-	}
-
 	public ChastCondition getCondition()
 	{
 		int health = (int) this.getHealth();
@@ -853,9 +835,26 @@ public class EntityChast extends EntityGolem
 		return condition;
 	}
 
-	public BlockPos getHomePosition()
+	public ChastMode getMode()
 	{
-		if (this.getMode() == ChastMode.FOLLOW)
+		if (this.isFollow())
+		{
+			return ChastMode.FOLLOW;
+		}
+		else
+		{
+			if (this.getCanBeSeeHomeTEChest(false) != null)
+			{
+				return ChastMode.PATROL;
+			}
+
+			return ChastMode.FREEDOM;
+		}
+	}
+
+	public BlockPos getHomeChestPosition()
+	{
+		if (this.isFollow())
 		{
 			EntityLivingBase ownerEntity = this.getOwner();
 
@@ -866,16 +865,77 @@ public class EntityChast extends EntityGolem
 		}
 		else
 		{
-			EnumHand handItemHomeMapFill = this.getHandHomeMapFill(this);
-			ItemStack stackHeldItem = this.getHeldItem(handItemHomeMapFill);
+			ItemStack satckItemHMF = this.getHandItemHMF(this);
 
-			if (this.isItemHomeMapFill(stackHeldItem))
+			if (!satckItemHMF.isEmpty())
 			{
-				return ((ItemHomeMap) stackHeldItem.getItem()).getHomeChestPosition(stackHeldItem);
+				BlockPos homePosition = ((ItemHomeMap) satckItemHMF.getItem()).getPosition(satckItemHMF);
+
+				if (this.canBlockBeSeen(homePosition))
+				{
+					return homePosition;
+				}
 			}
 		}
 
 		return this.getPosition();
+	}
+
+	@Nullable
+	public TileEntityChest getCanBeSeeHomeTEChest(boolean isOpenChest)
+	{
+		World world = this.getEntityWorld();
+		BlockPos homePos = this.getHomeChestPosition();
+		TileEntityChest homeChest = (TileEntityChest) world.getTileEntity(homePos);
+
+		if (homeChest != null)
+		{
+			boolean isLockedChest = (((BlockChest) world.getBlockState(homePos).getBlock()).getLockableContainer(world, homePos) == null);
+
+			if (isOpenChest && isLockedChest)
+			{
+				return (TileEntityChest) null;
+			}
+
+			return homeChest;
+		}
+
+		return (TileEntityChest) null;
+	}
+
+	public boolean canBlockBeSeen(BlockPos blockPos)
+	{
+		World world = this.getEntityWorld();
+		IBlockState state = world.getBlockState(blockPos);
+
+		if (state == Blocks.AIR.getDefaultState())
+		{
+			return false;
+		}
+
+		Vec3d entityVec3d = new Vec3d(this.posX, this.posY + this.getEyeHeight(), this.posZ);
+		Vec3d targetVec3d = new Vec3d(((double) blockPos.getX() + 0.5D), ((double) blockPos.getY() + (state.getCollisionBoundingBox(world, blockPos).minY + state.getCollisionBoundingBox(world, blockPos).maxY) * 0.9D), ((double) blockPos.getZ() + 0.5D));
+		RayTraceResult rayTraceResult = world.rayTraceBlocks(entityVec3d, targetVec3d);
+
+		if ((rayTraceResult != null) && (rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK))
+		{
+			if (rayTraceResult.getBlockPos().equals(blockPos))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public double getAISpeed()
+	{
+		return 1.25D;
+	}
+
+	public int getAIRange()
+	{
+		return 5;
 	}
 
 	public void setSitAI(boolean isSit)
@@ -959,17 +1019,25 @@ public class EntityChast extends EntityGolem
 		return true;
 	}
 
-	private EnumHand getHandHomeMapFill(EntityLivingBase entity)
+	private ItemStack getHandItemHMF(EntityLivingBase entityLivingBase)
 	{
-		if (this.isItemHomeMapFill(entity.getHeldItemOffhand()))
+		ItemStack stackMainhand = this.getInventoryEquipments().getMainhandItem();
+		ItemStack stackOffhand = this.getInventoryEquipments().getOffhandItem();
+
+		if (this.isItemHMF(stackMainhand))
 		{
-			return EnumHand.OFF_HAND;
+			return stackMainhand;
 		}
 
-		return EnumHand.MAIN_HAND;
+		if (this.isItemHMF(stackOffhand))
+		{
+			return stackOffhand;
+		}
+
+		return ItemStack.EMPTY;
 	}
 
-	private boolean isItemHomeMapFill(ItemStack stack)
+	private boolean isItemHMF(ItemStack stack)
 	{
 		if (stack.getItem() instanceof ItemHomeMap)
 		{

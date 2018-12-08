@@ -4,12 +4,9 @@ import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
@@ -65,19 +62,21 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.entityChast.getMode();
 	}
 
-	public BlockPos getHomePosition()
-	{
-		return this.entityChast.getHomePosition();
-	}
-
 	public double getSpeed()
 	{
-		return 1.25D;
+		return this.entityChast.getAISpeed();
 	}
 
 	public int getRange()
 	{
-		return 5;
+		return this.entityChast.getAIRange();
+	}
+
+	public int getBlockRange()
+	{
+		int range = this.entityChast.getAIRange();
+
+		return (range * range) * 2;
 	}
 
 	public int getTimeLimit()
@@ -88,31 +87,6 @@ public abstract class EntityAIChast extends EntityAIBase
 	public boolean isTimeOut()
 	{
 		return (this.time < 0);
-	}
-
-	public boolean canBlockBeSeen(BlockPos blockPos)
-	{
-		World world = this.entityChast.getEntityWorld();
-		IBlockState state = world.getBlockState(blockPos);
-
-		if (state == Blocks.AIR.getDefaultState())
-		{
-			return false;
-		}
-
-		Vec3d entityVec3d = new Vec3d(this.entityChast.posX, this.entityChast.posY + this.entityChast.getEyeHeight(), this.entityChast.posZ);
-		Vec3d targetVec3d = new Vec3d(((double) blockPos.getX() + 0.5D), ((double) blockPos.getY() + (state.getCollisionBoundingBox(world, blockPos).minY + state.getCollisionBoundingBox(world, blockPos).maxY) * 0.9D), ((double) blockPos.getZ() + 0.5D));
-		RayTraceResult rayTraceResult = world.rayTraceBlocks(entityVec3d, targetVec3d);
-
-		if ((rayTraceResult != null) && (rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK))
-		{
-			if (rayTraceResult.getBlockPos().equals(blockPos))
-			{
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	public void forceMoveToTargetBlockPos(BlockPos blockPos)

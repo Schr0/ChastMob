@@ -77,7 +77,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 
 		if (this.getEntity().isBurning())
 		{
-			BlockPos blockPos = this.getNearWaterBlockPos(this.getEntity(), this.getRange());
+			BlockPos blockPos = this.getNearWaterPosition(this.getEntity(), this.getRange());
 
 			if (blockPos == null)
 			{
@@ -198,7 +198,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 	}
 
 	@Nullable
-	private BlockPos getNearWaterBlockPos(Entity entity, int searchXYZ)
+	private BlockPos getNearWaterPosition(Entity entity, int searchXYZ)
 	{
 		BlockPos blockPos = new BlockPos(entity);
 		int entityPosX = blockPos.getX();
@@ -224,6 +224,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 						if (range < rangeOrigin)
 						{
 							rangeOrigin = range;
+
 							blockPosWater = new BlockPos(blockPosMutable);
 						}
 					}

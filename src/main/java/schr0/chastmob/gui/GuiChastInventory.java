@@ -47,7 +47,9 @@ public class GuiChastInventory extends GuiContainer
 		int buttonId = 0;
 		int buttonPosX = ((this.width - this.xSize) / 2) + 113;
 		int buttonPosY = ((this.height - this.ySize) / 2) + 39;
-		this.buttonChange = (GuiChastInventory.ChangeButton) this.addButton(new GuiChastInventory.ChangeButton(buttonId, buttonPosX, buttonPosY));
+		GuiChastInventory.ChangeButton changeButton = new GuiChastInventory.ChangeButton(buttonId, buttonPosX, buttonPosY);
+
+		this.buttonChange = (GuiChastInventory.ChangeButton) this.addButton(changeButton);
 	}
 
 	@Override
@@ -74,11 +76,6 @@ public class GuiChastInventory extends GuiContainer
 		height = 10;
 		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
 
-		ItemStack renderItem = entityChast.getMode().getIconItem();
-		int xPosition = (originPosX + 91);
-		int yPosition = (originPosY + 44);
-		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);
-
 		int entityPosX = (originPosX + 51);
 		int entityPosY = (originPosY + 60);
 		int scale = 25;
@@ -101,17 +98,30 @@ public class GuiChastInventory extends GuiContainer
 	{
 		super.drawScreen(mouseX, mouseY, partialTicks);
 
-		this.renderHoveredToolTip(mouseX, mouseY);
-
-		if (this.isPointInRegion(89, 25, 72, 14, mouseX, mouseY))
+		int rectX = 89;
+		int rectY = 25;
+		int width = 72;
+		int height = 14;
+		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
 		{
 			this.drawHoveringText(Lists.newArrayList(this.entityChast.getHealth() + " / " + this.entityChast.getMaxHealth()), mouseX, mouseY);
 		}
 
-		if (this.isPointInRegion(91, 44, 16, 16, mouseX, mouseY))
+		rectX = 91;
+		rectY = 44;
+		width = 16;
+		height = 16;
+		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
 		{
 			this.drawHoveringText(Lists.newArrayList(this.entityChast.getMode().getLabel()), mouseX, mouseY);
 		}
+
+		ItemStack renderItem = entityChast.getMode().getIconItem();
+		int xPosition = ((this.width - this.xSize) / 2) + 91;
+		int yPosition = ((this.height - this.ySize) / 2) + 44;
+		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);
+
+		this.renderHoveredToolTip(mouseX, mouseY);
 	}
 
 	@Override

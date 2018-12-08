@@ -6,6 +6,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.inventory.InventoryChastHelper;
 
@@ -13,7 +14,6 @@ public class EntityAIChastCollectItem extends EntityAIChast
 {
 
 	private static final double COLLECT_DISTANCE = 1.5D;
-	private static final int OPEN_COUNT_LIMIT = 3;
 	private EntityItem targetEntityItem;
 
 	public EntityAIChastCollectItem(EntityChast entityChast)
@@ -29,7 +29,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		float rangeOrigin = 0.0F;
 
-		for (EntityItem entityItem : this.getAroundEntityItem())
+		for (EntityItem entityItem : this.getAroundItems())
 		{
 			float range = (float) this.getEntity().getDistanceSq(entityItem);
 
@@ -37,7 +37,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 			{
 				rangeOrigin = range;
 
-				if (this.canCollectEntityItem(entityItem))
+				if (this.canCollectItem(entityItem))
 				{
 					if (InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), entityItem.getItem()))
 					{
@@ -80,16 +80,15 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		if (this.getEntity().getDistanceSq(this.targetEntityItem) < COLLECT_DISTANCE)
 		{
-			for (EntityItem entityItem : this.getAroundEntityItem())
+			for (EntityItem entityItem : this.getAroundItems())
 			{
-				if (entityItem.equals(this.targetEntityItem) && this.canCollectEntityItem(entityItem))
+				if (entityItem.equals(this.targetEntityItem) && this.canCollectItem(entityItem))
 				{
 					if (!this.getEntity().isCoverOpen())
 					{
 						this.getEntity().setCoverOpen(true);
 
 						return;
-
 					}
 
 					TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getEntity().getInventoryMain(), entityItem);
@@ -108,19 +107,21 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private List<EntityItem> getAroundEntityItem()
+	private boolean canCollectItem(EntityItem entityItem)
 	{
-		return this.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(this.getHomePosition()).grow(this.getRange(), this.getRange(), this.getRange()));
-	}
-
-	private boolean canCollectEntityItem(EntityItem entityItem)
-	{
-		if (this.getEntity().getEntitySenses().canSee(entityItem) && entityItem.isEntityAlive() && !entityItem.cannotPickup())
+		if (entityItem.isEntityAlive() && !entityItem.cannotPickup())
 		{
-			return true;
+			return this.getEntity().getEntitySenses().canSee(entityItem);
 		}
 
 		return false;
+	}
+
+	private List<EntityItem> getAroundItems()
+	{
+		BlockPos pos = this.getEntity().getHomeChestPosition();
+
+		return this.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
 	}
 
 }
