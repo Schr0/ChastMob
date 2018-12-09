@@ -6,6 +6,7 @@ import schr0.chastmob.entity.EntityChast;
 public class EntityAIChastStateTrade extends EntityAIChast
 {
 
+	private static final double TRADER_RANGE = 16.0D;
 	private Entity trader;
 
 	public EntityAIChastStateTrade(EntityChast entityChast)

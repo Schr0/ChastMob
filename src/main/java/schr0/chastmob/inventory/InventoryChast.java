@@ -10,6 +10,7 @@ import schr0.chastmob.entity.EntityChast;
 public abstract class InventoryChast extends InventoryBasic
 {
 
+	private static final double MAX_RANGE = 16.0D;
 	private EntityChast entityChast;
 
 	public InventoryChast(EntityChast entityChast, int slotCount)
@@ -29,7 +30,7 @@ public abstract class InventoryChast extends InventoryBasic
 				return false;
 			}
 
-			return (player.getDistanceSq(this.entityChast) < 64.0D);
+			return (player.getDistanceSq(this.entityChast) < MAX_RANGE);
 		}
 
 		return false;
@@ -37,7 +38,7 @@ public abstract class InventoryChast extends InventoryBasic
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public EntityChast getContainerEntityChast()
+	public EntityChast getContainerEntity()
 	{
 		return this.entityChast;
 	}

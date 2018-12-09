@@ -26,6 +26,7 @@ item.chast_helmet.tooltip=Chast can equip.
 
 item.home_map.name=Home Map
 item.home_map.tooltip=Let's right click on the "Chest".
+item.home_map.message=HomeChest -> X : %s, Y : %s, Z : %s
 
 // ======================================== ENTITY ===================================== //
 entity.chast.name=Chast

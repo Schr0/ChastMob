@@ -10,8 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -26,7 +24,7 @@ public class ItemSoulFragment extends Item
 
 	public ItemSoulFragment()
 	{
-		// none
+		this.setMaxStackSize(16);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -42,27 +40,13 @@ public class ItemSoulFragment extends Item
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-	{
-		ItemStack stack = playerIn.getHeldItem(handIn);
-
-		if (playerIn.shouldHeal())
-		{
-			this.healTarget(stack, worldIn, playerIn, playerIn);
-
-			return new ActionResult(EnumActionResult.SUCCESS, stack);
-		}
-
-		return super.onItemRightClick(worldIn, playerIn, handIn);
-	}
-
 	public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand)
 	{
 		if (target instanceof EntityChast)
 		{
 			if (this.shouldHeal(target))
 			{
-				this.healTarget(stack, playerIn.getEntityWorld(), target, playerIn);
+				this.heal(stack, playerIn.getEntityWorld(), target, playerIn);
 
 				return true;
 			}
@@ -83,7 +67,7 @@ public class ItemSoulFragment extends Item
 		return false;
 	}
 
-	public void healTarget(ItemStack stack, World world, EntityLivingBase target, EntityLivingBase owner)
+	public void heal(ItemStack stack, World world, EntityLivingBase target, EntityLivingBase owner)
 	{
 		if (owner instanceof EntityPlayer)
 		{

@@ -29,9 +29,9 @@ public class ItemHomeMap extends Item
 {
 
 	private static final String TAG = ChastMob.MOD_ID + "." + "item_home_map" + ".";
-	private static final String TAG_POS_X = TAG + "home_pos_x";
-	private static final String TAG_POS_Y = TAG + "home_pos_y";
-	private static final String TAG_POS_Z = TAG + "home_pos_z";
+	private static final String TAG_POS_X = TAG + "pos_x";
+	private static final String TAG_POS_Y = TAG + "pos_y";
+	private static final String TAG_POS_Z = TAG + "pos_z";
 
 	public ItemHomeMap()
 	{
@@ -50,7 +50,7 @@ public class ItemHomeMap extends Item
 				{
 					ItemHomeMap itemHomeMap = (ItemHomeMap) item;
 
-					if (itemHomeMap.hasHomeChest(stack))
+					if (itemHomeMap.hasPosition(stack))
 					{
 						return 1.0F;
 					}
@@ -66,20 +66,20 @@ public class ItemHomeMap extends Item
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
-		BlockPos homePosition = this.getPosition(stack);
+		BlockPos homePos = this.getPosition(stack);
 
-		if (homePosition.equals(BlockPos.ORIGIN))
-		{
-			tooltip.add("posX : " + homePosition.getX());
-			tooltip.add("posY : " + homePosition.getY());
-			tooltip.add("posZ : " + homePosition.getZ());
-		}
-		else
+		if (homePos.equals(BlockPos.ORIGIN))
 		{
 			String none = "NONE";
 			tooltip.add("posX : " + none);
 			tooltip.add("posY : " + none);
 			tooltip.add("posZ : " + none);
+		}
+		else
+		{
+			tooltip.add("posX : " + homePos.getX());
+			tooltip.add("posY : " + homePos.getY());
+			tooltip.add("posZ : " + homePos.getZ());
 		}
 
 		TextComponentTranslation info = new TextComponentTranslation("item.home_map.tooltip", new Object[0]);
@@ -94,19 +94,29 @@ public class ItemHomeMap extends Item
 	@Override
 	public boolean hasEffect(ItemStack stack)
 	{
-		return this.hasHomeChest(stack);
+		return this.hasPosition(stack);
 	}
 
 	@Override
-	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
 	{
 		ItemStack stack = player.getHeldItem(hand);
 
-		if (!this.hasHomeChest(stack))
+		if (!this.hasPosition(stack))
 		{
-			if (worldIn.getTileEntity(pos) instanceof TileEntityChest)
+			if (world.getTileEntity(pos) instanceof TileEntityChest)
 			{
-				this.setPosition(stack, pos);
+				if (!world.isRemote)
+				{
+					this.setPosition(stack, pos);
+
+					player.sendMessage(new TextComponentTranslation("item.home_map.message", new Object[]
+					{
+							pos.getX(),
+							pos.getY(),
+							pos.getZ(),
+					}));
+				}
 
 				player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0F, 1.0F);
 
@@ -114,7 +124,7 @@ public class ItemHomeMap extends Item
 			}
 		}
 
-		return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+		return super.onItemUseFirst(player, world, pos, side, hitX, hitY, hitZ, hand);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -157,7 +167,7 @@ public class ItemHomeMap extends Item
 		stack.setTagCompound(nbt);
 	}
 
-	public boolean hasHomeChest(ItemStack stack)
+	public boolean hasPosition(ItemStack stack)
 	{
 		if (this.getPosition(stack).equals(BlockPos.ORIGIN))
 		{

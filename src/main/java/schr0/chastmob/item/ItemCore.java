@@ -44,15 +44,16 @@ public class ItemCore extends Item
 	}
 
 	@Override
-	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
 	{
 		ItemStack stack = player.getHeldItem(hand);
-		TileEntity tileEntity = worldIn.getTileEntity(pos);
+		TileEntity tileEntity = world.getTileEntity(pos);
 
-		if ((worldIn.getBlockState(pos).getBlock() == Blocks.CHEST) && (tileEntity instanceof TileEntityChest))
+		if ((world.getBlockState(pos).getBlock() == Blocks.CHEST) && (tileEntity instanceof TileEntityChest))
 		{
-			EntityChast entityChast = new EntityChast(worldIn);
-			IInventory inventory = (IInventory) tileEntity;
+			EntityChast entityChast = new EntityChast(world);
+
+			entityChast.onSpawnByPlayer(player);
 
 			entityChast.setPositionAndRotation(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0F, 0.0F);
 
@@ -62,26 +63,26 @@ public class ItemCore extends Item
 				entityChast.enablePersistence();
 			}
 
-			entityChast.onSpawnByPlayer(player);
+			IInventory inventory = (IInventory) tileEntity;
 
 			for (int slot = 0; slot < inventory.getSizeInventory(); ++slot)
 			{
-				ItemStack stackTileChest = inventory.getStackInSlot(slot);
+				ItemStack stackChest = inventory.getStackInSlot(slot);
 
-				if (!stackTileChest.isEmpty())
+				if (!stackChest.isEmpty())
 				{
-					entityChast.getInventoryMain().setInventorySlotContents(slot, stackTileChest);
+					entityChast.getInventoryMain().setInventorySlotContents(slot, stackChest);
 				}
 
 				inventory.setInventorySlotContents(slot, ItemStack.EMPTY);
 			}
 
-			if (!worldIn.isRemote)
+			if (!world.isRemote)
 			{
-				worldIn.spawnEntity(entityChast);
+				world.spawnEntity(entityChast);
 			}
 
-			worldIn.destroyBlock(pos, false);
+			world.destroyBlock(pos, false);
 
 			if (!player.capabilities.isCreativeMode)
 			{
@@ -91,7 +92,7 @@ public class ItemCore extends Item
 			return EnumActionResult.SUCCESS;
 		}
 
-		return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+		return super.onItemUseFirst(player, world, pos, side, hitX, hitY, hitZ, hand);
 	}
 
 }

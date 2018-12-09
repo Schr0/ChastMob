@@ -72,13 +72,6 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.entityChast.getAIRange();
 	}
 
-	public int getBlockRange()
-	{
-		int range = this.entityChast.getAIRange();
-
-		return (range * range) * 2;
-	}
-
 	public int getTimeLimit()
 	{
 		return (5 * 20);

@@ -18,7 +18,6 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
-import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -67,6 +66,7 @@ public class EntityChast extends EntityGolem
 	private static final float SIZE_HEIGHT = 1.5F;
 	private static final double ENTITY_HEALTH = 20.0D;
 	private static final double ENTITY_SPEED = 0.25D;
+	private static final double SIT_MOUNTED_Y_OFFSET = 0.60D;
 
 	private static final String TAG = ChastMob.MOD_ID + "." + "entity_chast" + ".";
 	private static final String TAG_INVENTORY = TAG + "inventory";
@@ -244,6 +244,18 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Override
+	protected SoundEvent getHurtSound(DamageSource damagesource)
+	{
+		return SoundEvents.BLOCK_WOOD_HIT;
+	}
+
+	@Override
+	protected SoundEvent getDeathSound()
+	{
+		return SoundEvents.ENTITY_ITEM_BREAK;
+	}
+
+	@Override
 	public double getYOffset()
 	{
 		Entity ridingEntity = this.getRidingEntity();
@@ -261,24 +273,42 @@ public class EntityChast extends EntityGolem
 	{
 		if (this.isSit())
 		{
-			return ((double) this.height * 0.45);
+			return ((double) this.height * SIT_MOUNTED_Y_OFFSET);
 		}
 		else
 		{
-			return ((double) this.height * 0.80);
+			return super.getMountedYOffset();
 		}
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damagesource)
+	public void updateRidden()
 	{
-		return SoundEvents.BLOCK_WOOD_HIT;
+		super.updateRidden();
+
+		if (this.getRidingEntity() instanceof EntityLivingBase)
+		{
+			EntityLivingBase ridingEntity = (EntityLivingBase) this.getRidingEntity();
+
+			this.renderYawOffset = ridingEntity.renderYawOffset;
+			this.rotationYaw = ridingEntity.rotationYaw;
+			this.prevRotationYaw = this.rotationYaw;
+			this.rotationPitch = ridingEntity.rotationPitch * 0.5F;
+			this.setRotation(this.rotationYaw, this.rotationPitch);
+			this.renderYawOffset = this.rotationYaw;
+			this.rotationYawHead = this.rotationYaw;
+		}
 	}
 
 	@Override
-	protected SoundEvent getDeathSound()
+	public void updatePassenger(Entity passenger)
 	{
-		return SoundEvents.ENTITY_ITEM_BREAK;
+		super.updatePassenger(passenger);
+
+		if (!this.getEntityWorld().isRemote && this.isDamage())
+		{
+			passenger.dismountRidingEntity();
+		}
 	}
 
 	@Override
@@ -432,18 +462,13 @@ public class EntityChast extends EntityGolem
 	@Override
 	public boolean processInteract(EntityPlayer player, EnumHand hand)
 	{
-		if (this.isDamage())
+		if (this.isDamage() || !this.isOwner(player) || (hand == EnumHand.OFF_HAND))
 		{
 			return false;
 		}
 
 		if (this.isTamed())
 		{
-			if (!this.isOwner(player) || (hand == EnumHand.OFF_HAND))
-			{
-				return false;
-			}
-
 			boolean isServerWorld = !this.getEntityWorld().isRemote;
 			ItemStack stackHeldItem = player.getHeldItem(hand);
 
@@ -482,10 +507,7 @@ public class EntityChast extends EntityGolem
 					}
 				}
 
-				if (stackHeldItem.interactWithEntity(player, this, hand))
-				{
-					return this.onSuccessProcessInteract(player, (SoundEvent) null);
-				}
+				return super.processInteract(player, hand);
 			}
 
 			if (player.isSneaking())
@@ -511,36 +533,7 @@ public class EntityChast extends EntityGolem
 		{
 			this.onSpawnByPlayer(player);
 
-			return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_PLAYER_LEVELUP);
-		}
-	}
-
-	@Override
-	public void updateRidden()
-	{
-		super.updateRidden();
-
-		Entity ridingEntity = this.getRidingEntity();
-
-		if (ridingEntity instanceof EntityLivingBase)
-		{
-			this.renderYawOffset = ((EntityLivingBase) ridingEntity).renderYawOffset;
-		}
-	}
-
-	@Override
-	public void updatePassenger(Entity passenger)
-	{
-		super.updatePassenger(passenger);
-
-		if (this.isDamage() && !this.getEntityWorld().isRemote)
-		{
-			passenger.dismountRidingEntity();
-		}
-
-		if (!passenger.getClass().equals(EntityOcelot.class))
-		{
-			this.setSit(false);
+			return this.onSuccessProcessInteract(player, (SoundEvent) null);
 		}
 	}
 
@@ -551,11 +544,11 @@ public class EntityChast extends EntityGolem
 
 		if (this.ticksExisted < 20)
 		{
-			EntityLivingBase ownerEntity = this.getOwner();
+			EntityLivingBase owner = this.getOwner();
 
-			if ((ownerEntity != null) && (ownerEntity.getDistanceSq(this) < 16.0D))
+			if (owner != null)
 			{
-				this.getLookHelper().setLookPositionWithEntity(ownerEntity, this.getHorizontalFaceSpeed(), this.getVerticalFaceSpeed());
+				this.getLookHelper().setLookPositionWithEntity(owner, this.getHorizontalFaceSpeed(), this.getVerticalFaceSpeed());
 			}
 		}
 
@@ -843,7 +836,7 @@ public class EntityChast extends EntityGolem
 		}
 		else
 		{
-			if (this.getCanBeSeeHomeTEChest(false) != null)
+			if (this.getCanSeeHomeChest(false) != null)
 			{
 				return ChastMode.PATROL;
 			}
@@ -852,15 +845,15 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public BlockPos getHomeChestPosition()
+	public BlockPos getCenterPosition()
 	{
 		if (this.isFollow())
 		{
-			EntityLivingBase ownerEntity = this.getOwner();
+			EntityLivingBase owner = this.getOwner();
 
-			if (this.isTamed() && (ownerEntity != null))
+			if (this.isTamed() && (owner != null))
 			{
-				return ownerEntity.getPosition();
+				return owner.getPosition();
 			}
 		}
 		else
@@ -882,15 +875,15 @@ public class EntityChast extends EntityGolem
 	}
 
 	@Nullable
-	public TileEntityChest getCanBeSeeHomeTEChest(boolean isOpenChest)
+	public TileEntityChest getCanSeeHomeChest(boolean isOpenChest)
 	{
 		World world = this.getEntityWorld();
-		BlockPos homePos = this.getHomeChestPosition();
-		TileEntityChest homeChest = (TileEntityChest) world.getTileEntity(homePos);
+		BlockPos centerPos = this.getCenterPosition();
+		TileEntityChest homeChest = (TileEntityChest) world.getTileEntity(centerPos);
 
 		if (homeChest != null)
 		{
-			boolean isLockedChest = (((BlockChest) world.getBlockState(homePos).getBlock()).getLockableContainer(world, homePos) == null);
+			boolean isLockedChest = (((BlockChest) world.getBlockState(centerPos).getBlock()).getLockableContainer(world, centerPos) == null);
 
 			if (isOpenChest && isLockedChest)
 			{
@@ -993,7 +986,7 @@ public class EntityChast extends EntityGolem
 			this.setTamed(true);
 			this.setOwnerUUID(player.getUniqueID());
 			this.setFollow(true);
-			this.setSit(false);
+			this.setSitAI(true);
 
 			player.sendMessage(new TextComponentTranslation("entity.chast.thanks", new Object[]
 			{
@@ -1002,7 +995,7 @@ public class EntityChast extends EntityGolem
 			}));
 		}
 
-		ChastMobParticles.spawnParticleHeart(player);
+		ChastMobParticles.spawnParticleHeart(this);
 
 		this.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 	}
@@ -1041,7 +1034,7 @@ public class EntityChast extends EntityGolem
 	{
 		if (stack.getItem() instanceof ItemHomeMap)
 		{
-			return ((ItemHomeMap) stack.getItem()).hasHomeChest(stack);
+			return ((ItemHomeMap) stack.getItem()).hasPosition(stack);
 		}
 
 		return false;

@@ -13,7 +13,7 @@ import schr0.chastmob.inventory.InventoryChastHelper;
 public class EntityAIChastCollectItem extends EntityAIChast
 {
 
-	private static final double COLLECT_DISTANCE = 1.5D;
+	private static final double COLLECT_RANGE = 1.5D;
 	private EntityItem targetEntityItem;
 
 	public EntityAIChastCollectItem(EntityChast entityChast)
@@ -78,7 +78,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		this.getEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, this.getEntity().getHorizontalFaceSpeed(), this.getEntity().getVerticalFaceSpeed());
 
-		if (this.getEntity().getDistanceSq(this.targetEntityItem) < COLLECT_DISTANCE)
+		if (this.getEntity().getDistanceSq(this.targetEntityItem) < COLLECT_RANGE)
 		{
 			for (EntityItem entityItem : this.getAroundItems())
 			{
@@ -119,7 +119,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private List<EntityItem> getAroundItems()
 	{
-		BlockPos pos = this.getEntity().getHomeChestPosition();
+		BlockPos pos = this.getEntity().getCenterPosition();
 
 		return this.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
 	}

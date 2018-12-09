@@ -140,7 +140,7 @@ public class ItemSoulBottleFull extends Item
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public void resurrectionOwner(ItemStack stack, EnumHand hand, EntityLivingBase owner)
+	public void resurrection(ItemStack stack, EnumHand hand, EntityLivingBase owner)
 	{
 		if (stack.getItemDamage() != 0)
 		{

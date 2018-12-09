@@ -26,7 +26,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 		{
 			this.targetTEChest = null;
 
-			TileEntityChest homeChest = this.getEntity().getCanBeSeeHomeTEChest(false);
+			TileEntityChest homeChest = this.getEntity().getCanSeeHomeChest(false);
 
 			if (homeChest != null)
 			{
@@ -95,7 +95,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 
 	private List<EntityChast> getAroundChast()
 	{
-		BlockPos pos = this.getEntity().getHomeChestPosition();
+		BlockPos pos = this.getEntity().getCenterPosition();
 
 		return this.getWorld().getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
 	}
