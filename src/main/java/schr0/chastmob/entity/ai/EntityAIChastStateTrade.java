@@ -38,6 +38,8 @@ public class EntityAIChastStateTrade extends EntityAIChast
 	@Override
 	public void updateTask()
 	{
+		super.updateTask();
+
 		this.getEntity().getLookHelper().setLookPositionWithEntity(this.trader, this.getEntity().getHorizontalFaceSpeed(), this.getEntity().getVerticalFaceSpeed());
 	}
 
