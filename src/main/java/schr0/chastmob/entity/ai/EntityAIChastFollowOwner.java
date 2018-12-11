@@ -13,6 +13,7 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	public EntityAIChastFollowOwner(EntityChast entityChast)
 	{
 		super(entityChast);
+
 		this.targetOwner = null;
 	}
 

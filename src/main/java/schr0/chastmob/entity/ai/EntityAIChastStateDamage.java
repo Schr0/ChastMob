@@ -19,6 +19,7 @@ import schr0.chastmob.inventory.InventoryChastMain;
 public class EntityAIChastStateDamage extends EntityAIChast
 {
 
+	private static final int IDLE_TIME = (2 * 20);
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
@@ -27,6 +28,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 	public EntityAIChastStateDamage(EntityChast entityChast)
 	{
 		super(entityChast);
+
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
@@ -72,7 +74,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 
 		if (this.getEntity().getRNG().nextFloat() < 0.5F)
 		{
-			this.onPanicDropItem(this.getEntity());
+			this.onPanicDropItems(this.getEntity());
 		}
 
 		if (this.getEntity().isBurning())
@@ -122,27 +124,22 @@ public class EntityAIChastStateDamage extends EntityAIChast
 		sec = Math.max(4, sec);
 		sec = Math.min(8, sec);
 
-		this.damageTime = ((sec * 20) + this.getIdleTime());
+		this.damageTime = ((sec * 20) + IDLE_TIME);
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
 		this.getEntity().setDamage(true);
 	}
 
-	private int getIdleTime()
-	{
-		return (2 * 20);
-	}
-
 	private boolean isIdle()
 	{
-		return (this.damageTime < this.getIdleTime());
+		return (this.damageTime < IDLE_TIME);
 	}
 
-	private void onPanicDropItem(EntityChast entityChast)
+	private void onPanicDropItems(EntityChast entityChast)
 	{
 		InventoryChastEquipments inventoryChastEquipment = entityChast.getInventoryEquipments();
-		Random random = entityChast.getRNG();
+		Random random = this.getRandom();
 
 		for (int slot = 0; slot < inventoryChastEquipment.getSizeInventory(); ++slot)
 		{
@@ -215,6 +212,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 				for (int posZ = (entityPosZ - searchXYZ); posZ <= (entityPosZ + searchXYZ); ++posZ)
 				{
 					blockPosMutable.setPos(posX, posY, posZ);
+
 					Block block = entity.getEntityWorld().getBlockState(blockPosMutable).getBlock();
 
 					if ((block == Blocks.WATER) || (block == Blocks.FLOWING_WATER))

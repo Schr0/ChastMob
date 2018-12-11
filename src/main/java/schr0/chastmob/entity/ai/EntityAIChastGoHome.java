@@ -16,6 +16,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	public EntityAIChastGoHome(EntityChast entityChast)
 	{
 		super(entityChast);
+
 		this.targetTEChest = null;
 	}
 
@@ -30,9 +31,9 @@ public class EntityAIChastGoHome extends EntityAIChast
 
 			if (homeChest != null)
 			{
-				for (EntityChast entityChast : this.getAroundChast())
+				for (EntityChast ownerChast : this.getAroundEntityChast())
 				{
-					if (entityChast.equals(this.getEntity()))
+					if (ownerChast.equals(this.getEntity()))
 					{
 						return false;
 					}
@@ -93,7 +94,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private List<EntityChast> getAroundChast()
+	private List<EntityChast> getAroundEntityChast()
 	{
 		BlockPos pos = this.getEntity().getCenterPosition();
 

@@ -15,7 +15,6 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -53,7 +52,7 @@ import schr0.chastmob.entity.ai.EntityAIChastStateDamage;
 import schr0.chastmob.entity.ai.EntityAIChastStateSit;
 import schr0.chastmob.entity.ai.EntityAIChastStateTrade;
 import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
-import schr0.chastmob.entity.ai.EntityAIChastYawn;
+import schr0.chastmob.entity.ai.EntityAIChastWander;
 import schr0.chastmob.init.ChastMobGuis;
 import schr0.chastmob.inventory.InventoryChastEquipments;
 import schr0.chastmob.inventory.InventoryChastMain;
@@ -105,7 +104,11 @@ public class EntityChast extends EntityGolem
 	{
 		super.initEntityAI();
 
+		// MUTE : 0 [1]
 		EntityAIBase aiSwimming = new EntityAISwimming(this);
+		aiSwimming.setMutexBits(0);
+
+		// MUTE : 1 [9]
 		this.aiStateDamage = new EntityAIChastStateDamage(this);
 		this.aiStateSit = new EntityAIChastStateSit(this);
 		this.aiStateTrade = new EntityAIChastStateTrade(this);
@@ -113,25 +116,13 @@ public class EntityChast extends EntityGolem
 		EntityAIBase aiStoreChest = new EntityAIChastStoreChest(this);
 		EntityAIBase aiFollowOwner = new EntityAIChastFollowOwner(this);
 		EntityAIBase aiCollectItem = new EntityAIChastCollectItem(this);
-		EntityAIBase aiWanderAvoidWater = new EntityAIWanderAvoidWater(this, 1.0D);
-		EntityAIBase aiWatchClosestPlayer = new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F);
-		EntityAIBase aiWatchClosestGolem = new EntityAIWatchClosest(this, EntityGolem.class, 6.0F);
-		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
-		EntityAIBase aiYawn = new EntityAIChastYawn(this);
+		EntityAIBase aiWander = new EntityAIChastWander(this);
 
-		aiSwimming.setMutexBits(0);
-		this.aiStateDamage.setMutexBits(1);
-		this.aiStateSit.setMutexBits(1);
-		this.aiStateTrade.setMutexBits(1);
-		aiGoHome.setMutexBits(1);
-		aiStoreChest.setMutexBits(1);
-		aiFollowOwner.setMutexBits(1);
-		aiCollectItem.setMutexBits(1);
-		aiWanderAvoidWater.setMutexBits(1);
-		aiWatchClosestPlayer.setMutexBits(2);
-		aiWatchClosestGolem.setMutexBits(2);
-		aiLookIdle.setMutexBits(3);
-		aiYawn.setMutexBits(4);
+		// MUTE : 2 [2]
+		EntityAIBase aiWatchClosest = new EntityAIWatchClosest(this, EntityLivingBase.class, 6.0F);
+		aiWatchClosest.setMutexBits(2);
+		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
+		aiLookIdle.setMutexBits(2);
 
 		this.tasks.addTask(0, aiSwimming);
 		this.tasks.addTask(1, this.aiStateDamage);
@@ -141,11 +132,9 @@ public class EntityChast extends EntityGolem
 		this.tasks.addTask(5, aiStoreChest);
 		this.tasks.addTask(6, aiCollectItem);
 		this.tasks.addTask(7, aiFollowOwner);
-		this.tasks.addTask(8, aiWanderAvoidWater);
-		this.tasks.addTask(9, aiWatchClosestPlayer);
-		this.tasks.addTask(9, aiWatchClosestGolem);
-		this.tasks.addTask(10, aiLookIdle);
-		this.tasks.addTask(11, aiYawn);
+		this.tasks.addTask(8, aiWander);
+		this.tasks.addTask(9, aiWatchClosest);
+		this.tasks.addTask(10, aiWatchClosest);
 	}
 
 	@Override

@@ -12,6 +12,7 @@ public class EntityAIChastStateTrade extends EntityAIChast
 	public EntityAIChastStateTrade(EntityChast entityChast)
 	{
 		super(entityChast);
+
 		this.trader = null;
 	}
 

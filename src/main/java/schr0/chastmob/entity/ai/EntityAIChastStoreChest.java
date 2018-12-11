@@ -25,6 +25,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	public EntityAIChastStoreChest(EntityChast entityChast)
 	{
 		super(entityChast);
+
 		this.targetTEChest = null;
 	}
 
@@ -131,16 +132,6 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private boolean canStoreChest(@Nullable TileEntityChest tileEntityChest)
-	{
-		if (tileEntityChest != null)
-		{
-			return this.getEntity().canBlockBeSeen(tileEntityChest.getPos());
-		}
-
-		return false;
-	}
-
 	private TileEntityChest getNearOpenChest(EntityChast entityChast, int searchXYZ)
 	{
 		World world = entityChast.getEntityWorld();
@@ -196,6 +187,16 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		}
 
 		return tileEntityChest;
+	}
+
+	private boolean canStoreChest(@Nullable TileEntityChest tileEntityChest)
+	{
+		if (tileEntityChest != null)
+		{
+			return this.getEntity().canBlockBeSeen(tileEntityChest.getPos());
+		}
+
+		return false;
 	}
 
 }

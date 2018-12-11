@@ -11,17 +11,15 @@ import schr0.chastmob.entity.EntityChast;
 public class EntityAIChastStateSit extends EntityAIChast
 {
 
-	private boolean isSitting;
-
 	private static final double OCELOT_SIT_RANGE = 1.5D;
 	private static final double OCELOT_MOVE_SPEED = 0.8D;
-	private float ocelotRangeOrigin;
+	private boolean isSitting;
 
 	public EntityAIChastStateSit(EntityChast entityChast)
 	{
 		super(entityChast);
+
 		this.isSitting = false;
-		this.ocelotRangeOrigin = 0;
 	}
 
 	@Override
@@ -49,7 +47,6 @@ public class EntityAIChastStateSit extends EntityAIChast
 		}
 
 		this.isSitting = false;
-		this.ocelotRangeOrigin = 0;
 		this.getEntity().setSit(false);
 	}
 
@@ -78,13 +75,15 @@ public class EntityAIChastStateSit extends EntityAIChast
 			}
 		}
 
-		for (EntityOcelot ocelot : this.getAroundOcelot())
+		float rangeOrigin = 0.0F;
+
+		for (EntityOcelot ocelot : this.getAroundEntityOcelot())
 		{
 			float range = (float) this.getEntity().getDistanceSq(ocelot);
 
-			if ((range < this.ocelotRangeOrigin) || (this.ocelotRangeOrigin == 0.0F))
+			if ((range < rangeOrigin) || (rangeOrigin == 0.0F))
 			{
-				this.ocelotRangeOrigin = range;
+				rangeOrigin = range;
 
 				if (this.canOcelotSit(ocelot))
 				{
@@ -111,7 +110,7 @@ public class EntityAIChastStateSit extends EntityAIChast
 		this.getEntity().setSit(true);
 	}
 
-	private List<EntityOcelot> getAroundOcelot()
+	private List<EntityOcelot> getAroundEntityOcelot()
 	{
 		BlockPos pos = this.getEntity().getPosition();
 

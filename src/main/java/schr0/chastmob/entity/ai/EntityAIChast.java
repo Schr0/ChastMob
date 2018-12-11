@@ -1,5 +1,7 @@
 package schr0.chastmob.entity.ai;
 
+import java.util.Random;
+
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -19,6 +21,7 @@ public abstract class EntityAIChast extends EntityAIBase
 
 	public EntityAIChast(EntityChast entityChast)
 	{
+		this.setMutexBits(1);
 		this.entityChast = entityChast;
 		this.time = 0;
 	}
@@ -70,6 +73,11 @@ public abstract class EntityAIChast extends EntityAIBase
 	public int getRange()
 	{
 		return this.entityChast.getAIRange();
+	}
+
+	public Random getRandom()
+	{
+		return this.entityChast.getEntityWorld().rand;
 	}
 
 	public int getTimeLimit()
@@ -128,6 +136,7 @@ public abstract class EntityAIChast extends EntityAIBase
 		World world = this.entityChast.getEntityWorld();
 		BlockPos blockpos = new BlockPos(xP + x, zP - 1, yP + z);
 		IBlockState iblockstate = world.getBlockState(blockpos);
+
 		return iblockstate.getBlockFaceShape(world, blockpos, EnumFacing.DOWN) == BlockFaceShape.SOLID && iblockstate.canEntitySpawn(this.entityChast) && world.isAirBlock(blockpos.up()) && world.isAirBlock(blockpos.up(2));
 	}
 }

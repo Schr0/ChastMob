@@ -19,6 +19,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	public EntityAIChastCollectItem(EntityChast entityChast)
 	{
 		super(entityChast);
+
 		this.targetEntityItem = null;
 	}
 
@@ -29,7 +30,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		float rangeOrigin = 0.0F;
 
-		for (EntityItem entityItem : this.getAroundItems())
+		for (EntityItem entityItem : this.getAroundEntityItem())
 		{
 			float range = (float) this.getEntity().getDistanceSq(entityItem);
 
@@ -80,7 +81,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 		if (this.getEntity().getDistanceSq(this.targetEntityItem) < COLLECT_RANGE)
 		{
-			for (EntityItem entityItem : this.getAroundItems())
+			for (EntityItem entityItem : this.getAroundEntityItem())
 			{
 				if (entityItem.equals(this.targetEntityItem) && this.canCollectItem(entityItem))
 				{
@@ -107,6 +108,13 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
+	private List<EntityItem> getAroundEntityItem()
+	{
+		BlockPos pos = this.getEntity().getCenterPosition();
+
+		return this.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
+	}
+
 	private boolean canCollectItem(EntityItem entityItem)
 	{
 		if (entityItem.isEntityAlive() && !entityItem.cannotPickup())
@@ -115,13 +123,6 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		}
 
 		return false;
-	}
-
-	private List<EntityItem> getAroundItems()
-	{
-		BlockPos pos = this.getEntity().getCenterPosition();
-
-		return this.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
 	}
 
 }
