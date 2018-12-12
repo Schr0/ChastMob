@@ -7,7 +7,7 @@ import schr0.chastmob.entity.EntityChast;
 public class EntityAIChastWander extends EntityAIChast
 {
 
-	private static final int CHANCE = (6 * 20);
+	private static final int CHANCE = 50;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
@@ -24,12 +24,12 @@ public class EntityAIChastWander extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
+		this.randPosX = 0;
+		this.randPosY = 0;
+		this.randPosZ = 0;
+
 		if (this.getRandom().nextInt(CHANCE) == 0)
 		{
-			this.randPosX = 0;
-			this.randPosY = 0;
-			this.randPosZ = 0;
-
 			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.getRange(), this.getRange());
 
 			if (vec3d == null)

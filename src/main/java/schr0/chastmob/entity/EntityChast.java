@@ -13,9 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -53,6 +51,7 @@ import schr0.chastmob.entity.ai.EntityAIChastStateSit;
 import schr0.chastmob.entity.ai.EntityAIChastStateTrade;
 import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
 import schr0.chastmob.entity.ai.EntityAIChastWander;
+import schr0.chastmob.entity.ai.EntityAIChastWatchClosest;
 import schr0.chastmob.init.ChastMobGuis;
 import schr0.chastmob.inventory.InventoryChastEquipments;
 import schr0.chastmob.inventory.InventoryChastMain;
@@ -104,11 +103,7 @@ public class EntityChast extends EntityGolem
 	{
 		super.initEntityAI();
 
-		// MUTE : 0 [1]
 		EntityAIBase aiSwimming = new EntityAISwimming(this);
-		aiSwimming.setMutexBits(0);
-
-		// MUTE : 1 [9]
 		this.aiStateDamage = new EntityAIChastStateDamage(this);
 		this.aiStateSit = new EntityAIChastStateSit(this);
 		this.aiStateTrade = new EntityAIChastStateTrade(this);
@@ -117,12 +112,7 @@ public class EntityChast extends EntityGolem
 		EntityAIBase aiFollowOwner = new EntityAIChastFollowOwner(this);
 		EntityAIBase aiCollectItem = new EntityAIChastCollectItem(this);
 		EntityAIBase aiWander = new EntityAIChastWander(this);
-
-		// MUTE : 2 [2]
-		EntityAIBase aiWatchClosest = new EntityAIWatchClosest(this, EntityLivingBase.class, 6.0F);
-		aiWatchClosest.setMutexBits(2);
-		EntityAIBase aiLookIdle = new EntityAILookIdle(this);
-		aiLookIdle.setMutexBits(2);
+		EntityAIBase aiWatchClosest = new EntityAIChastWatchClosest(this);
 
 		this.tasks.addTask(0, aiSwimming);
 		this.tasks.addTask(1, this.aiStateDamage);
@@ -134,7 +124,6 @@ public class EntityChast extends EntityGolem
 		this.tasks.addTask(7, aiFollowOwner);
 		this.tasks.addTask(8, aiWander);
 		this.tasks.addTask(9, aiWatchClosest);
-		this.tasks.addTask(10, aiWatchClosest);
 	}
 
 	@Override

@@ -11,13 +11,13 @@ import schr0.chastmob.entity.EntityChast;
 public class EntityAIChastGoHome extends EntityAIChast
 {
 
-	private TileEntityChest targetTEChest;
+	private TileEntityChest targetHome;
 
 	public EntityAIChastGoHome(EntityChast entityChast)
 	{
 		super(entityChast);
 
-		this.targetTEChest = null;
+		this.targetHome = null;
 	}
 
 	@Override
@@ -25,21 +25,18 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		if (this.getMode() == ChastMode.PATROL)
 		{
-			this.targetTEChest = null;
+			this.targetHome = null;
 
 			TileEntityChest homeChest = this.getEntity().getCanSeeHomeChest(false);
 
-			if (homeChest != null)
+			if (homeChest == null)
 			{
-				for (EntityChast ownerChast : this.getAroundEntityChast())
-				{
-					if (ownerChast.equals(this.getEntity()))
-					{
-						return false;
-					}
-				}
+				return false;
+			}
 
-				this.targetTEChest = homeChest;
+			if (this.canGoHome())
+			{
+				this.targetHome = homeChest;
 
 				return true;
 			}
@@ -56,7 +53,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 			return false;
 		}
 
-		return (this.targetTEChest != null);
+		return (this.targetHome != null);
 	}
 
 	@Override
@@ -64,12 +61,12 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		super.resetTask();
 
-		if (this.targetTEChest != null)
+		if (this.targetHome != null)
 		{
-			this.forceMoveToTargetBlockPos(this.targetTEChest.getPos());
+			this.forceMoveToTargetBlockPos(this.targetHome.getPos());
 		}
 
-		this.targetTEChest = null;
+		this.targetHome = null;
 	}
 
 	@Override
@@ -77,14 +74,14 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		super.updateTask();
 
-		BlockPos targetPos = this.targetTEChest.getPos();
+		BlockPos targetPos = this.targetHome.getPos();
 		double minRange = (this.getRange() * this.getRange());
 
 		this.getEntity().getLookHelper().setLookPosition(targetPos.getX(), targetPos.getY(), targetPos.getZ(), 10.0F, this.getEntity().getVerticalFaceSpeed());
 
 		if (this.getEntity().getDistanceSqToCenter(targetPos) < minRange)
 		{
-			this.targetTEChest = null;
+			this.targetHome = null;
 		}
 		else
 		{
@@ -94,11 +91,25 @@ public class EntityAIChastGoHome extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
+	private boolean canGoHome()
+	{
+		for (EntityChast ownerChast : this.getAroundEntityChast())
+		{
+			if (ownerChast.equals(this.getEntity()))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	private List<EntityChast> getAroundEntityChast()
 	{
 		BlockPos pos = this.getEntity().getCenterPosition();
+		int range = this.getRange();
 
-		return this.getWorld().getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
+		return this.getWorld().getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(pos).grow(range, range, range));
 	}
 
 }
