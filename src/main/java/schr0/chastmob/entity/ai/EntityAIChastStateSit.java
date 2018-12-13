@@ -1,5 +1,7 @@
 package schr0.chastmob.entity.ai;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.Entity;
@@ -75,22 +77,19 @@ public class EntityAIChastStateSit extends EntityAIChast
 			}
 		}
 
-		EntityOcelot nearestOcelot = this.getNearestOcelot();
+		EntityOcelot nearestOcelot = this.getNearestEntityOcelot();
 
 		if (nearestOcelot != null)
 		{
-			if (this.canOcelotSit(nearestOcelot))
-			{
-				nearestOcelot.getLookHelper().setLookPositionWithEntity(this.getEntity(), nearestOcelot.getHorizontalFaceSpeed(), nearestOcelot.getVerticalFaceSpeed());
+			nearestOcelot.getLookHelper().setLookPositionWithEntity(this.getEntity(), nearestOcelot.getHorizontalFaceSpeed(), nearestOcelot.getVerticalFaceSpeed());
 
-				if (nearestOcelot.getDistanceSq(this.getEntity()) < OCELOT_SIT_RANGE)
-				{
-					nearestOcelot.startRiding(this.getEntity());
-				}
-				else
-				{
-					nearestOcelot.getNavigator().tryMoveToEntityLiving(this.getEntity(), OCELOT_MOVE_SPEED);
-				}
+			if (nearestOcelot.getDistanceSq(this.getEntity()) < OCELOT_SIT_RANGE)
+			{
+				nearestOcelot.startRiding(this.getEntity());
+			}
+			else
+			{
+				nearestOcelot.getNavigator().tryMoveToEntityLiving(this.getEntity(), OCELOT_MOVE_SPEED);
 			}
 		}
 	}
@@ -103,6 +102,37 @@ public class EntityAIChastStateSit extends EntityAIChast
 		this.getEntity().setSit(true);
 	}
 
+	@Nullable
+	private EntityOcelot getNearestEntityOcelot()
+	{
+		EntityOcelot nearestEntityOcelot = null;
+		double rangeOrigin = 0;
+
+		for (EntityOcelot aroundEntityOcelot : this.getAroundEntityOcelots())
+		{
+			if (this.canOcelotSit(aroundEntityOcelot))
+			{
+				double range = this.getEntity().getDistanceSq(aroundEntityOcelot);
+
+				if ((range < rangeOrigin) || (rangeOrigin == 0))
+				{
+					rangeOrigin = range;
+
+					nearestEntityOcelot = aroundEntityOcelot;
+				}
+			}
+		}
+
+		return nearestEntityOcelot;
+	}
+
+	private List<EntityOcelot> getAroundEntityOcelots()
+	{
+		BlockPos pos = this.getEntity().getCenterPosition();
+
+		return this.getWorld().getEntitiesWithinAABB(EntityOcelot.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
+	}
+
 	private boolean canOcelotSit(EntityOcelot ocelot)
 	{
 		if (ocelot.isTamed() && !ocelot.isSitting())
@@ -111,15 +141,6 @@ public class EntityAIChastStateSit extends EntityAIChast
 		}
 
 		return false;
-	}
-
-	@Nullable
-	private EntityOcelot getNearestOcelot()
-	{
-		BlockPos pos = this.getEntity().getPosition();
-		int range = this.getRange();
-
-		return (EntityOcelot) this.getWorld().findNearestEntityWithinAABB(EntityOcelot.class, new AxisAlignedBB(pos).grow(range, range, range), this.getEntity());
 	}
 
 }

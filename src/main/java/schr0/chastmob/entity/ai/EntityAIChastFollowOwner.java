@@ -1,5 +1,7 @@
 package schr0.chastmob.entity.ai;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import schr0.chastmob.entity.ChastMode;
@@ -22,18 +24,11 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		if (this.getMode() == ChastMode.FOLLOW)
 		{
-			this.targetOwner = null;
+			this.targetOwner = this.getFollowOwner();
 
-			EntityLivingBase owner = this.getEntity().getOwner();
-
-			if (this.canFollowOwner(owner))
+			if (this.targetOwner != null)
 			{
-				if (this.getRange() < this.getEntity().getDistanceSq(owner))
-				{
-					this.targetOwner = owner;
-
-					return true;
-				}
+				return true;
 			}
 		}
 
@@ -56,11 +51,12 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		super.resetTask();
 
-		double minRange = (this.getRange() * this.getRange());
-
-		if ((this.targetOwner != null) && (minRange < this.getEntity().getDistanceSq(this.targetOwner)))
+		if (this.targetOwner != null)
 		{
-			this.forceMoveToTargetEntity(this.targetOwner);
+			if (this.getFollowRange() < this.getEntity().getDistanceSq(this.targetOwner))
+			{
+				this.forceMoveToTargetEntity(this.targetOwner);
+			}
 		}
 
 		this.targetOwner = null;
@@ -85,14 +81,37 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private boolean canFollowOwner(EntityLivingBase owner)
+	private int getFollowRange()
 	{
-		if (owner instanceof EntityPlayer)
+		return (this.getRange() * this.getRange());
+	}
+
+	@Nullable
+	private EntityLivingBase getFollowOwner()
+	{
+		EntityLivingBase owner = this.getEntity().getOwner();
+
+		if (owner == null)
 		{
-			return !((EntityPlayer) owner).isSpectator();
+			return (EntityLivingBase) null;
 		}
 
-		return false;
+		if (owner instanceof EntityPlayer)
+		{
+			EntityPlayer player = (EntityPlayer) owner;
+
+			if (player.isSpectator())
+			{
+				return (EntityLivingBase) null;
+			}
+		}
+
+		if (this.getFollowRange() < this.getEntity().getDistanceSq(owner))
+		{
+			return owner;
+		}
+
+		return (EntityLivingBase) null;
 	}
 
 }

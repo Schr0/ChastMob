@@ -1,9 +1,12 @@
 package schr0.chastmob.entity.ai;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -14,31 +17,23 @@ public class EntityAIChastCollectItem extends EntityAIChast
 {
 
 	private static final double COLLECT_RANGE = 1.5D;
-	private EntityItem targetItem;
+	private EntityItem targetEntityItem;
 
 	public EntityAIChastCollectItem(EntityChast entityChast)
 	{
 		super(entityChast);
 
-		this.targetItem = null;
+		this.targetEntityItem = null;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		this.targetItem = this.getNearestItem();
+		this.targetEntityItem = this.getNearestEntityItem();
 
-		if (this.targetItem == null)
+		if (this.targetEntityItem != null)
 		{
-			return false;
-		}
-
-		if (this.canCollectItem(this.targetItem))
-		{
-			if (InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), this.targetItem.getItem()))
-			{
-				return true;
-			}
+			return true;
 		}
 
 		return false;
@@ -52,7 +47,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 			return false;
 		}
 
-		return (this.targetItem != null);
+		return (this.targetEntityItem != null);
 	}
 
 	@Override
@@ -60,7 +55,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.targetItem = null;
+		this.targetEntityItem = null;
 	}
 
 	@Override
@@ -68,20 +63,13 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		super.updateTask();
 
-		this.getEntity().getLookHelper().setLookPositionWithEntity(this.targetItem, this.getEntity().getHorizontalFaceSpeed(), this.getEntity().getVerticalFaceSpeed());
+		this.getEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, this.getEntity().getHorizontalFaceSpeed(), this.getEntity().getVerticalFaceSpeed());
 
-		if (this.getEntity().getDistanceSq(this.targetItem) < COLLECT_RANGE)
+		if (this.getEntity().getDistanceSq(this.targetEntityItem) < COLLECT_RANGE)
 		{
-			EntityItem nearestEntityItem = this.getNearestItem();
-
-			if (nearestEntityItem == null)
+			for (EntityItem aroundEntityItem : this.getAroundEntityItems())
 			{
-				return;
-			}
-
-			if (nearestEntityItem.equals(this.targetItem) && this.canCollectItem(nearestEntityItem))
-			{
-				if (InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), nearestEntityItem.getItem()))
+				if (this.areEntityItemEqual(this.targetEntityItem, aroundEntityItem))
 				{
 					if (!this.getEntity().isCoverOpen())
 					{
@@ -90,39 +78,72 @@ public class EntityAIChastCollectItem extends EntityAIChast
 						return;
 					}
 
-					TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getEntity().getInventoryMain(), nearestEntityItem);
+					TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getEntity().getInventoryMain(), aroundEntityItem);
 
-					this.targetItem = null;
-
-					return;
+					this.targetEntityItem = null;
 				}
 			}
 		}
 		else
 		{
-			this.getEntity().getNavigator().tryMoveToEntityLiving(this.targetItem, this.getSpeed());
+			this.getEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.getSpeed());
 		}
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
+	@Nullable
+	private EntityItem getNearestEntityItem()
+	{
+		EntityItem nearestEntityItem = null;
+		double rangeOrigin = 0;
+
+		for (EntityItem aroundEntityItem : this.getAroundEntityItems())
+		{
+			if (this.canCollectItem(aroundEntityItem))
+			{
+				double range = this.getEntity().getDistanceSq(aroundEntityItem);
+
+				if ((range < rangeOrigin) || (rangeOrigin == 0))
+				{
+					rangeOrigin = range;
+
+					nearestEntityItem = aroundEntityItem;
+				}
+			}
+		}
+
+		return nearestEntityItem;
+	}
+
+	private List<EntityItem> getAroundEntityItems()
+	{
+		BlockPos pos = this.getEntity().getCenterPosition();
+
+		return this.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
+	}
+
 	private boolean canCollectItem(EntityItem entityItem)
 	{
-		if (entityItem.isEntityAlive() && !entityItem.cannotPickup())
+		if (this.getEntity().getEntitySenses().canSee(entityItem))
 		{
-			return this.getEntity().getEntitySenses().canSee(entityItem);
+			if (entityItem.isEntityAlive() && !entityItem.cannotPickup())
+			{
+				return InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), entityItem.getItem());
+			}
 		}
 
 		return false;
 	}
 
-	@Nullable
-	private EntityItem getNearestItem()
+	private boolean areEntityItemEqual(EntityItem entityItemA, EntityItem entityItemB)
 	{
-		BlockPos pos = this.getEntity().getCenterPosition();
-		int range = this.getRange();
+		if ((entityItemA != null) && (entityItemB != null))
+		{
+			return ItemStack.areItemsEqual(entityItemA.getItem(), entityItemB.getItem());
+		}
 
-		return (EntityItem) this.getWorld().findNearestEntityWithinAABB(EntityItem.class, new AxisAlignedBB(pos).grow(range, range, range), this.getEntity());
+		return false;
 	}
 
 }

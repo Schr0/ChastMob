@@ -23,7 +23,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
-	private int damageTime;
+	private int timeDamage;
 
 	public EntityAIChastStateDamage(EntityChast entityChast)
 	{
@@ -32,13 +32,13 @@ public class EntityAIChastStateDamage extends EntityAIChast
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
-		this.damageTime = 0;
+		this.timeDamage = 0;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (0 < this.damageTime)
+		if (0 < this.timeDamage)
 		{
 			return true;
 		}
@@ -54,7 +54,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
-		this.damageTime = 0;
+		this.timeDamage = 0;
 		this.getEntity().setDamage(false);
 	}
 
@@ -63,7 +63,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 	{
 		super.updateTask();
 
-		--this.damageTime;
+		--this.timeDamage;
 
 		if (this.isIdle() || this.getEntity().isEquipHelmet())
 		{
@@ -124,7 +124,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 		sec = Math.max(4, sec);
 		sec = Math.min(8, sec);
 
-		this.damageTime = ((sec * 20) + IDLE_TIME);
+		this.timeDamage = ((sec * 20) + IDLE_TIME);
 		this.randPosX = 0;
 		this.randPosY = 0;
 		this.randPosZ = 0;
@@ -133,7 +133,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 
 	private boolean isIdle()
 	{
-		return (this.damageTime < IDLE_TIME);
+		return (this.timeDamage < IDLE_TIME);
 	}
 
 	private void onPanicDropItems(EntityChast entityChast)
@@ -197,13 +197,13 @@ public class EntityAIChastStateDamage extends EntityAIChast
 	@Nullable
 	private BlockPos getNearWaterPosition(Entity entity, int searchXYZ)
 	{
+		BlockPos blockPosWater = null;
 		BlockPos blockPos = new BlockPos(entity);
 		int entityPosX = blockPos.getX();
 		int entityPosY = blockPos.getY();
 		int entityPosZ = blockPos.getZ();
-		float rangeOrigin = (float) (searchXYZ * searchXYZ * searchXYZ * 2);
+		float rangeOrigin = 0.0F;
 		BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
-		BlockPos blockPosWater = null;
 
 		for (int posX = (entityPosX - searchXYZ); posX <= (entityPosX + searchXYZ); ++posX)
 		{
@@ -219,7 +219,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 					{
 						float range = (float) ((posX - entityPosX) * (posX - entityPosX) + (posY - entityPosY) * (posY - entityPosY) + (posZ - entityPosZ) * (posZ - entityPosZ));
 
-						if (range < rangeOrigin)
+						if ((range < rangeOrigin) || (rangeOrigin == 0.0F))
 						{
 							rangeOrigin = range;
 

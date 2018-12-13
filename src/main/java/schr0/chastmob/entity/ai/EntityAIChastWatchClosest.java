@@ -12,13 +12,13 @@ public class EntityAIChastWatchClosest extends EntityAIChast
 {
 
 	private static final int CHANCE = (50);
-	private EntityLivingBase targetClosest;
+	private EntityLivingBase targetEntity;
 
 	public EntityAIChastWatchClosest(EntityChast entityChast)
 	{
 		super(entityChast);
 
-		this.targetClosest = null;
+		this.targetEntity = null;
 	}
 
 	@Override
@@ -26,14 +26,14 @@ public class EntityAIChastWatchClosest extends EntityAIChast
 	{
 		if (this.getRandom().nextInt(CHANCE) == 0)
 		{
-			this.targetClosest = this.getNearestEntity();
+			this.targetEntity = this.getNearestEntity();
 
-			if (this.targetClosest == null)
+			if (this.targetEntity == null)
 			{
 				return false;
 			}
 
-			if (this.canWatchClosest(this.targetClosest))
+			if (this.canWatchClosest(this.targetEntity))
 			{
 				return true;
 			}
@@ -58,7 +58,7 @@ public class EntityAIChastWatchClosest extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.targetClosest = null;
+		this.targetEntity = null;
 	}
 
 	@Override
@@ -66,10 +66,18 @@ public class EntityAIChastWatchClosest extends EntityAIChast
 	{
 		super.updateTask();
 
-		this.getEntity().getLookHelper().setLookPositionWithEntity(this.targetClosest, this.getEntity().getHorizontalFaceSpeed(), this.getEntity().getVerticalFaceSpeed());
+		this.getEntity().getLookHelper().setLookPositionWithEntity(this.targetEntity, this.getEntity().getHorizontalFaceSpeed(), this.getEntity().getVerticalFaceSpeed());
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
+
+	@Nullable
+	private EntityLivingBase getNearestEntity()
+	{
+		BlockPos pos = this.getEntity().getPosition();
+
+		return (EntityLivingBase) this.getWorld().findNearestEntityWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()), this.getEntity());
+	}
 
 	private boolean canWatchClosest(Entity entity)
 	{
@@ -79,14 +87,6 @@ public class EntityAIChastWatchClosest extends EntityAIChast
 		}
 
 		return false;
-	}
-
-	@Nullable
-	private EntityLivingBase getNearestEntity()
-	{
-		BlockPos pos = this.getEntity().getPosition();
-
-		return (EntityLivingBase) this.getWorld().findNearestEntityWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()), this.getEntity());
 	}
 
 }

@@ -2,6 +2,8 @@ package schr0.chastmob.entity.ai;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -11,13 +13,13 @@ import schr0.chastmob.entity.EntityChast;
 public class EntityAIChastGoHome extends EntityAIChast
 {
 
-	private TileEntityChest targetHome;
+	private TileEntityChest targetHomeChest;
 
 	public EntityAIChastGoHome(EntityChast entityChast)
 	{
 		super(entityChast);
 
-		this.targetHome = null;
+		this.targetHomeChest = null;
 	}
 
 	@Override
@@ -25,19 +27,10 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		if (this.getMode() == ChastMode.PATROL)
 		{
-			this.targetHome = null;
+			this.targetHomeChest = this.getCanGoHomeChest();
 
-			TileEntityChest homeChest = this.getEntity().getCanSeeHomeChest(false);
-
-			if (homeChest == null)
+			if (this.targetHomeChest != null)
 			{
-				return false;
-			}
-
-			if (this.canGoHome())
-			{
-				this.targetHome = homeChest;
-
 				return true;
 			}
 		}
@@ -53,7 +46,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 			return false;
 		}
 
-		return (this.targetHome != null);
+		return (this.targetHomeChest != null);
 	}
 
 	@Override
@@ -61,12 +54,12 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		super.resetTask();
 
-		if (this.targetHome != null)
+		if (this.targetHomeChest != null)
 		{
-			this.forceMoveToTargetBlockPos(this.targetHome.getPos());
+			this.forceMoveToTargetBlockPos(this.targetHomeChest.getPos());
 		}
 
-		this.targetHome = null;
+		this.targetHomeChest = null;
 	}
 
 	@Override
@@ -74,14 +67,13 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		super.updateTask();
 
-		BlockPos targetPos = this.targetHome.getPos();
-		double minRange = (this.getRange() * this.getRange());
+		BlockPos targetPos = this.targetHomeChest.getPos();
 
 		this.getEntity().getLookHelper().setLookPosition(targetPos.getX(), targetPos.getY(), targetPos.getZ(), 10.0F, this.getEntity().getVerticalFaceSpeed());
 
-		if (this.getEntity().getDistanceSqToCenter(targetPos) < minRange)
+		if (this.getEntity().getDistanceSqToCenter(targetPos) < this.getGoHomeRange())
 		{
-			this.targetHome = null;
+			this.targetHomeChest = null;
 		}
 		else
 		{
@@ -91,25 +83,30 @@ public class EntityAIChastGoHome extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private boolean canGoHome()
+	private int getGoHomeRange()
 	{
-		for (EntityChast ownerChast : this.getAroundEntityChast())
+		return (this.getRange() * this.getRange());
+	}
+
+	@Nullable
+	private TileEntityChest getCanGoHomeChest()
+	{
+		for (EntityChast ownerChast : this.getAroundEntityChasts())
 		{
 			if (ownerChast.equals(this.getEntity()))
 			{
-				return false;
+				return (TileEntityChest) null;
 			}
 		}
 
-		return true;
+		return this.getEntity().getCanSeeHomeChest(false);
 	}
 
-	private List<EntityChast> getAroundEntityChast()
+	private List<EntityChast> getAroundEntityChasts()
 	{
 		BlockPos pos = this.getEntity().getCenterPosition();
-		int range = this.getRange();
 
-		return this.getWorld().getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(pos).grow(range, range, range));
+		return this.getWorld().getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
 	}
 
 }

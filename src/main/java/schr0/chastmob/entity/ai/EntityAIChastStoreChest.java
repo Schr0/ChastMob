@@ -2,15 +2,12 @@ package schr0.chastmob.entity.ai;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.BlockChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.inventory.InventoryChastHelper;
@@ -34,31 +31,11 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		if (this.getMode() == ChastMode.PATROL)
 		{
-			this.targetHomeChest = null;
+			this.targetHomeChest = this.getCanStoreChest();
 
-			if (InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), ItemStack.EMPTY))
+			if (this.targetHomeChest != null)
 			{
-				return false;
-			}
-
-			TileEntityChest homeChest = this.getEntity().getCanSeeHomeChest(true);
-
-			if (homeChest != null)
-			{
-				InventoryChastMain inventoryMain = this.getEntity().getInventoryMain();
-				IInventory inventory = (IInventory) homeChest;
-
-				for (int slot = 0; slot < inventoryMain.getSizeInventory(); ++slot)
-				{
-					ItemStack stackSlot = inventoryMain.getStackInSlot(slot);
-
-					if (InventoryChastHelper.canStoreInventory(inventory, stackSlot))
-					{
-						this.targetHomeChest = homeChest;
-
-						return true;
-					}
-				}
+				return true;
 			}
 		}
 
@@ -95,12 +72,11 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 		if (this.getEntity().getDistanceSqToCenter(targetPos) < STORE_RANGE)
 		{
-			TileEntityChest nearestOpenChest = this.getNearestOpenChest(this.getEntity(), this.getRange());
+			TileEntityChest homeChest = this.getCanStoreChest();
 
-			if ((nearestOpenChest != null) && (nearestOpenChest.equals(this.targetHomeChest)))
+			if (homeChest != null)
 			{
 				InventoryChastMain inventoryMain = this.getEntity().getInventoryMain();
-				IInventory inventory = (IInventory) nearestOpenChest;
 
 				for (int slot = 0; slot < inventoryMain.getSizeInventory(); ++slot)
 				{
@@ -115,13 +91,14 @@ public class EntityAIChastStoreChest extends EntityAIChast
 							return;
 						}
 
-						inventoryMain.setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) null, (IInventory) nearestOpenChest, stackSlot, EnumFacing.UP));
+						inventoryMain.setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) null, (IInventory) homeChest, stackSlot, EnumFacing.UP));
 					}
 				}
 
 				this.targetHomeChest = null;
 
 				return;
+
 			}
 		}
 		else
@@ -132,71 +109,33 @@ public class EntityAIChastStoreChest extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private TileEntityChest getNearestOpenChest(EntityChast entityChast, int searchXYZ)
+	@Nullable
+	private TileEntityChest getCanStoreChest()
 	{
-		World world = entityChast.getEntityWorld();
-		BlockPos blockPos = entityChast.getPosition();
-		int posX = blockPos.getX();
-		int posY = blockPos.getY();
-		int posZ = blockPos.getZ();
-		float rangeOrigin = (float) (searchXYZ * searchXYZ * searchXYZ * 2);
-
-		BlockPos.MutableBlockPos posMutable = new BlockPos.MutableBlockPos();
-		TileEntityChest tileEntityChest = null;
-
-		for (int x = (posX - searchXYZ); x <= (posX + searchXYZ); ++x)
+		if (InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), ItemStack.EMPTY))
 		{
-			for (int y = (posY - searchXYZ); y <= (posY + searchXYZ); ++y)
+			return (TileEntityChest) null;
+		}
+
+		TileEntityChest homeChest = this.getEntity().getCanSeeHomeChest(true);
+
+		if (homeChest != null)
+		{
+			InventoryChastMain inventoryMain = this.getEntity().getInventoryMain();
+			IInventory inventory = (IInventory) homeChest;
+
+			for (int slot = 0; slot < inventoryMain.getSizeInventory(); ++slot)
 			{
-				for (int z = (posZ - searchXYZ); z <= (posZ + searchXYZ); ++z)
+				ItemStack stackSlot = inventoryMain.getStackInSlot(slot);
+
+				if (InventoryChastHelper.canStoreInventory(inventory, stackSlot))
 				{
-					posMutable.setPos(x, y, z);
-
-					TileEntity tileEntity = world.getTileEntity(posMutable);
-
-					if (tileEntity instanceof TileEntityChest)
-					{
-						boolean isLockedChest = (((BlockChest) world.getBlockState(posMutable).getBlock()).getLockableContainer(world, posMutable) == null);
-
-						if (isLockedChest)
-						{
-							continue;
-						}
-
-						float range = (float) ((x - posX) * (x - posX) + (y - posY) * (y - posY) + (z - posZ) * (z - posZ));
-
-						if (range < rangeOrigin)
-						{
-							rangeOrigin = range;
-
-							for (int slot = 0; slot < entityChast.getInventoryMain().getSizeInventory(); ++slot)
-							{
-								ItemStack stackSlot = entityChast.getInventoryMain().getStackInSlot(slot);
-
-								if (InventoryChastHelper.canStoreInventory((IInventory) tileEntity, stackSlot))
-								{
-									tileEntityChest = (TileEntityChest) tileEntity;
-
-									break;
-								}
-							}
-						}
-					}
+					return homeChest;
 				}
 			}
 		}
 
-		return tileEntityChest;
-	}
-
-	private boolean canStoreChest(@Nullable TileEntityChest tileEntityChest)
-	{
-		if (tileEntityChest != null)
-		{
-			return this.getEntity().canBlockBeSeen(tileEntityChest.getPos());
-		}
-
-		return false;
+		return (TileEntityChest) null;
 	}
 
 }
