@@ -27,7 +27,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		if (this.getMode() == ChastMode.PATROL)
 		{
-			this.targetHomeChest = this.getCanGoHomeChest();
+			this.targetHomeChest = this.getHomeChest();
 
 			if (this.targetHomeChest != null)
 			{
@@ -89,7 +89,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	}
 
 	@Nullable
-	private TileEntityChest getCanGoHomeChest()
+	private TileEntityChest getHomeChest()
 	{
 		for (EntityChast ownerChast : this.getAroundEntityChasts())
 		{

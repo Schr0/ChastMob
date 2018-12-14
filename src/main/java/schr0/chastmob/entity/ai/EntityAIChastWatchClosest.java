@@ -11,7 +11,7 @@ import schr0.chastmob.entity.EntityChast;
 public class EntityAIChastWatchClosest extends EntityAIChast
 {
 
-	private static final int CHANCE = (50);
+	private static final int CHANCE = (20);
 	private EntityLivingBase targetEntity;
 
 	public EntityAIChastWatchClosest(EntityChast entityChast)
@@ -24,7 +24,7 @@ public class EntityAIChastWatchClosest extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getRandom().nextInt(CHANCE) == 0)
+		if (this.getEntity().getNavigator().noPath() && (this.getRandom().nextInt(CHANCE) == 0))
 		{
 			this.targetEntity = this.getNearestEntity();
 

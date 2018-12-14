@@ -2,12 +2,13 @@ package schr0.chastmob.entity.ai;
 
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.util.math.Vec3d;
+import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastWander extends EntityAIChast
 {
 
-	private static final int CHANCE = 50;
+	private static final int CHANCE = 20;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
@@ -24,25 +25,28 @@ public class EntityAIChastWander extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		this.randPosX = 0;
-		this.randPosY = 0;
-		this.randPosZ = 0;
-
-		if (this.getRandom().nextInt(CHANCE) == 0)
+		if ((this.getMode() == ChastMode.FREEDOM) || (this.getMode() == ChastMode.PATROL))
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.getRange(), this.getRange());
+			this.randPosX = 0;
+			this.randPosY = 0;
+			this.randPosZ = 0;
 
-			if (vec3d == null)
+			if (this.getEntity().getNavigator().noPath() && (this.getRandom().nextInt(CHANCE) == 0))
 			{
-				return false;
-			}
-			else
-			{
-				this.randPosX = vec3d.x;
-				this.randPosY = vec3d.y;
-				this.randPosZ = vec3d.z;
+				Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.getRange(), this.getRange());
 
-				return true;
+				if (vec3d == null)
+				{
+					return false;
+				}
+				else
+				{
+					this.randPosX = vec3d.x;
+					this.randPosY = vec3d.y;
+					this.randPosZ = vec3d.z;
+
+					return true;
+				}
 			}
 		}
 

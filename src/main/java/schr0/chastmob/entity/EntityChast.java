@@ -488,8 +488,6 @@ public class EntityChast extends EntityGolem
 						return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
 					}
 				}
-
-				return super.processInteract(player, hand);
 			}
 
 			if (player.isSneaking())
