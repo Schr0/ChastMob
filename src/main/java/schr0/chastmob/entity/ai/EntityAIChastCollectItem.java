@@ -125,6 +125,24 @@ public class EntityAIChastCollectItem extends EntityAIChast
 
 	private boolean canCollectItem(EntityItem entityItem)
 	{
+		ItemStack stackEntity = entityItem.getItem();
+		ItemStack stackMainhand = this.getEntity().getHeldItemMainhand().copy();
+		ItemStack stackOffhand = this.getEntity().getHeldItemOffhand().copy();
+
+		stackEntity.setCount(1);
+		stackMainhand.setCount(1);
+		stackOffhand.setCount(1);
+
+		if (!stackMainhand.isEmpty() && !ItemStack.areItemStacksEqual(stackEntity, stackMainhand))
+		{
+			return false;
+		}
+
+		if (!stackOffhand.isEmpty() && ItemStack.areItemStacksEqual(stackEntity, stackOffhand))
+		{
+			return false;
+		}
+
 		if (this.getEntity().getEntitySenses().canSee(entityItem))
 		{
 			if (entityItem.isEntityAlive() && !entityItem.cannotPickup())

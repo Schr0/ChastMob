@@ -1,6 +1,7 @@
 package schr0.chastmob.gui;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.google.common.collect.Lists;
 
@@ -13,6 +14,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
@@ -45,7 +49,7 @@ public class GuiChastInventory extends GuiContainer
 		super.initGui();
 
 		int buttonId = 0;
-		int buttonPosX = ((this.width - this.xSize) / 2) + 113;
+		int buttonPosX = ((this.width - this.xSize) / 2) + 128;
 		int buttonPosY = ((this.height - this.ySize) / 2) + 39;
 		GuiChastInventory.ChangeButton changeButton = new GuiChastInventory.ChangeButton(buttonId, buttonPosX, buttonPosY);
 
@@ -76,6 +80,14 @@ public class GuiChastInventory extends GuiContainer
 		height = 10;
 		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
 
+		drawX = (originPosX + 85);
+		drawY = (originPosY + 44);
+		textureX = 184;
+		textureY = this.getHomeChestTextureY();
+		width = 16;
+		height = 16;
+		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
+
 		int entityPosX = (originPosX + 51);
 		int entityPosY = (originPosY + 60);
 		int scale = 25;
@@ -90,7 +102,9 @@ public class GuiChastInventory extends GuiContainer
 	{
 		String nameChast = this.entityChast.getName();
 		this.fontRenderer.drawString(nameChast, this.xSize / 2 - this.fontRenderer.getStringWidth(nameChast) / 2, 6, 4210752);
-		this.fontRenderer.drawString(this.entityPlayer.inventory.getDisplayName().getUnformattedText(), 8, 128, 4210752);
+
+		String nameInventory = this.entityPlayer.inventory.getDisplayName().getUnformattedText();
+		this.fontRenderer.drawString(nameInventory, 8, 128, 4210752);
 	}
 
 	@Override
@@ -104,22 +118,66 @@ public class GuiChastInventory extends GuiContainer
 		int height = 14;
 		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
 		{
-			this.drawHoveringText(Lists.newArrayList(this.entityChast.getHealth() + " / " + this.entityChast.getMaxHealth()), mouseX, mouseY);
+			List<String> texts = Lists.newArrayList();
+			TextComponentTranslation text = new TextComponentTranslation("entity.chast.gui.health", new Object[0]);
+			text.getStyle().setColor(TextFormatting.AQUA);
+
+			texts.add(text.getFormattedText());
+			texts.add(this.entityChast.getHealth() + " / " + this.entityChast.getMaxHealth());
+
+			this.drawHoveringText(texts, mouseX, mouseY);
 		}
 
-		rectX = 91;
+		ItemStack renderItem = entityChast.getMode().getIconItem();
+		int xPosition = ((this.width - this.xSize) / 2) + 107;
+		int yPosition = ((this.height - this.ySize) / 2) + 44;
+		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);
+
+		rectX = 107;
 		rectY = 44;
 		width = 16;
 		height = 16;
 		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
 		{
-			this.drawHoveringText(Lists.newArrayList(this.entityChast.getMode().getLabel()), mouseX, mouseY);
+			List<String> texts = Lists.newArrayList();
+			TextComponentTranslation text = new TextComponentTranslation("entity.chast.gui.mode", new Object[0]);
+			text.getStyle().setColor(TextFormatting.AQUA);
+
+			texts.add(text.getFormattedText());
+			texts.add(this.entityChast.getMode().getLabel());
+
+			this.drawHoveringText(texts, mouseX, mouseY);
 		}
 
-		ItemStack renderItem = entityChast.getMode().getIconItem();
-		int xPosition = ((this.width - this.xSize) / 2) + 91;
-		int yPosition = ((this.height - this.ySize) / 2) + 44;
-		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);
+		rectX = 85;
+		rectY = 44;
+		width = 16;
+		height = 16;
+		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
+		{
+			List<String> texts = Lists.newArrayList();
+			BlockPos pos = this.entityChast.getHomeChestPosition();
+			TextComponentTranslation text = new TextComponentTranslation("entity.chast.gui.home", new Object[0]);
+			text.getStyle().setColor(TextFormatting.AQUA);
+
+			texts.add(text.getFormattedText());
+
+			if (pos.equals(BlockPos.ORIGIN))
+			{
+				String none = "NONE";
+				texts.add("posX : " + none);
+				texts.add("posY : " + none);
+				texts.add("posZ : " + none);
+			}
+			else
+			{
+				texts.add("posX : " + pos.getX());
+				texts.add("posY : " + pos.getY());
+				texts.add("posZ : " + pos.getZ());
+			}
+
+			this.drawHoveringText(texts, mouseX, mouseY);
+		}
 
 		this.renderHoveredToolTip(mouseX, mouseY);
 	}
@@ -144,7 +202,7 @@ public class GuiChastInventory extends GuiContainer
 
 		public ChangeButton(int buttonId, int x, int y)
 		{
-			super(buttonId, x, y, 44, 26, "");
+			super(buttonId, x, y, 35, 26, "");
 
 			this.buttonTextureY = 56;
 		}
@@ -167,8 +225,6 @@ public class GuiChastInventory extends GuiContainer
 		{
 			this.buttonTextureY = 56;
 		}
-
-		// TODO /* ======================================== MOD START =====================================*/
 
 		public void mouseClicked()
 		{
@@ -209,6 +265,16 @@ public class GuiChastInventory extends GuiContainer
 		int healthMax = (int) this.entityChast.getMaxHealth();
 
 		return Math.min(72, (72 - ((healthMax - health) * 3)));
+	}
+
+	private int getHomeChestTextureY()
+	{
+		if (this.entityChast.getHomeChestPosition() == BlockPos.ORIGIN)
+		{
+			return 120;
+		}
+
+		return 144;
 	}
 
 }

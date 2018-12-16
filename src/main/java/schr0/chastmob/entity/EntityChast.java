@@ -25,6 +25,7 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -53,6 +54,7 @@ import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
 import schr0.chastmob.entity.ai.EntityAIChastWander;
 import schr0.chastmob.entity.ai.EntityAIChastWatchClosest;
 import schr0.chastmob.init.ChastMobGuis;
+import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.inventory.InventoryChastEquipments;
 import schr0.chastmob.inventory.InventoryChastMain;
 import schr0.chastmob.item.ItemHomeMap;
@@ -70,11 +72,13 @@ public class EntityChast extends EntityGolem
 	private static final String TAG = ChastMob.MOD_ID + "." + "entity_chast" + ".";
 	private static final String TAG_INVENTORY = TAG + "inventory";
 	private static final String TAG_EQUIPMENTS = TAG + "equipments";
+	private static final String TAG_HOME_CHEST_POS = TAG + "home_chest_pos";
 	private static final String TAG_ARM_COLOR = TAG + "arm_color";
 	private static final String TAG_OWNER_UUID = TAG + "owner_uuid";
 	private static final String TAG_FOLLOW = TAG + "follow";
 	private static final String TAG_STATE_SIT = TAG + "state_sit";
 
+	private static final DataParameter<BlockPos> HOME_CHEST_POS = EntityDataManager.<BlockPos> createKey(EntityChast.class, DataSerializers.BLOCK_POS);
 	private static final DataParameter<Integer> ARM_COLOR = EntityDataManager.<Integer> createKey(EntityChast.class, DataSerializers.VARINT);
 	private static final DataParameter<Byte> COVER_OPEN = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Optional<UUID>> OWNER_UUID = EntityDataManager.<Optional<UUID>> createKey(EntityChast.class, DataSerializers.OPTIONAL_UNIQUE_ID);
@@ -138,6 +142,7 @@ public class EntityChast extends EntityGolem
 	protected void entityInit()
 	{
 		super.entityInit();
+		this.getDataManager().register(HOME_CHEST_POS, BlockPos.ORIGIN);
 		this.getDataManager().register(ARM_COLOR, Integer.valueOf(EnumDyeColor.WHITE.getDyeDamage()));
 		this.getDataManager().register(COVER_OPEN, Byte.valueOf((byte) 0));
 		this.getDataManager().register(OWNER_UUID, Optional.<UUID> absent());
@@ -156,6 +161,11 @@ public class EntityChast extends EntityGolem
 		compound.setTag(TAG_INVENTORY, this.getInventoryMain().writeInventoryToNBT());
 
 		compound.setTag(TAG_EQUIPMENTS, this.getInventoryEquipments().writeInventoryToNBT());
+
+		compound.setTag(TAG_HOME_CHEST_POS, this.newDoubleNBTList(new double[]
+		{
+				this.getHomeChestPosition().getX(), this.getHomeChestPosition().getY(), this.getHomeChestPosition().getZ()
+		}));
 
 		compound.setByte(TAG_ARM_COLOR, (byte) this.getArmColor().getDyeDamage());
 
@@ -181,6 +191,16 @@ public class EntityChast extends EntityGolem
 		this.getInventoryMain().readInventoryFromNBT(compound.getTagList(TAG_INVENTORY, 10));
 
 		this.getInventoryEquipments().readInventoryFromNBT(compound.getTagList(TAG_EQUIPMENTS, 10));
+
+		if (compound.hasKey(TAG_HOME_CHEST_POS))
+		{
+			NBTTagList nbttaglist = compound.getTagList(TAG_HOME_CHEST_POS, 6);
+
+			if (nbttaglist.tagCount() == 3)
+			{
+				this.setHomeChestPosition(new BlockPos((int) nbttaglist.getDoubleAt(0), (int) nbttaglist.getDoubleAt(1), (int) nbttaglist.getDoubleAt(2)));
+			}
+		}
 
 		this.setArmColor(EnumDyeColor.byDyeDamage(compound.getByte(TAG_ARM_COLOR)));
 
@@ -444,13 +464,18 @@ public class EntityChast extends EntityGolem
 	@Override
 	public boolean processInteract(EntityPlayer player, EnumHand hand)
 	{
-		if (this.isDamage() || !this.isOwner(player) || (hand == EnumHand.OFF_HAND))
+		if (this.isDamage() || (hand == EnumHand.OFF_HAND))
 		{
 			return false;
 		}
 
 		if (this.isTamed())
 		{
+			if (!this.isOwner(player))
+			{
+				return false;
+			}
+
 			boolean isServerWorld = !this.getEntityWorld().isRemote;
 			ItemStack stackHeldItem = player.getHeldItem(hand);
 
@@ -487,6 +512,43 @@ public class EntityChast extends EntityGolem
 
 						return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
 					}
+				}
+
+				if (stackHeldItem.getItem() == ChastMobItems.HOME_MAP)
+				{
+					ItemHomeMap itemHomeMap = (ItemHomeMap) stackHeldItem.getItem();
+					BlockPos homeChestPosition = BlockPos.ORIGIN;
+
+					if (itemHomeMap.hasPosition(stackHeldItem))
+					{
+						homeChestPosition = itemHomeMap.getPosition(stackHeldItem);
+					}
+
+					this.setHomeChestPosition(homeChestPosition);
+
+					if (isServerWorld)
+					{
+						if (homeChestPosition == BlockPos.ORIGIN)
+						{
+							player.sendMessage(new TextComponentTranslation("entity.chast.home.reset", new Object[]
+							{
+									TextFormatting.ITALIC.BOLD + this.getName()
+							}));
+						}
+						else
+						{
+							player.sendMessage(new TextComponentTranslation("entity.chast.home.register", new Object[]
+							{
+									TextFormatting.ITALIC.BOLD + this.getName(),
+									homeChestPosition.getX(),
+									homeChestPosition.getY(),
+									homeChestPosition.getZ(),
+							}));
+						}
+
+					}
+
+					return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
 				}
 			}
 
@@ -590,6 +652,16 @@ public class EntityChast extends EntityGolem
 	public float getCoverRotateAngleX(float partialTickTime)
 	{
 		return ((this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * partialTickTime) * 0.5F * (float) Math.PI);
+	}
+
+	public BlockPos getHomeChestPosition()
+	{
+		return (BlockPos) this.getDataManager().get(HOME_CHEST_POS);
+	}
+
+	public void setHomeChestPosition(BlockPos pos)
+	{
+		this.getDataManager().set(HOME_CHEST_POS, pos);
 	}
 
 	public EnumDyeColor getArmColor()
@@ -763,6 +835,31 @@ public class EntityChast extends EntityGolem
 
 	// TODO /* ======================================== MOD START =====================================*/
 
+	public boolean canBlockBeSeen(BlockPos blockPos)
+	{
+		World world = this.getEntityWorld();
+		IBlockState state = world.getBlockState(blockPos);
+
+		if (state == Blocks.AIR.getDefaultState())
+		{
+			return false;
+		}
+
+		Vec3d entityVec3d = new Vec3d(this.posX, this.posY + this.getEyeHeight(), this.posZ);
+		Vec3d targetVec3d = new Vec3d(((double) blockPos.getX() + 0.5D), ((double) blockPos.getY() + (state.getCollisionBoundingBox(world, blockPos).minY + state.getCollisionBoundingBox(world, blockPos).maxY) * 0.9D), ((double) blockPos.getZ() + 0.5D));
+		RayTraceResult rayTraceResult = world.rayTraceBlocks(entityVec3d, targetVec3d);
+
+		if ((rayTraceResult != null) && (rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK))
+		{
+			if (rayTraceResult.getBlockPos().equals(blockPos))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public InventoryChastMain getInventoryMain()
 	{
 		if (this.inventoryMain == null)
@@ -825,35 +922,6 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public BlockPos getCenterPosition()
-	{
-		if (this.isFollow())
-		{
-			EntityLivingBase owner = this.getOwner();
-
-			if (this.isTamed() && (owner != null))
-			{
-				return owner.getPosition();
-			}
-		}
-		else
-		{
-			ItemStack satckItemHMF = this.getHandItemHMF(this);
-
-			if (!satckItemHMF.isEmpty())
-			{
-				BlockPos homePosition = ((ItemHomeMap) satckItemHMF.getItem()).getPosition(satckItemHMF);
-
-				if (this.canBlockBeSeen(homePosition))
-				{
-					return homePosition;
-				}
-			}
-		}
-
-		return this.getPosition();
-	}
-
 	@Nullable
 	public TileEntityChest getCanSeeHomeChest(boolean isOpenChest)
 	{
@@ -876,29 +944,28 @@ public class EntityChast extends EntityGolem
 		return (TileEntityChest) null;
 	}
 
-	public boolean canBlockBeSeen(BlockPos blockPos)
+	public BlockPos getCenterPosition()
 	{
-		World world = this.getEntityWorld();
-		IBlockState state = world.getBlockState(blockPos);
-
-		if (state == Blocks.AIR.getDefaultState())
+		if (this.isFollow())
 		{
-			return false;
-		}
+			EntityLivingBase owner = this.getOwner();
 
-		Vec3d entityVec3d = new Vec3d(this.posX, this.posY + this.getEyeHeight(), this.posZ);
-		Vec3d targetVec3d = new Vec3d(((double) blockPos.getX() + 0.5D), ((double) blockPos.getY() + (state.getCollisionBoundingBox(world, blockPos).minY + state.getCollisionBoundingBox(world, blockPos).maxY) * 0.9D), ((double) blockPos.getZ() + 0.5D));
-		RayTraceResult rayTraceResult = world.rayTraceBlocks(entityVec3d, targetVec3d);
-
-		if ((rayTraceResult != null) && (rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK))
-		{
-			if (rayTraceResult.getBlockPos().equals(blockPos))
+			if (this.isTamed() && (owner != null))
 			{
-				return true;
+				return owner.getPosition();
+			}
+		}
+		else
+		{
+			BlockPos homeChestPosition = this.getHomeChestPosition();
+
+			if (this.canBlockBeSeen(homeChestPosition))
+			{
+				return homeChestPosition;
 			}
 		}
 
-		return false;
+		return this.getPosition();
 	}
 
 	public double getAISpeed()
@@ -990,34 +1057,6 @@ public class EntityChast extends EntityGolem
 		}
 
 		return true;
-	}
-
-	private ItemStack getHandItemHMF(EntityLivingBase entityLivingBase)
-	{
-		ItemStack stackMainhand = this.getInventoryEquipments().getMainhandItem();
-		ItemStack stackOffhand = this.getInventoryEquipments().getOffhandItem();
-
-		if (this.isItemHMF(stackMainhand))
-		{
-			return stackMainhand;
-		}
-
-		if (this.isItemHMF(stackOffhand))
-		{
-			return stackOffhand;
-		}
-
-		return ItemStack.EMPTY;
-	}
-
-	private boolean isItemHMF(ItemStack stack)
-	{
-		if (stack.getItem() instanceof ItemHomeMap)
-		{
-			return ((ItemHomeMap) stack.getItem()).hasPosition(stack);
-		}
-
-		return false;
 	}
 
 }
