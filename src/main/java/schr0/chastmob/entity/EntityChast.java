@@ -524,28 +524,31 @@ public class EntityChast extends EntityGolem
 						homeChestPosition = itemHomeMap.getPosition(stackHeldItem);
 					}
 
-					this.setHomeChestPosition(homeChestPosition);
-
-					if (isServerWorld)
+					if (this.getHomeChestPosition() != homeChestPosition)
 					{
-						if (homeChestPosition == BlockPos.ORIGIN)
-						{
-							player.sendMessage(new TextComponentTranslation("entity.chast.home.reset", new Object[]
-							{
-									TextFormatting.ITALIC.BOLD + this.getName()
-							}));
-						}
-						else
-						{
-							player.sendMessage(new TextComponentTranslation("entity.chast.home.register", new Object[]
-							{
-									TextFormatting.ITALIC.BOLD + this.getName(),
-									homeChestPosition.getX(),
-									homeChestPosition.getY(),
-									homeChestPosition.getZ(),
-							}));
-						}
+						this.setHomeChestPosition(homeChestPosition);
 
+						if (isServerWorld)
+						{
+							if (homeChestPosition == BlockPos.ORIGIN)
+							{
+								player.sendMessage(new TextComponentTranslation("entity.chast.home.reset", new Object[]
+								{
+										TextFormatting.ITALIC.BOLD + this.getName()
+								}));
+							}
+							else
+							{
+								player.sendMessage(new TextComponentTranslation("entity.chast.home.register", new Object[]
+								{
+										TextFormatting.ITALIC.BOLD + this.getName(),
+										homeChestPosition.getX(),
+										homeChestPosition.getY(),
+										homeChestPosition.getZ(),
+								}));
+							}
+
+						}
 					}
 
 					return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
