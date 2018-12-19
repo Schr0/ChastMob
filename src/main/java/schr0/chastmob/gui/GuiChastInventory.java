@@ -48,9 +48,10 @@ public class GuiChastInventory extends GuiContainer
 	{
 		super.initGui();
 
+		// AIボタン
 		int buttonId = 0;
-		int buttonPosX = ((this.width - this.xSize) / 2) + 128;
-		int buttonPosY = ((this.height - this.ySize) / 2) + 39;
+		int buttonPosX = ((this.width - this.xSize) / 2) + 119;
+		int buttonPosY = ((this.height - this.ySize) / 2) + 41;
 		GuiChastInventory.ChangeButton changeButton = new GuiChastInventory.ChangeButton(buttonId, buttonPosX, buttonPosY);
 
 		this.buttonChange = (GuiChastInventory.ChangeButton) this.addButton(changeButton);
@@ -64,6 +65,7 @@ public class GuiChastInventory extends GuiContainer
 		int originPosX = (this.width - this.xSize) / 2;
 		int originPosY = (this.height - this.ySize) / 2;
 
+		// 全画面
 		int drawX = originPosX;
 		int drawY = originPosY;
 		int textureX = 0;
@@ -72,22 +74,25 @@ public class GuiChastInventory extends GuiContainer
 		int height = this.ySize;
 		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
 
-		drawX = (originPosX + 89);
-		drawY = (originPosY + 25);
+		// HPバー
+		drawX = (originPosX + 114);
+		drawY = (originPosY + 26);
 		textureX = 184;
 		textureY = this.getHealthTextureY();
 		width = this.getHealthBar();
 		height = 10;
 		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
 
-		drawX = (originPosX + 85);
-		drawY = (originPosY + 44);
+		// ホームチェストアイコン
+		drawX = (originPosX + 92);
+		drawY = (originPosY + 22);
 		textureX = 184;
 		textureY = this.getHomeChestTextureY();
 		width = 16;
 		height = 16;
 		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
 
+		// モブ表示
 		int entityPosX = (originPosX + 51);
 		int entityPosY = (originPosY + 60);
 		int scale = 25;
@@ -100,9 +105,11 @@ public class GuiChastInventory extends GuiContainer
 	@Override
 	protected void drawGuiContainerForegroundLayer(int xMouse, int yMouse)
 	{
+		// モブの名前
 		String nameChast = this.entityChast.getName();
 		this.fontRenderer.drawString(nameChast, this.xSize / 2 - this.fontRenderer.getStringWidth(nameChast) / 2, 6, 4210752);
 
+		// インベントリの名前
 		String nameInventory = this.entityPlayer.inventory.getDisplayName().getUnformattedText();
 		this.fontRenderer.drawString(nameInventory, 8, 128, 4210752);
 	}
@@ -112,9 +119,10 @@ public class GuiChastInventory extends GuiContainer
 	{
 		super.drawScreen(mouseX, mouseY, partialTicks);
 
-		int rectX = 89;
-		int rectY = 25;
-		int width = 72;
+		// HPツールチップ
+		int rectX = 112;
+		int rectY = 24;
+		int width = 49;
 		int height = 14;
 		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
 		{
@@ -128,13 +136,15 @@ public class GuiChastInventory extends GuiContainer
 			this.drawHoveringText(texts, mouseX, mouseY);
 		}
 
+		// モードアイコン
 		ItemStack renderItem = entityChast.getMode().getIconItem();
-		int xPosition = ((this.width - this.xSize) / 2) + 107;
-		int yPosition = ((this.height - this.ySize) / 2) + 44;
+		int xPosition = ((this.width - this.xSize) / 2) + 92;
+		int yPosition = ((this.height - this.ySize) / 2) + 46;
 		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);
 
-		rectX = 107;
-		rectY = 44;
+		// モードツールチップ
+		rectX = 92;
+		rectY = 46;
 		width = 16;
 		height = 16;
 		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
@@ -149,8 +159,9 @@ public class GuiChastInventory extends GuiContainer
 			this.drawHoveringText(texts, mouseX, mouseY);
 		}
 
-		rectX = 85;
-		rectY = 44;
+		// ホームチェストツールチップ
+		rectX = 92;
+		rectY = 22;
 		width = 16;
 		height = 16;
 		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
@@ -179,6 +190,7 @@ public class GuiChastInventory extends GuiContainer
 			this.drawHoveringText(texts, mouseX, mouseY);
 		}
 
+		// ツールチップ表示
 		this.renderHoveredToolTip(mouseX, mouseY);
 	}
 
@@ -261,10 +273,12 @@ public class GuiChastInventory extends GuiContainer
 
 	private int getHealthBar()
 	{
-		int health = (int) this.entityChast.getHealth();
+		int barMax = 45;
 		int healthMax = (int) this.entityChast.getMaxHealth();
+		int health = (int) this.entityChast.getHealth();
+		int healthBar = (barMax - ((healthMax - health) * 2));
 
-		return Math.min(72, (72 - ((healthMax - health) * 3)));
+		return Math.min(barMax, healthBar);
 	}
 
 	private int getHomeChestTextureY()

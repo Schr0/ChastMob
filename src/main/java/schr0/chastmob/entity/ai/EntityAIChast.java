@@ -67,12 +67,12 @@ public abstract class EntityAIChast extends EntityAIBase
 
 	public double getSpeed()
 	{
-		return this.entityChast.getAISpeed();
+		return 1.25D;
 	}
 
 	public int getRange()
 	{
-		return this.entityChast.getAIRange();
+		return 5;
 	}
 
 	public Random getRandom()

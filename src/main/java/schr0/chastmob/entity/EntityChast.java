@@ -488,7 +488,7 @@ public class EntityChast extends EntityGolem
 						passenger.dismountRidingEntity();
 					}
 
-					return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
+					return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP, false);
 				}
 			}
 
@@ -510,34 +510,23 @@ public class EntityChast extends EntityGolem
 							}
 						}
 
-						return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
+						return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP, true);
 					}
 				}
 
 				if (stackHeldItem.getItem() == ChastMobItems.HOME_MAP)
 				{
 					ItemHomeMap itemHomeMap = (ItemHomeMap) stackHeldItem.getItem();
-					BlockPos homeChestPosition = BlockPos.ORIGIN;
 
 					if (itemHomeMap.hasPosition(stackHeldItem))
 					{
-						homeChestPosition = itemHomeMap.getPosition(stackHeldItem);
-					}
+						BlockPos homeChestPosition = itemHomeMap.getPosition(stackHeldItem);
 
-					if (this.getHomeChestPosition() != homeChestPosition)
-					{
-						this.setHomeChestPosition(homeChestPosition);
-
-						if (isServerWorld)
+						if (this.getHomeChestPosition() == BlockPos.ORIGIN)
 						{
-							if (homeChestPosition == BlockPos.ORIGIN)
-							{
-								player.sendMessage(new TextComponentTranslation("entity.chast.home.reset", new Object[]
-								{
-										TextFormatting.ITALIC.BOLD + this.getName()
-								}));
-							}
-							else
+							this.setHomeChestPosition(homeChestPosition);
+
+							if (isServerWorld)
 							{
 								player.sendMessage(new TextComponentTranslation("entity.chast.home.register", new Object[]
 								{
@@ -548,10 +537,26 @@ public class EntityChast extends EntityGolem
 								}));
 							}
 
+							return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP, true);
 						}
 					}
+					else
+					{
+						if (this.getHomeChestPosition() != BlockPos.ORIGIN)
+						{
+							this.setHomeChestPosition(BlockPos.ORIGIN);
 
-					return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP);
+							if (isServerWorld)
+							{
+								player.sendMessage(new TextComponentTranslation("entity.chast.home.reset", new Object[]
+								{
+										TextFormatting.ITALIC.BOLD + this.getName()
+								}));
+							}
+
+							return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_ITEM_PICKUP, true);
+						}
+					}
 				}
 			}
 
@@ -562,7 +567,7 @@ public class EntityChast extends EntityGolem
 					this.setSitAI(!this.isSit());
 				}
 
-				return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP);
+				return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, true);
 			}
 			else
 			{
@@ -571,14 +576,14 @@ public class EntityChast extends EntityGolem
 					player.openGui(ChastMob.instance, ChastMobGuis.ID_CHAST_INVENTORY, this.getEntityWorld(), this.getEntityId(), 0, 0);
 				}
 
-				return this.onSuccessProcessInteract(player, (SoundEvent) null);
+				return this.onSuccessProcessInteract(player, (SoundEvent) null, false);
 			}
 		}
 		else
 		{
 			this.onSpawnByPlayer(player);
 
-			return this.onSuccessProcessInteract(player, (SoundEvent) null);
+			return this.onSuccessProcessInteract(player, (SoundEvent) null, false);
 		}
 	}
 
@@ -838,10 +843,10 @@ public class EntityChast extends EntityGolem
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public boolean canBlockBeSeen(BlockPos blockPos)
+	public boolean canBlockBeSeen(BlockPos pos)
 	{
 		World world = this.getEntityWorld();
-		IBlockState state = world.getBlockState(blockPos);
+		IBlockState state = world.getBlockState(pos);
 
 		if (state == Blocks.AIR.getDefaultState())
 		{
@@ -849,12 +854,12 @@ public class EntityChast extends EntityGolem
 		}
 
 		Vec3d entityVec3d = new Vec3d(this.posX, this.posY + this.getEyeHeight(), this.posZ);
-		Vec3d targetVec3d = new Vec3d(((double) blockPos.getX() + 0.5D), ((double) blockPos.getY() + (state.getCollisionBoundingBox(world, blockPos).minY + state.getCollisionBoundingBox(world, blockPos).maxY) * 0.9D), ((double) blockPos.getZ() + 0.5D));
+		Vec3d targetVec3d = new Vec3d(((double) pos.getX() + 0.5D), ((double) pos.getY() + (state.getCollisionBoundingBox(world, pos).minY + state.getCollisionBoundingBox(world, pos).maxY) * 0.9D), ((double) pos.getZ() + 0.5D));
 		RayTraceResult rayTraceResult = world.rayTraceBlocks(entityVec3d, targetVec3d);
 
 		if ((rayTraceResult != null) && (rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK))
 		{
-			if (rayTraceResult.getBlockPos().equals(blockPos))
+			if (rayTraceResult.getBlockPos().equals(pos))
 			{
 				return true;
 			}
@@ -1050,13 +1055,18 @@ public class EntityChast extends EntityGolem
 		this.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 	}
 
-	private boolean onSuccessProcessInteract(EntityPlayer player, @Nullable SoundEvent soundEvent)
+	private boolean onSuccessProcessInteract(EntityPlayer player, @Nullable SoundEvent soundEvent, boolean isParticle)
 	{
 		player.swingArm(EnumHand.MAIN_HAND);
 
 		if (soundEvent != null)
 		{
 			this.playSound(soundEvent, 0.5F, 1.0F);
+		}
+
+		if (!player.getEntityWorld().isRemote && isParticle)
+		{
+			ChastMobParticles.spawnParticleNote(this);
 		}
 
 		return true;
