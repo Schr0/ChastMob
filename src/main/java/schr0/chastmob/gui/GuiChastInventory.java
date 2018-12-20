@@ -75,7 +75,7 @@ public class GuiChastInventory extends GuiContainer
 		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
 
 		// HPバー
-		drawX = (originPosX + 114);
+		drawX = (originPosX + 117);
 		drawY = (originPosY + 26);
 		textureX = 184;
 		textureY = this.getHealthTextureY();
@@ -273,7 +273,7 @@ public class GuiChastInventory extends GuiContainer
 
 	private int getHealthBar()
 	{
-		int barMax = 45;
+		int barMax = 40;
 		int healthMax = (int) this.entityChast.getMaxHealth();
 		int health = (int) this.entityChast.getHealth();
 		int healthBar = (barMax - ((healthMax - health) * 2));
