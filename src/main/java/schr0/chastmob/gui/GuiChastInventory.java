@@ -21,6 +21,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobMessages;
 import schr0.chastmob.packet.MessageGuiChastInventory;
 
@@ -50,7 +51,7 @@ public class GuiChastInventory extends GuiContainer
 
 		// AIボタン
 		int buttonId = 0;
-		int buttonPosX = ((this.width - this.xSize) / 2) + 119;
+		int buttonPosX = ((this.width - this.xSize) / 2) + 121;
 		int buttonPosY = ((this.height - this.ySize) / 2) + 41;
 		GuiChastInventory.ChangeButton changeButton = new GuiChastInventory.ChangeButton(buttonId, buttonPosX, buttonPosY);
 
@@ -74,20 +75,20 @@ public class GuiChastInventory extends GuiContainer
 		int height = this.ySize;
 		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
 
-		// HPバー
-		drawX = (originPosX + 117);
-		drawY = (originPosY + 26);
-		textureX = 184;
-		textureY = this.getHealthTextureY();
-		width = this.getHealthBar();
-		height = 10;
-		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
-
 		// ホームチェストアイコン
-		drawX = (originPosX + 92);
+		drawX = (originPosX + 93);
 		drawY = (originPosY + 22);
 		textureX = 184;
 		textureY = this.getHomeChestTextureY();
+		width = 16;
+		height = 16;
+		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
+
+		// フィルターアイコン
+		drawX = (originPosX + 117);
+		drawY = (originPosY + 22);
+		textureX = 184;
+		textureY = this.getFilterTextureY();
 		width = 16;
 		height = 16;
 		this.drawTexturedModalRect(drawX, drawY, textureX, textureY, width, height);
@@ -119,11 +120,66 @@ public class GuiChastInventory extends GuiContainer
 	{
 		super.drawScreen(mouseX, mouseY, partialTicks);
 
+		// HPアイコン
+		ItemStack renderItem = new ItemStack(ChastMobItems.CORE);
+		int xPosition = ((this.width - this.xSize) / 2) + 141;
+		int yPosition = ((this.height - this.ySize) / 2) + 22;
+		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);
+
+		// モードアイコン
+		renderItem = entityChast.getMode().getIconItem();
+		xPosition = ((this.width - this.xSize) / 2) + 98;
+		yPosition = ((this.height - this.ySize) / 2) + 46;
+		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);
+
+		// ホームチェストツールチップ
+		int rectX = 93;
+		int rectY = 22;
+		int width = 16;
+		int height = 16;
+		if (this.hasHomeChest())
+		{
+			if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
+			{
+				List<String> texts = Lists.newArrayList();
+				BlockPos pos = this.entityChast.getHomeChestPosition();
+				TextComponentTranslation text = new TextComponentTranslation("entity.chast.gui.home", new Object[0]);
+				text.getStyle().setColor(TextFormatting.AQUA);
+
+				texts.add(text.getFormattedText());
+				texts.add("posX : " + pos.getX());
+				texts.add("posY : " + pos.getY());
+				texts.add("posZ : " + pos.getZ());
+
+				this.drawHoveringText(texts, mouseX, mouseY);
+			}
+		}
+
+		// フィルターツールチップ
+		rectX = 117;
+		rectY = 22;
+		width = 16;
+		height = 16;
+		if (this.hasFilter())
+		{
+			if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
+			{
+				List<String> texts = Lists.newArrayList();
+				TextComponentTranslation text = new TextComponentTranslation("entity.chast.gui.filter", new Object[0]);
+				text.getStyle().setColor(TextFormatting.AQUA);
+
+				texts.add(text.getFormattedText());
+				// TODO
+
+				this.drawHoveringText(texts, mouseX, mouseY);
+			}
+		}
+
 		// HPツールチップ
-		int rectX = 112;
-		int rectY = 24;
-		int width = 49;
-		int height = 14;
+		rectX = 141;
+		rectY = 22;
+		width = 16;
+		height = 16;
 		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
 		{
 			List<String> texts = Lists.newArrayList();
@@ -136,14 +192,8 @@ public class GuiChastInventory extends GuiContainer
 			this.drawHoveringText(texts, mouseX, mouseY);
 		}
 
-		// モードアイコン
-		ItemStack renderItem = entityChast.getMode().getIconItem();
-		int xPosition = ((this.width - this.xSize) / 2) + 92;
-		int yPosition = ((this.height - this.ySize) / 2) + 46;
-		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);
-
 		// モードツールチップ
-		rectX = 92;
+		rectX = 98;
 		rectY = 46;
 		width = 16;
 		height = 16;
@@ -155,37 +205,6 @@ public class GuiChastInventory extends GuiContainer
 
 			texts.add(text.getFormattedText());
 			texts.add(this.entityChast.getMode().getLabel());
-
-			this.drawHoveringText(texts, mouseX, mouseY);
-		}
-
-		// ホームチェストツールチップ
-		rectX = 92;
-		rectY = 22;
-		width = 16;
-		height = 16;
-		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
-		{
-			List<String> texts = Lists.newArrayList();
-			BlockPos pos = this.entityChast.getHomeChestPosition();
-			TextComponentTranslation text = new TextComponentTranslation("entity.chast.gui.home", new Object[0]);
-			text.getStyle().setColor(TextFormatting.AQUA);
-
-			texts.add(text.getFormattedText());
-
-			if (pos.equals(BlockPos.ORIGIN))
-			{
-				String none = "NONE";
-				texts.add("posX : " + none);
-				texts.add("posY : " + none);
-				texts.add("posZ : " + none);
-			}
-			else
-			{
-				texts.add("posX : " + pos.getX());
-				texts.add("posY : " + pos.getY());
-				texts.add("posZ : " + pos.getZ());
-			}
 
 			this.drawHoveringText(texts, mouseX, mouseY);
 		}
@@ -216,7 +235,7 @@ public class GuiChastInventory extends GuiContainer
 		{
 			super(buttonId, x, y, 35, 26, "");
 
-			this.buttonTextureY = 56;
+			this.buttonTextureY = 0;
 		}
 
 		@Override
@@ -235,60 +254,44 @@ public class GuiChastInventory extends GuiContainer
 		@Override
 		public void mouseReleased(int mouseX, int mouseY)
 		{
-			this.buttonTextureY = 56;
+			this.buttonTextureY = 0;
 		}
 
 		public void mouseClicked()
 		{
-			this.buttonTextureY = 88;
+			this.buttonTextureY = 32;
 		}
 
 	}
 
-	private int getHealthTextureY()
+	private boolean hasHomeChest()
 	{
-		int healthTextureY;
-
-		switch (this.entityChast.getCondition())
-		{
-			case HURT :
-
-				healthTextureY = 24;
-
-				break;
-
-			case DYING :
-
-				healthTextureY = 40;
-
-				break;
-
-			default :
-
-				healthTextureY = 8;
-		}
-
-		return healthTextureY;
-	}
-
-	private int getHealthBar()
-	{
-		int barMax = 40;
-		int healthMax = (int) this.entityChast.getMaxHealth();
-		int health = (int) this.entityChast.getHealth();
-		int healthBar = (barMax - ((healthMax - health) * 2));
-
-		return Math.min(barMax, healthBar);
+		return (this.entityChast.getHomeChestPosition() == BlockPos.ORIGIN);
 	}
 
 	private int getHomeChestTextureY()
 	{
-		if (this.entityChast.getHomeChestPosition() == BlockPos.ORIGIN)
+		if (this.hasHomeChest())
 		{
-			return 120;
+			return 64;
 		}
 
-		return 144;
+		return 88;
+	}
+
+	private boolean hasFilter()
+	{
+		return (!this.entityChast.getHeldItemMainhand().isEmpty() || !this.entityChast.getHeldItemOffhand().isEmpty());
+	}
+
+	private int getFilterTextureY()
+	{
+		if (this.hasFilter())
+		{
+			return 112;
+		}
+
+		return 136;
 	}
 
 }

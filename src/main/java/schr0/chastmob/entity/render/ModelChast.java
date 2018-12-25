@@ -35,53 +35,40 @@ public class ModelChast extends ModelBase
 		this.textureWidth = WIDTH;
 		this.textureHeight = HEIGHT;
 		this.coverMain = new ModelRenderer(this, 0, 0);
+		this.coverMain.setRotationPoint(0.0F, -4.0F, 7.0F);
 		this.coverMain.addBox(-7.0F, -5.0F, -14.0F, 14, 5, 14, 0.0F);
 		this.armRight = new ModelRenderer(this, 0, 48);
+		this.armRight.setRotationPoint(-7.0F, 8.0F, 0.0F);
 		this.armRight.addBox(-1.0F, 0.0F, -1.0F, 2, 9, 2, 0.0F);
-		this.armLeft = new ModelRenderer(this, 8, 48);
-		this.armLeft.addBox(-1.0F, 0.0F, -1.0F, 2, 9, 2, 0.0F);
-		this.legLeft = new ModelRenderer(this, 24, 48);
-		this.legLeft.addBox(-1.0F, 0.0F, -1.0F, 2, 9, 2, 0.0F);
-		this.core = new ModelRenderer(this, 32, 48);
-		this.core.addBox(-2.0F, -2.0F, -1.0F, 4, 4, 2, 0.0F);
-		this.armourLower = new ModelRenderer(this, 64, 20);
-		this.armourLower.addBox(-7.5F, -2.5F, -7.5F, 15, 9, 15, 0.0F);
 		this.legRight = new ModelRenderer(this, 16, 48);
+		this.legRight.setRotationPoint(-3.0F, 15.0F, 0.0F);
 		this.legRight.addBox(-1.0F, 0.0F, -1.0F, 2, 9, 2, 0.0F);
 		this.coverHandle = new ModelRenderer(this, 0, 0);
+		this.coverHandle.setRotationPoint(0.0F, 0.0F, 0.0F);
 		this.coverHandle.addBox(-1.0F, -2.0F, -15.0F, 2, 4, 1, 0.0F);
-		this.body = new ModelRenderer(this, 0, 19);
-		this.body.addBox(-7.0F, -4.0F, -7.0F, 14, 10, 14, 0.0F);
 		this.armourUpper = new ModelRenderer(this, 64, 0);
+		this.armourUpper.setRotationPoint(0.0F, 0.0F, 0.0F);
 		this.armourUpper.addBox(-7.5F, -6.5F, -14.5F, 15, 5, 15, 0.0F);
-
-		this.body.setRotationPoint(0F, 10F, 0F);
-
-		// 親：this.body.setRotationPoint(0F, 10F, 0F);
-		// 子：this.core.setRotationPoint(0F, 11F, -7F);
-		this.core.setRotationPoint(0F, 1F, -7F);
-
-		// 親：this.body.setRotationPoint(0F, 10F, 0F);
-		// 子：this.coverMain.setRotationPoint(0F, 6F, 7F);
-		this.coverMain.setRotationPoint(0F, -4F, 7F);
-
-		// 親：this.coverMain.setRotationPoint(0F, 6F, 7F);
-		// 子：this.coverHandle.setRotationPoint(0F, 6F, 7F);
-		this.coverHandle.setRotationPoint(0F, 0F, 0F);
-
-		// 親：this.coverMain.setRotationPoint(0F, 6F, 7F);
-		// 子：this.armourUpper.setRotationPoint(0F, 6F, 7F);
-		this.armourUpper.setRotationPoint(0F, 0F, 0F);
-
-		// 親：this.body.setRotationPoint(0F, 10F, 0F);
-		// 子：this.armourLower.setRotationPoint(0F, 10F, 0F);
-		this.armourLower.setRotationPoint(0F, 0F, 0F);
-
-		this.body.addChild(this.core);
+		this.legLeft = new ModelRenderer(this, 24, 48);
+		this.legLeft.setRotationPoint(3.0F, 15.0F, 0.0F);
+		this.legLeft.addBox(-1.0F, 0.0F, -1.0F, 2, 9, 2, 0.0F);
+		this.armLeft = new ModelRenderer(this, 8, 48);
+		this.armLeft.setRotationPoint(7.0F, 8.0F, 0.0F);
+		this.armLeft.addBox(-1.0F, 0.0F, -1.0F, 2, 9, 2, 0.0F);
+		this.core = new ModelRenderer(this, 32, 48);
+		this.core.setRotationPoint(0.0F, 1.0F, -7.0F);
+		this.core.addBox(-2.0F, -2.0F, -1.0F, 4, 4, 2, 0.0F);
+		this.armourLower = new ModelRenderer(this, 64, 20);
+		this.armourLower.setRotationPoint(0.0F, 0.0F, 0.0F);
+		this.armourLower.addBox(-7.5F, -2.5F, -7.5F, 15, 9, 15, 0.0F);
+		this.body = new ModelRenderer(this, 0, 19);
+		this.body.setRotationPoint(0.0F, 10.0F, 0.0F);
+		this.body.addBox(-7.0F, -4.0F, -7.0F, 14, 10, 14, 0.0F);
 		this.body.addChild(this.coverMain);
-		this.body.addChild(this.armourLower);
 		this.coverMain.addChild(this.coverHandle);
 		this.coverMain.addChild(this.armourUpper);
+		this.body.addChild(this.core);
+		this.body.addChild(this.armourLower);
 	}
 
 	@Override
@@ -121,11 +108,11 @@ public class ModelChast extends ModelBase
 			return;
 		}
 
-		EntityChast entityChast = (EntityChast) entityIn;
-		boolean isDefending = (entityChast.isDamage() && entityChast.isEquipHelmet());
-		boolean isPanicking = (entityChast.isDamage() && !entityChast.isEquipHelmet());
+		EntityChast chast = (EntityChast) entityIn;
+		boolean isDefending = (chast.isDamage() && chast.isEquipHelmet());
+		boolean isPanicking = (chast.isDamage() && !chast.isEquipHelmet());
 
-		if (entityChast.isRiding() || !entityChast.getPassengers().isEmpty())
+		if (chast.isRiding() || !chast.getPassengers().isEmpty())
 		{
 			this.body.rotateAngleX = 0.0F;
 		}
@@ -135,9 +122,9 @@ public class ModelChast extends ModelBase
 		}
 
 		this.body.rotateAngleY = (netHeadYaw / (180F / (float) Math.PI));
-		this.core.rotateAngleZ = (ageInTicks * (entityChast.getHealth() / 50F));
+		this.core.rotateAngleZ = (ageInTicks * (chast.getHealth() / 50F));
 
-		if (entityChast.isSit() || entityChast.isRiding())
+		if (chast.isSit() || chast.isRiding())
 		{
 			float pointSitY = 7.0F;
 
@@ -234,9 +221,9 @@ public class ModelChast extends ModelBase
 			return;
 		}
 
-		EntityChast entityChast = (EntityChast) entitylivingbaseIn;
+		EntityChast chast = (EntityChast) entitylivingbaseIn;
 
-		this.coverMain.rotateAngleX = -(entityChast.getCoverRotateAngleX(partialTickTime));
+		this.coverMain.rotateAngleX = -(chast.getCoverRotateAngleX(partialTickTime));
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
