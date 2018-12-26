@@ -11,7 +11,7 @@ import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.inventory.InventoryChastHelper;
+import schr0.chastmob.inventory.InventoryChast;
 
 public class EntityAIChastCollectItem extends EntityAIChast
 {
@@ -147,7 +147,7 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		{
 			if (entityItem.isEntityAlive() && !entityItem.cannotPickup())
 			{
-				return InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), entityItem.getItem());
+				return InventoryChast.canStoreInventory(this.getEntity().getInventoryMain(), entityItem.getItem());
 			}
 		}
 

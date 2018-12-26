@@ -132,27 +132,52 @@ public class GuiChastInventory extends GuiContainer
 		yPosition = ((this.height - this.ySize) / 2) + 46;
 		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);
 
-		// ホームチェストツールチップ
-		int rectX = 93;
-		int rectY = 22;
+		// モードツールチップ
+		int rectX = 98;
+		int rectY = 46;
 		int width = 16;
 		int height = 16;
-		if (this.hasHomeChest())
+		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
 		{
-			if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
-			{
-				List<String> texts = Lists.newArrayList();
-				BlockPos pos = this.entityChast.getHomeChestPosition();
-				TextComponentTranslation text = new TextComponentTranslation("entity.chast.gui.home", new Object[0]);
-				text.getStyle().setColor(TextFormatting.AQUA);
+			List<String> texts = Lists.newArrayList();
+			TextComponentTranslation title = new TextComponentTranslation("entity.chast.gui.mode", new Object[0]);
 
-				texts.add(text.getFormattedText());
+			title.getStyle().setColor(TextFormatting.AQUA);
+
+			texts.add(title.getFormattedText());
+			texts.add(this.entityChast.getMode().getLabel());
+
+			this.drawHoveringText(texts, mouseX, mouseY);
+		}
+
+		// ホームチェストツールチップ
+		rectX = 93;
+		rectY = 22;
+		width = 16;
+		height = 16;
+		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
+		{
+			List<String> texts = Lists.newArrayList();
+			TextComponentTranslation title = new TextComponentTranslation("entity.chast.gui.home", new Object[0]);
+
+			title.getStyle().setColor(TextFormatting.AQUA);
+
+			texts.add(title.getFormattedText());
+
+			if (this.hasHomeChest())
+			{
+				BlockPos pos = this.entityChast.getHomeChestPosition();
+
 				texts.add("posX : " + pos.getX());
 				texts.add("posY : " + pos.getY());
 				texts.add("posZ : " + pos.getZ());
-
-				this.drawHoveringText(texts, mouseX, mouseY);
 			}
+			else
+			{
+				texts.add("NONE");
+			}
+
+			this.drawHoveringText(texts, mouseX, mouseY);
 		}
 
 		// フィルターツールチップ
@@ -160,19 +185,28 @@ public class GuiChastInventory extends GuiContainer
 		rectY = 22;
 		width = 16;
 		height = 16;
-		if (this.hasFilter())
+		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
 		{
-			if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
+			List<String> texts = Lists.newArrayList();
+			TextComponentTranslation title = new TextComponentTranslation("entity.chast.gui.filter", new Object[0]);
+			TextComponentTranslation textWhite = new TextComponentTranslation("entity.chast.gui.filter.white", new Object[0]);
+			TextComponentTranslation textBlack = new TextComponentTranslation("entity.chast.gui.filter.black", new Object[0]);
+
+			title.getStyle().setColor(TextFormatting.AQUA);
+
+			texts.add(title.getFormattedText());
+
+			if (this.hasFilter())
 			{
-				List<String> texts = Lists.newArrayList();
-				TextComponentTranslation text = new TextComponentTranslation("entity.chast.gui.filter", new Object[0]);
-				text.getStyle().setColor(TextFormatting.AQUA);
-
-				texts.add(text.getFormattedText());
-				// TODO
-
-				this.drawHoveringText(texts, mouseX, mouseY);
+				texts.add(textWhite.getFormattedText() + " : " + this.getFilterWhite());
+				texts.add(textBlack.getFormattedText() + " : " + this.getFilterBlack());
 			}
+			else
+			{
+				texts.add("NONE");
+			}
+
+			this.drawHoveringText(texts, mouseX, mouseY);
 		}
 
 		// HPツールチップ
@@ -183,28 +217,12 @@ public class GuiChastInventory extends GuiContainer
 		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
 		{
 			List<String> texts = Lists.newArrayList();
-			TextComponentTranslation text = new TextComponentTranslation("entity.chast.gui.health", new Object[0]);
-			text.getStyle().setColor(TextFormatting.AQUA);
+			TextComponentTranslation title = new TextComponentTranslation("entity.chast.gui.health", new Object[0]);
+			title.getStyle().setColor(TextFormatting.AQUA);
 
-			texts.add(text.getFormattedText());
-			texts.add(this.entityChast.getHealth() + " / " + this.entityChast.getMaxHealth());
+			texts.add(title.getFormattedText());
 
-			this.drawHoveringText(texts, mouseX, mouseY);
-		}
-
-		// モードツールチップ
-		rectX = 98;
-		rectY = 46;
-		width = 16;
-		height = 16;
-		if (this.isPointInRegion(rectX, rectY, width, height, mouseX, mouseY))
-		{
-			List<String> texts = Lists.newArrayList();
-			TextComponentTranslation text = new TextComponentTranslation("entity.chast.gui.mode", new Object[0]);
-			text.getStyle().setColor(TextFormatting.AQUA);
-
-			texts.add(text.getFormattedText());
-			texts.add(this.entityChast.getMode().getLabel());
+			texts.add(this.entityChast.getHealth() + "/" + this.entityChast.getMaxHealth());
 
 			this.drawHoveringText(texts, mouseX, mouseY);
 		}
@@ -266,17 +284,17 @@ public class GuiChastInventory extends GuiContainer
 
 	private boolean hasHomeChest()
 	{
-		return (this.entityChast.getHomeChestPosition() == BlockPos.ORIGIN);
+		return (this.entityChast.getHomeChestPosition() != BlockPos.ORIGIN);
 	}
 
 	private int getHomeChestTextureY()
 	{
 		if (this.hasHomeChest())
 		{
-			return 64;
+			return 88;
 		}
 
-		return 88;
+		return 64;
 	}
 
 	private boolean hasFilter()
@@ -288,10 +306,34 @@ public class GuiChastInventory extends GuiContainer
 	{
 		if (this.hasFilter())
 		{
-			return 112;
+			return 136;
 		}
 
-		return 136;
+		return 112;
+	}
+
+	private String getFilterWhite()
+	{
+		ItemStack stack = this.entityChast.getHeldItemMainhand();
+
+		if (stack.isEmpty())
+		{
+			return "NONE";
+		}
+
+		return stack.getDisplayName();
+	}
+
+	private String getFilterBlack()
+	{
+		ItemStack stack = this.entityChast.getHeldItemOffhand();
+
+		if (stack.isEmpty())
+		{
+			return "NONE";
+		}
+
+		return stack.getDisplayName();
 	}
 
 }

@@ -10,7 +10,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
-import schr0.chastmob.inventory.InventoryChastHelper;
+import schr0.chastmob.inventory.InventoryChast;
 import schr0.chastmob.inventory.InventoryChastMain;
 
 public class EntityAIChastStoreChest extends EntityAIChast
@@ -31,6 +31,11 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		if (this.getMode() == ChastMode.PATROL)
 		{
+			if (this.getEntity().getInventoryMain().isEmpty())
+			{
+				return false;
+			}
+
 			this.targetHomeChest = this.getCanStoreChest();
 
 			if (this.targetHomeChest != null)
@@ -112,11 +117,6 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Nullable
 	private TileEntityChest getCanStoreChest()
 	{
-		if (InventoryChastHelper.canStoreInventory(this.getEntity().getInventoryMain(), ItemStack.EMPTY))
-		{
-			return (TileEntityChest) null;
-		}
-
 		TileEntityChest homeChest = this.getEntity().getCanSeeHomeChest(true);
 
 		if (homeChest != null)
@@ -128,7 +128,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 			{
 				ItemStack stackSlot = inventoryMain.getStackInSlot(slot);
 
-				if (InventoryChastHelper.canStoreInventory(inventory, stackSlot))
+				if (InventoryChast.canStoreInventory(inventory, stackSlot))
 				{
 					return homeChest;
 				}
