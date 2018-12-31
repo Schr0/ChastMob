@@ -1,0 +1,43 @@
+{
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+         "gemQuartz": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "type": "forge:ore_dict",
+                        "ore": "gemQuartz"
+                   }
+                ]
+            }
+        },
+         "nuggetGold": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "type": "forge:ore_dict",
+                        "ore": "nuggetGold"
+                   }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        ["gemQuartz", "nuggetGold"]
+    ],
+    "rewards": {
+        "recipes": [
+            "schr0chastmob:recipe_soul_bottle",
+            "schr0chastmob:recipe_soul_fragment",
+            "schr0chastmob:recipe_core",
+            "schr0chastmob:recipe_home_map",
+            "schr0chastmob:recipe_chast_helmet_wood",
+            "schr0chastmob:recipe_chast_helmet_stone",
+            "schr0chastmob:recipe_chast_helmet_iron",
+            "schr0chastmob:recipe_chast_helmet_diamond",
+            "schr0chastmob:recipe_chast_helmet_gold"
+        ]
+    }
+}

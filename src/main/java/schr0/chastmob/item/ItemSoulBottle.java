@@ -18,8 +18,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.util.ChastMobLangs;
 
 public class ItemSoulBottle extends Item
 {
@@ -29,22 +30,28 @@ public class ItemSoulBottle extends Item
 		this.setMaxStackSize(16);
 	}
 
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
 	{
-		tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_SOUL_BOTTLE_TIPS, new Object[0]).getFormattedText());
+		TextComponentTranslation info = new TextComponentTranslation("item.soul_bottle.tooltip", new Object[0]);
+
+		info.getStyle().setColor(TextFormatting.BLUE);
+		info.getStyle().setItalic(true);
+
+		tooltip.add(info.getFormattedText());
 	}
 
 	@Override
-	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
 	{
 		ItemStack stack = player.getHeldItem(hand);
 
-		if (worldIn.getBlockState(pos).getBlock() == Blocks.SOUL_SAND)
+		if (world.getBlockState(pos).getBlock() == Blocks.SOUL_SAND)
 		{
-			worldIn.destroyBlock(pos, false);
+			world.destroyBlock(pos, false);
 
-			Block.spawnAsEntity(worldIn, pos, new ItemStack(Blocks.SAND));
+			Block.spawnAsEntity(world, pos, new ItemStack(Blocks.SAND));
 
 			ItemStack stackSoulBottleFull = new ItemStack(ChastMobItems.SOUL_BOTTLE_FULL, 1, ItemSoulBottleFull.MAX_DAMAGE);
 
@@ -63,7 +70,7 @@ public class ItemSoulBottle extends Item
 			return EnumActionResult.SUCCESS;
 		}
 
-		return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+		return super.onItemUseFirst(player, world, pos, side, hitX, hitY, hitZ, hand);
 	}
 
 }

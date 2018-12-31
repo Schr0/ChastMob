@@ -6,6 +6,11 @@ import schr0.chastmob.api.ItemChastHelmet.ChastHelmetMaterial;
 public class ChastMobAPI
 {
 
+	/**
+	 * ModのID.
+	 */
+	public static final String MOD_ID = "schr0chastmob";
+
 	public static ChastHelmetMaterial addChastHelmetMaterial(String name, int maxUses, int damageReduceAmount, int enchantability)
 	{
 		final Class<?>[] paramTypes =

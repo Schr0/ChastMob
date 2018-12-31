@@ -2,45 +2,51 @@ package schr0.chastmob.entity.ai;
 
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.util.math.Vec3d;
+import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastWander extends EntityAIChast
 {
 
-	private static final int CHANCE_WONDER = 100;
-
-	private double speed;
-	private int distance;
+	private static final int CHANCE = 20;
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
 
-	public EntityAIChastWander(EntityChast entityChast, double speed, int distance)
+	public EntityAIChastWander(EntityChast entityChast)
 	{
 		super(entityChast);
 
-		this.speed = speed;
-		this.distance = distance;
+		this.randPosX = 0;
+		this.randPosY = 0;
+		this.randPosZ = 0;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.isWandering())
+		if ((this.getMode() == ChastMode.FREEDOM) || (this.getMode() == ChastMode.PATROL))
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getOwnerEntity(), this.distance, this.distance);
+			this.randPosX = 0;
+			this.randPosY = 0;
+			this.randPosZ = 0;
 
-			if (vec3d == null)
+			if (this.getEntity().getNavigator().noPath() && (this.getRandom().nextInt(CHANCE) == 0))
 			{
-				return false;
-			}
-			else
-			{
-				this.randPosX = vec3d.x;
-				this.randPosY = vec3d.y;
-				this.randPosZ = vec3d.z;
+				Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.getRange(), this.getRange());
 
-				return true;
+				if (vec3d == null)
+				{
+					return false;
+				}
+				else
+				{
+					this.randPosX = vec3d.x;
+					this.randPosY = vec3d.y;
+					this.randPosZ = vec3d.z;
+
+					return true;
+				}
 			}
 		}
 
@@ -50,22 +56,30 @@ public class EntityAIChastWander extends EntityAIChast
 	@Override
 	public boolean shouldContinueExecuting()
 	{
-		return !this.getOwnerEntity().getNavigator().noPath();
+		if (this.isTimeOut())
+		{
+			return false;
+		}
+
+		return !this.getEntity().getNavigator().noPath();
 	}
 
 	@Override
-	public void startExecuting()
+	public void resetTask()
 	{
-		super.startExecuting();
+		super.resetTask();
 
-		this.getOwnerEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.speed);
+		this.randPosX = 0;
+		this.randPosY = 0;
+		this.randPosZ = 0;
 	}
 
-	// TODO /* ======================================== MOD START =====================================*/
-
-	public boolean isWandering()
+	@Override
+	public void updateTask()
 	{
-		return (this.getOwnerEntity().getRNG().nextInt(CHANCE_WONDER) == 0);
+		super.updateTask();
+
+		this.getEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.getSpeed());
 	}
 
 }

@@ -2,64 +2,45 @@ package schr0.chastmob.entity.ai;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.BlockChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import schr0.chastmob.ChastMobHelper;
+import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
+import schr0.chastmob.inventory.InventoryChast;
+import schr0.chastmob.inventory.InventoryChastMain;
 
 public class EntityAIChastStoreChest extends EntityAIChast
 {
 
-	private static final int TIME_LIMIT = (5 * 20);
-	private int timeCounter;
+	private static final double STORE_RANGE = 2.5D;
+	private TileEntityChest targetHomeChest;
 
-	private double speed;
-	private int distance;
-	private TileEntityChest targetChest;
-
-	public EntityAIChastStoreChest(EntityChast entityChast, double speed, int distance)
+	public EntityAIChastStoreChest(EntityChast entityChast)
 	{
 		super(entityChast);
 
-		this.speed = speed;
-		this.distance = distance;
+		this.targetHomeChest = null;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if ((this.getOwnerAIMode() == ChastAIMode.FOLLOW) || (this.getOwnerAIMode() == ChastAIMode.SUPPLY))
+		if (this.getMode() == ChastMode.PATROL)
 		{
-			return false;
-		}
-
-		if (!ChastMobHelper.canStoreInventory(this.getOwnerInventoryMain(), ItemStack.EMPTY))
-		{
-			TileEntityChest homeChest = (TileEntityChest) this.getOwnerWorld().getTileEntity(this.getOwnerHomePosition());
-
-			if (this.canStoringTileEntityChest(homeChest))
+			if (this.getEntity().getInventoryMain().isEmpty())
 			{
-				this.setStoring(TIME_LIMIT, homeChest);
-
-				return true;
+				return false;
 			}
-			else
+
+			this.targetHomeChest = this.getCanStoreChest();
+
+			if (this.targetHomeChest != null)
 			{
-				TileEntityChest nearOpenChest = this.getNearOpenChestTileEntity(this.getOwnerEntity(), this.distance);
-
-				if (this.canStoringTileEntityChest(nearOpenChest))
-				{
-					this.setStoring(TIME_LIMIT, nearOpenChest);
-
-					return true;
-				}
+				return true;
 			}
 		}
 
@@ -69,20 +50,12 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean shouldContinueExecuting()
 	{
-		if (this.isStoring())
+		if (this.isTimeOut())
 		{
-			return true;
+			return false;
 		}
 
-		return false;
-	}
-
-	@Override
-	public void startExecuting()
-	{
-		super.startExecuting();
-
-		this.getOwnerEntity().setCoverOpen(false);
+		return (this.targetHomeChest != null);
 	}
 
 	@Override
@@ -90,129 +63,79 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getOwnerEntity().setCoverOpen(false);
-		this.setStoring(0, null);
+		this.targetHomeChest = null;
 	}
 
 	@Override
 	public void updateTask()
 	{
-		--this.timeCounter;
+		super.updateTask();
 
-		BlockPos targetBlockPos = this.targetChest.getPos();
+		BlockPos targetPos = this.targetHomeChest.getPos();
 
-		this.getOwnerEntity().getLookHelper().setLookPosition(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 10.0F, this.getOwnerEntity().getVerticalFaceSpeed());
+		this.getEntity().getLookHelper().setLookPosition(targetPos.getX(), targetPos.getY(), targetPos.getZ(), 10.0F, this.getEntity().getVerticalFaceSpeed());
 
-		if (this.getOwnerEntity().getDistanceSqToCenter(targetBlockPos) < 2.5D)
+		if (this.getEntity().getDistanceSqToCenter(targetPos) < STORE_RANGE)
 		{
-			TileEntityChest nearChest = this.getNearOpenChestTileEntity(this.getOwnerEntity(), this.distance);
+			TileEntityChest homeChest = this.getCanStoreChest();
 
-			if ((nearChest != null) && (nearChest == this.targetChest))
+			if (homeChest != null)
 			{
-				for (int slot = 0; slot < this.getOwnerInventoryMain().getSizeInventory(); ++slot)
+				InventoryChastMain inventoryMain = this.getEntity().getInventoryMain();
+
+				for (int slot = 0; slot < inventoryMain.getSizeInventory(); ++slot)
 				{
-					ItemStack stackSlot = this.getOwnerInventoryMain().getStackInSlot(slot);
+					ItemStack stackSlot = inventoryMain.getStackInSlot(slot);
 
-					if (ChastMobHelper.isNotEmptyItemStack(stackSlot))
+					if (!stackSlot.isEmpty())
 					{
-						this.getOwnerInventoryMain().setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) null, (IInventory) nearChest, stackSlot, EnumFacing.UP));
+						if (!this.getEntity().isCoverOpen())
+						{
+							this.getEntity().setCoverOpen(true);
 
-						this.getOwnerEntity().setCoverOpen(true);
+							return;
+						}
+
+						inventoryMain.setInventorySlotContents(slot, TileEntityHopper.putStackInInventoryAllSlots((IInventory) null, (IInventory) homeChest, stackSlot, EnumFacing.UP));
 					}
 				}
 
-				this.setStoring(0, null);
+				this.targetHomeChest = null;
+
+				return;
+
 			}
 		}
 		else
 		{
-			if (this.timeCounter < 20)
-			{
-				this.forceMoveToTargetBlockPos(targetBlockPos, this.speed);
-			}
-			else
-			{
-				this.getOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.speed);
-			}
+			this.getEntity().getNavigator().tryMoveToXYZ(targetPos.getX(), targetPos.getY(), targetPos.getZ(), this.getSpeed());
 		}
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public boolean isStoring()
+	@Nullable
+	private TileEntityChest getCanStoreChest()
 	{
-		return (0 < this.timeCounter) && (this.targetChest != null);
-	}
+		TileEntityChest homeChest = this.getEntity().getCanSeeHomeChest(true);
 
-	public void setStoring(int timeCounter, @Nullable TileEntityChest tileEntityChest)
-	{
-		this.timeCounter = timeCounter;
-		this.targetChest = tileEntityChest;
-	}
-
-	private boolean canStoringTileEntityChest(@Nullable TileEntityChest tileEntityChest)
-	{
-		if (tileEntityChest != null)
+		if (homeChest != null)
 		{
-			return this.canBlockBeSeen(tileEntityChest.getPos());
-		}
+			InventoryChastMain inventoryMain = this.getEntity().getInventoryMain();
+			IInventory inventory = (IInventory) homeChest;
 
-		return false;
-	}
-
-	private TileEntityChest getNearOpenChestTileEntity(EntityChast entityChast, int searchXYZ)
-	{
-		BlockPos blockPos = entityChast.getPosition();
-		int entityPosX = blockPos.getX();
-		int entityPosY = blockPos.getY();
-		int entityPosZ = blockPos.getZ();
-		float rangeOrigin = (float) (searchXYZ * searchXYZ * searchXYZ * 2);
-		BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
-		TileEntityChest tileEntityChest = null;
-
-		for (int x = (entityPosX - searchXYZ); x <= (entityPosX + searchXYZ); ++x)
-		{
-			for (int y = (entityPosY - searchXYZ); y <= (entityPosY + searchXYZ); ++y)
+			for (int slot = 0; slot < inventoryMain.getSizeInventory(); ++slot)
 			{
-				for (int z = (entityPosZ - searchXYZ); z <= (entityPosZ + searchXYZ); ++z)
+				ItemStack stackSlot = inventoryMain.getStackInSlot(slot);
+
+				if (InventoryChast.canStoreInventory(inventory, stackSlot))
 				{
-					blockPosMutable.setPos(x, y, z);
-					World world = entityChast.getEntityWorld();
-					TileEntity tileEntity = world.getTileEntity(blockPosMutable);
-
-					if (tileEntity instanceof TileEntityChest)
-					{
-						boolean isLockedChest = (((BlockChest) world.getBlockState(blockPosMutable).getBlock()).getLockableContainer(world, blockPosMutable) == null);
-
-						if (isLockedChest)
-						{
-							continue;
-						}
-
-						float range = (float) ((x - entityPosX) * (x - entityPosX) + (y - entityPosY) * (y - entityPosY) + (z - entityPosZ) * (z - entityPosZ));
-
-						if (range < rangeOrigin)
-						{
-							rangeOrigin = range;
-
-							for (int slot = 0; slot < entityChast.getInventoryChastMain().getSizeInventory(); ++slot)
-							{
-								ItemStack stackInv = entityChast.getInventoryChastMain().getStackInSlot(slot);
-
-								if (ChastMobHelper.canStoreInventory((IInventory) tileEntity, stackInv))
-								{
-									tileEntityChest = (TileEntityChest) tileEntity;
-
-									break;
-								}
-							}
-						}
-					}
+					return homeChest;
 				}
 			}
 		}
 
-		return tileEntityChest;
+		return (TileEntityChest) null;
 	}
 
 }

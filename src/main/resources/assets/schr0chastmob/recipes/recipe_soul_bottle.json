@@ -1,0 +1,21 @@
+{
+    "type": "forge:ore_shaped",
+    "pattern": [
+        "   ",
+        "XYX",
+        "YXY"
+    ],
+    "key": {
+        "X": {
+            "type": "forge:ore_dict",
+            "ore": "gemQuartz"
+        },
+        "Y": {
+            "type": "forge:ore_dict",
+            "ore": "nuggetGold"
+        }
+    },
+    "result": {
+        "item": "schr0chastmob:soul_bottle"
+    }
+}

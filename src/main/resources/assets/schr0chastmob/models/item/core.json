@@ -3,5 +3,22 @@
 	"textures":
 	{
 		"layer0": "schr0chastmob:items/core"
-	}
+	},
+    "overrides":
+    [
+        {
+            "predicate":
+            {
+                "condition": 1
+            },
+            "model": "schr0chastmob:item/core_hurt"
+        },
+        {
+            "predicate":
+            {
+                "condition": 2
+            },
+            "model": "schr0chastmob:item/core_dying"
+         }
+     ]
 }

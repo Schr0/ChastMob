@@ -4,46 +4,30 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastFollowOwner extends EntityAIChast
 {
 
-	private static final int TIME_LIMIT = (5 * 20);
-	private int timeCounter;
-
-	private double speed;
-	private double distance;
 	private EntityLivingBase targetOwner;
 
-	public EntityAIChastFollowOwner(EntityChast entityChast, double speed, double distance)
+	public EntityAIChastFollowOwner(EntityChast entityChast)
 	{
 		super(entityChast);
 
-		this.speed = speed;
-		this.distance = (distance * distance);
+		this.targetOwner = null;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if ((this.getOwnerAIMode() == ChastAIMode.FREEDOM) || (this.getOwnerAIMode() == ChastAIMode.PATROL))
+		if (this.getMode() == ChastMode.FOLLOW)
 		{
-			return false;
-		}
+			this.targetOwner = this.getFollowOwner();
 
-		EntityLivingBase ownerEntity = this.getOwnerEntity().getOwnerEntity();
-
-		if (this.canFollowEntityLivingBase(ownerEntity))
-		{
-			if (this.getOwnerEntity().getDistanceSqToEntity(ownerEntity) < this.distance)
+			if (this.targetOwner != null)
 			{
-				return false;
-			}
-			else
-			{
-				this.setFollowing(TIME_LIMIT, ownerEntity);
-
 				return true;
 			}
 		}
@@ -54,12 +38,12 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	@Override
 	public boolean shouldContinueExecuting()
 	{
-		if (this.isFollowing())
+		if (this.isTimeOut())
 		{
-			return true;
+			return false;
 		}
 
-		return false;
+		return (this.targetOwner != null);
 	}
 
 	@Override
@@ -67,54 +51,67 @@ public class EntityAIChastFollowOwner extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.setFollowing(0, null);
+		if (this.targetOwner != null)
+		{
+			if (this.getFollowRange() < this.getEntity().getDistanceSq(this.targetOwner))
+			{
+				this.forceMoveToTargetEntity(this.targetOwner);
+			}
+		}
+
+		this.targetOwner = null;
 	}
 
 	@Override
 	public void updateTask()
 	{
-		--this.timeCounter;
+		super.updateTask();
 
-		this.getOwnerEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, this.getOwnerEntity().getHorizontalFaceSpeed(), this.getOwnerEntity().getVerticalFaceSpeed());
+		this.getEntity().getLookHelper().setLookPositionWithEntity(this.targetOwner, this.getEntity().getHorizontalFaceSpeed(), this.getEntity().getVerticalFaceSpeed());
 
-		if (this.getOwnerEntity().getDistanceSqToEntity(this.targetOwner) < this.distance)
+		if (this.getEntity().getDistanceSq(this.targetOwner) < this.getRange())
 		{
-			this.setFollowing(0, null);
+			this.targetOwner = null;
 		}
 		else
 		{
-			if (this.timeCounter < 20)
-			{
-				this.forceMoveToTargetEntity(this.targetOwner, this.speed);
-			}
-			else
-			{
-				this.getOwnerEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.speed);
-			}
+			this.getEntity().getNavigator().tryMoveToEntityLiving(this.targetOwner, this.getSpeed());
 		}
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public boolean isFollowing()
+	private int getFollowRange()
 	{
-		return (0 < this.timeCounter) && (this.targetOwner != null);
+		return (this.getRange() * this.getRange());
 	}
 
-	public void setFollowing(int timeCounter, @Nullable EntityLivingBase entityLivingBase)
+	@Nullable
+	private EntityLivingBase getFollowOwner()
 	{
-		this.timeCounter = timeCounter;
-		this.targetOwner = entityLivingBase;
-	}
+		EntityLivingBase owner = this.getEntity().getOwner();
 
-	private boolean canFollowEntityLivingBase(EntityLivingBase entityLivingBase)
-	{
-		if ((entityLivingBase instanceof EntityPlayer) && !((EntityPlayer) entityLivingBase).isSpectator())
+		if (owner == null)
 		{
-			return true;
+			return (EntityLivingBase) null;
 		}
 
-		return false;
+		if (owner instanceof EntityPlayer)
+		{
+			EntityPlayer player = (EntityPlayer) owner;
+
+			if (player.isSpectator())
+			{
+				return (EntityLivingBase) null;
+			}
+		}
+
+		if (this.getFollowRange() < this.getEntity().getDistanceSq(owner))
+		{
+			return owner;
+		}
+
+		return (EntityLivingBase) null;
 	}
 
 }

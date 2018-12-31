@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import schr0.chastmob.ChastMobHelper;
 import schr0.chastmob.api.ItemChastHelmet;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.entity.render.RenderChast;
@@ -26,7 +25,7 @@ public class LayerChastHelmet extends LayerChast
 	{
 		ItemStack stackEqHead = entityChast.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 
-		if (ChastMobHelper.isNotEmptyItemStack(stackEqHead))
+		if (!stackEqHead.isEmpty())
 		{
 			this.getRender().bindTexture(this.getArmourTexture(stackEqHead));
 
@@ -49,7 +48,9 @@ public class LayerChastHelmet extends LayerChast
 	{
 		if (stack.getItem() instanceof ItemChastHelmet)
 		{
-			return ((ItemChastHelmet) stack.getItem()).getHelmetTexture(stack);
+			ItemChastHelmet itemChastHelmet = (ItemChastHelmet) stack.getItem();
+
+			return itemChastHelmet.getHelmetTexture(stack);
 		}
 
 		return (ResourceLocation) null;

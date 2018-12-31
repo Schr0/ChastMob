@@ -1,46 +1,38 @@
 package schr0.chastmob.entity.ai;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
 
 public class EntityAIChastGoHome extends EntityAIChast
 {
 
-	private static final int TIME_LIMIT = (5 * 20);
-	private int timeCounter;
+	private TileEntityChest targetHomeChest;
 
-	private double speed;
-	private int distance;
-	private TileEntityChest targetChest;
-
-	public EntityAIChastGoHome(EntityChast entityChast, double speed, int distance)
+	public EntityAIChastGoHome(EntityChast entityChast)
 	{
 		super(entityChast);
 
-		this.speed = speed;
-		this.distance = distance;
+		this.targetHomeChest = null;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getOwnerAIMode() != ChastAIMode.PATROL)
+		if (this.getMode() == ChastMode.PATROL)
 		{
-			return false;
-		}
+			this.targetHomeChest = this.getHomeChest();
 
-		TileEntityChest homeChest = (TileEntityChest) this.getOwnerWorld().getTileEntity(this.getOwnerHomePosition());
-
-		if (this.canGoingTileEntityChest(homeChest))
-		{
-			this.setGoing(TIME_LIMIT, homeChest);
-
-			return true;
+			if (this.targetHomeChest != null)
+			{
+				return true;
+			}
 		}
 
 		return false;
@@ -49,20 +41,12 @@ public class EntityAIChastGoHome extends EntityAIChast
 	@Override
 	public boolean shouldContinueExecuting()
 	{
-		if (this.isGoing())
+		if (this.isTimeOut())
 		{
-			return true;
+			return false;
 		}
 
-		return false;
-	}
-
-	@Override
-	public void startExecuting()
-	{
-		super.startExecuting();
-
-		this.getOwnerEntity().setCoverOpen(false);
+		return (this.targetHomeChest != null);
 	}
 
 	@Override
@@ -70,102 +54,59 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.getOwnerEntity().setCoverOpen(false);
-		this.setGoing(0, null);
+		if (this.targetHomeChest != null)
+		{
+			this.forceMoveToTargetBlockPos(this.targetHomeChest.getPos());
+		}
+
+		this.targetHomeChest = null;
 	}
 
 	@Override
 	public void updateTask()
 	{
-		--this.timeCounter;
+		super.updateTask();
 
-		BlockPos targetBlockPos = this.targetChest.getPos();
+		BlockPos targetPos = this.targetHomeChest.getPos();
 
-		this.getOwnerEntity().getLookHelper().setLookPosition(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), 10.0F, this.getOwnerEntity().getVerticalFaceSpeed());
+		this.getEntity().getLookHelper().setLookPosition(targetPos.getX(), targetPos.getY(), targetPos.getZ(), 10.0F, this.getEntity().getVerticalFaceSpeed());
 
-		if (this.getOwnerEntity().getDistanceSqToCenter(targetBlockPos) < (this.distance * this.distance))
+		if (this.getEntity().getDistanceSqToCenter(targetPos) < this.getGoHomeRange())
 		{
-			this.setGoing(0, null);
+			this.targetHomeChest = null;
 		}
 		else
 		{
-			if (this.timeCounter < 20)
-			{
-				this.forceMoveToTargetBlockPos(targetBlockPos, this.speed);
-			}
-			else
-			{
-				this.getOwnerEntity().getNavigator().tryMoveToXYZ(targetBlockPos.getX(), targetBlockPos.getY(), targetBlockPos.getZ(), this.speed);
-			}
+			this.getEntity().getNavigator().tryMoveToXYZ(targetPos.getX(), targetPos.getY(), targetPos.getZ(), this.getSpeed());
 		}
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public boolean isGoing()
+	private int getGoHomeRange()
 	{
-		return (0 < this.timeCounter) && (this.targetChest != null);
+		return (this.getRange() * this.getRange());
 	}
 
-	public void setGoing(int timeCounter, @Nullable TileEntityChest tileEntityChest)
+	@Nullable
+	private TileEntityChest getHomeChest()
 	{
-		this.timeCounter = timeCounter;
-		this.targetChest = tileEntityChest;
-	}
-
-	private boolean canGoingTileEntityChest(TileEntityChest tileEntityChest)
-	{
-		if (tileEntityChest != null)
+		for (EntityChast ownerChast : this.getAroundEntityChasts())
 		{
-			TileEntityChest nearChest = this.getNearChestTileEntity(this.getOwnerEntity(), this.distance);
-
-			if ((nearChest != null) && (nearChest == tileEntityChest))
+			if (ownerChast.equals(this.getEntity()))
 			{
-				return false;
-			}
-
-			return this.canBlockBeSeen(tileEntityChest.getPos());
-		}
-
-		return false;
-	}
-
-	private TileEntityChest getNearChestTileEntity(EntityChast entityChast, int searchXYZ)
-	{
-		BlockPos blockPos = entityChast.getPosition();
-		int blockPosX = blockPos.getX();
-		int blockPosY = blockPos.getY();
-		int blockPosZ = blockPos.getZ();
-		float rangeOrigin = (float) (searchXYZ * searchXYZ * searchXYZ * 2);
-		BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
-		TileEntityChest tileEntityChest = null;
-
-		for (int x = (blockPosX - searchXYZ); x <= (blockPosX + searchXYZ); ++x)
-		{
-			for (int y = (blockPosY - searchXYZ); y <= (blockPosY + searchXYZ); ++y)
-			{
-				for (int z = (blockPosZ - searchXYZ); z <= (blockPosZ + searchXYZ); ++z)
-				{
-					blockPosMutable.setPos(x, y, z);
-					World world = entityChast.getEntityWorld();
-					TileEntity tileEntity = world.getTileEntity(blockPosMutable);
-
-					if (tileEntity instanceof TileEntityChest)
-					{
-						float range = (float) ((x - blockPosX) * (x - blockPosX) + (y - blockPosY) * (y - blockPosY) + (z - blockPosZ) * (z - blockPosZ));
-
-						if (range < rangeOrigin)
-						{
-							rangeOrigin = range;
-
-							tileEntityChest = (TileEntityChest) tileEntity;
-						}
-					}
-				}
+				return (TileEntityChest) null;
 			}
 		}
 
-		return tileEntityChest;
+		return this.getEntity().getCanSeeHomeChest(false);
+	}
+
+	private List<EntityChast> getAroundEntityChasts()
+	{
+		BlockPos pos = this.getEntity().getCenterPosition();
+
+		return this.getWorld().getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
 	}
 
 }

@@ -51,16 +51,19 @@ public class LayerChastCore extends LayerChast
 			case HURT :
 
 				enumDyeColor = EnumDyeColor.YELLOW;
+
 				break;
 
 			case DYING :
 
 				enumDyeColor = EnumDyeColor.RED;
+
 				break;
 
 			default :
 
 				enumDyeColor = EnumDyeColor.GREEN;
+
 				break;
 		}
 

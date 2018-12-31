@@ -1,7 +1,6 @@
 package schr0.chastmob;
 
 import net.minecraft.item.Item;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -19,12 +18,14 @@ import schr0.chastmob.init.ChastMobEntitys;
 import schr0.chastmob.init.ChastMobEvents;
 import schr0.chastmob.init.ChastMobGuis;
 import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.init.ChastMobPackets;
-import schr0.chastmob.init.ChastMobRecipes;
+import schr0.chastmob.init.ChastMobMessages;
 
 @Mod(modid = ChastMob.MOD_ID, name = ChastMob.MOD_NAME, version = ChastMob.MOD_VERSION)
 public class ChastMob
 {
+
+	@Mod.Instance(ChastMob.MOD_ID)
+	public static ChastMob instance;
 
 	/**
 	 * ModのID.
@@ -39,15 +40,12 @@ public class ChastMob
 	/**
 	 * Modのバージョン.
 	 */
-	public static final String MOD_VERSION = "2.1.5";
+	public static final String MOD_VERSION = "3.0.0";
 
 	/**
 	 * ResourceLocationのDomain.
 	 */
 	public static final String MOD_RESOURCE_DOMAIN = MOD_ID + ":";
-
-	@Mod.Instance(ChastMob.MOD_ID)
-	public static ChastMob instance;
 
 	/**
 	 * 初期・設定イベント.
@@ -83,15 +81,16 @@ public class ChastMob
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		(new ChastMobPackets()).registerMessages();
+		(new ChastMobGuis()).register();
 
-		(new ChastMobGuis()).registerGuis();
+		(new ChastMobEvents()).register();
 
-		(new ChastMobEvents()).registerEvents();
+		(new ChastMobMessages()).register();
 
 		if (event.getSide().isClient())
 		{
-			(new ChastMobPackets()).registerClientMessages();
+
+			(new ChastMobMessages()).registerClient();
 		}
 	}
 
@@ -139,17 +138,6 @@ public class ChastMob
 	public void registerEntitys(RegistryEvent.Register<EntityEntry> event)
 	{
 		(new ChastMobEntitys()).registerEntitys();
-	}
-
-	/**
-	 * Recipeの登録.
-	 */
-	@SubscribeEvent
-	public void registerRecipes(RegistryEvent.Register<IRecipe> event)
-	{
-		IForgeRegistry<IRecipe> registry = event.getRegistry();
-
-		(new ChastMobRecipes()).registerRecipes(registry);
 	}
 
 }

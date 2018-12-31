@@ -17,14 +17,14 @@ import schr0.chastmob.entity.render.RenderChast;
 public class ChastMobEntitys
 {
 
-	public static final int TRACKING_RANGE = 250;
-	public static final int UPDATE_FREQUENCY = 1;
-	public static final boolean SENDS_VELOCITY_UPDATES = true;
-
 	public static final String NAME_CHAST = "chast";
 	public static final int ID_CHAST = 0;
 	public static final int EGG_PRIMARY_CHAST = 0xa47227;
 	public static final int EGG_SECONDARY_CHAST = 0x000000;
+
+	private static final int TRACKING_RANGE = 250;
+	private static final int UPDATE_FREQUENCY = 1;
+	private static final boolean SENDS_VELOCITY_UPDATES = true;
 
 	public void registerEntitys()
 	{

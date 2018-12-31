@@ -9,26 +9,29 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import schr0.chastmob.init.ChastMobItems;
-import schr0.chastmob.init.ChastMobPackets;
-import schr0.chastmob.packet.particleentity.MessageParticleEntity;
-import schr0.chastmob.util.ChastMobLangs;
+import schr0.chastmob.util.ChastMobParticles;
 
 public class ItemSoulBottleFull extends Item
 {
 
+	public static final int MAX_DAMAGE = (60 * 20);
 	private static String NAME_FRIENDLY = "friendly";
-	public static final int MAX_DAMAGE = (20 * 60);
 
 	public ItemSoulBottleFull()
 	{
@@ -38,6 +41,7 @@ public class ItemSoulBottleFull extends Item
 
 		this.addPropertyOverride(new ResourceLocation(NAME_FRIENDLY), new IItemPropertyGetter()
 		{
+			@SideOnly(Side.CLIENT)
 			@Override
 			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
 			{
@@ -51,26 +55,34 @@ public class ItemSoulBottleFull extends Item
 		});
 	}
 
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
+	{
+		TextComponentTranslation info;
+
+		if (stack.getItemDamage() == 0)
+		{
+			info = new TextComponentTranslation("item.soul_bottle_full_friendly.tooltip", new Object[0]);
+		}
+		else
+		{
+			info = new TextComponentTranslation("item.soul_bottle_full.tooltip", new Object[0]);
+		}
+
+		info.getStyle().setColor(TextFormatting.BLUE);
+		info.getStyle().setItalic(true);
+
+		tooltip.add(info.getFormattedText());
+	}
+
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
 	{
 		if (this.isInCreativeTab(tab))
 		{
+			items.add(new ItemStack(this, 1));
 			items.add(new ItemStack(this, 1, MAX_DAMAGE));
-			items.add(new ItemStack(this, 1, 1));
-		}
-	}
-
-	@Override
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-	{
-		if (stack.getItemDamage() == 0)
-		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_SOUL_BOTTLE_FULL_FRIENDLY_TIPS, new Object[0]).getFormattedText());
-		}
-		else
-		{
-			tooltip.add(TextFormatting.ITALIC + new TextComponentTranslation(ChastMobLangs.ITEM_SOUL_BOTTLE_FULL_TIPS, new Object[0]).getFormattedText());
 		}
 	}
 
@@ -123,7 +135,7 @@ public class ItemSoulBottleFull extends Item
 
 		if (stack.getItemDamage() == 0)
 		{
-			ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(entityIn, 0));
+			ChastMobParticles.spawnParticleHeart(entityIn);
 
 			entityPlayer.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
 		}
@@ -131,7 +143,7 @@ public class ItemSoulBottleFull extends Item
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public void resurrectionOwner(ItemStack stack, EnumHand hand, EntityLivingBase owner)
+	public void resurrection(ItemStack stack, EnumHand hand, EntityLivingBase owner)
 	{
 		if (stack.getItemDamage() != 0)
 		{
@@ -139,10 +151,19 @@ public class ItemSoulBottleFull extends Item
 		}
 
 		owner.setHealth(owner.getMaxHealth());
+		owner.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 400, 1));
+		owner.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 6000, 0));
+		owner.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 6000, 0));
+		owner.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION, 2400, 3));
 
 		owner.setHeldItem(hand, new ItemStack(ChastMobItems.SOUL_BOTTLE));
 
-		ChastMobPackets.DISPATCHER.sendToAll(new MessageParticleEntity(owner, 0));
+		if (owner instanceof EntityPlayerMP)
+		{
+			((EntityPlayerMP) owner).sendMessage(new TextComponentTranslation("item.soul_bottle_full_friendly.resurrection", new Object[]{}));
+		}
+
+		ChastMobParticles.spawnParticleHeart(owner);
 
 		owner.getEntityWorld().playSound((EntityPlayer) null, owner.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, owner.getSoundCategory(), 1.0F, 1.0F);
 	}
