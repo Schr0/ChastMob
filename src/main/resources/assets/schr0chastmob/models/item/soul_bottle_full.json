@@ -7,13 +7,13 @@
 
 	"overrides":
 	[
-	        {
-			"predicate":
+        {
+            "predicate":
 			{
 				"friendly": 1
 			},
-				"model": "schr0chastmob:item/soul_bottle_full_friendly"
-	        }
+            "model": "schr0chastmob:item/soul_bottle_full_friendly"
+        }
 	]
 
 }

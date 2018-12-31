@@ -23,6 +23,7 @@ import schr0.chastmob.ChastMob;
 import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.init.ChastMobItems;
 import schr0.chastmob.init.ChastMobMessages;
+import schr0.chastmob.item.ItemCore;
 import schr0.chastmob.packet.MessageGuiChastInventory;
 
 @SideOnly(Side.CLIENT)
@@ -122,6 +123,8 @@ public class GuiChastInventory extends GuiContainer
 
 		// HPアイコン
 		ItemStack renderItem = new ItemStack(ChastMobItems.CORE);
+		((ItemCore) renderItem.getItem()).setCondition(renderItem, this.entityChast.getCondition());
+
 		int xPosition = ((this.width - this.xSize) / 2) + 141;
 		int yPosition = ((this.height - this.ySize) / 2) + 22;
 		this.itemRender.renderItemAndEffectIntoGUI(renderItem, xPosition, yPosition);

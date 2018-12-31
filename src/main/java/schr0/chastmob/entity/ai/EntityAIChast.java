@@ -21,7 +21,6 @@ public abstract class EntityAIChast extends EntityAIBase
 
 	public EntityAIChast(EntityChast entityChast)
 	{
-		this.setMutexBits(1);
 		this.entityChast = entityChast;
 		this.time = 0;
 	}

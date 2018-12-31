@@ -10,6 +10,7 @@ item.soul_bottle_full.tooltip=Let's stay together.
 
 item.soul_bottle_full_friendly.name=Friendly Soul Bottle
 item.soul_bottle_full_friendly.tooltip=Will help you, when you have in your hand.
+item.soul_bottle_full_friendly.resurrection=" Hope you stay around for a long time ! "
 
 item.soul_fragment.name=Soul Fragment
 item.soul_fragment.tooltip=Can heal Chast's Life.

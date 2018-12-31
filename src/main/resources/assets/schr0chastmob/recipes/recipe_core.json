@@ -1,0 +1,15 @@
+{
+    "type": "forge:ore_shapeless",
+    "ingredients": [
+        {
+            "item": "schr0chastmob:soul_bottle_full"
+        },
+        {
+            "type": "forge:ore_dict",
+            "ore": "chestWood"
+        }
+    ],
+    "result": {
+        "item": "schr0chastmob:core"
+    }
+}}

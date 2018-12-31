@@ -1,0 +1,15 @@
+{
+    "type": "forge:ore_shapeless",
+    "ingredients": [
+        {
+            "item": "schr0chastmob:soul_fragment"
+        },
+        {
+            "type": "forge:ore_dict",
+            "ore": "paper"
+        }
+    ],
+    "result": {
+        "item": "schr0chastmob:home_map"
+    }
+}}

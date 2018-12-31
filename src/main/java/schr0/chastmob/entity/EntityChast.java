@@ -118,6 +118,17 @@ public class EntityChast extends EntityGolem
 		EntityAIBase aiWander = new EntityAIChastWander(this);
 		EntityAIBase aiWatchClosest = new EntityAIChastWatchClosest(this);
 
+		aiSwimming.setMutexBits(0);
+		this.aiStateDamage.setMutexBits(1);
+		this.aiStateSit.setMutexBits(1);
+		this.aiStateTrade.setMutexBits(1);
+		aiGoHome.setMutexBits(1);
+		aiStoreChest.setMutexBits(1);
+		aiFollowOwner.setMutexBits(1);
+		aiCollectItem.setMutexBits(1);
+		aiWander.setMutexBits(1);
+		aiWatchClosest.setMutexBits(2);
+
 		this.tasks.addTask(0, aiSwimming);
 		this.tasks.addTask(1, this.aiStateDamage);
 		this.tasks.addTask(2, this.aiStateSit);
@@ -1041,7 +1052,6 @@ public class EntityChast extends EntityGolem
 			this.setTamed(true);
 			this.setOwnerUUID(player.getUniqueID());
 			this.setFollow(true);
-			this.setSitAI(true);
 
 			player.sendMessage(new TextComponentTranslation("entity.chast.thanks", new Object[]
 			{

@@ -4,16 +4,14 @@
 	{
 		"layer0": "schr0chastmob:items/home_map"
 	},
-
 	"overrides":
 	[
-	        {
-			"predicate":
+        {
+            "predicate":
 			{
 				"fill": 1
 			},
-				"model": "schr0chastmob:item/home_map_fill"
-	        }
+            "model": "schr0chastmob:item/home_map_fill"
+        }
 	]
-
 }

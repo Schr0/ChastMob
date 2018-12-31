@@ -9,10 +9,13 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -148,8 +151,17 @@ public class ItemSoulBottleFull extends Item
 		}
 
 		owner.setHealth(owner.getMaxHealth());
+		owner.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 400, 1));
+		owner.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 6000, 0));
+		owner.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 6000, 0));
+		owner.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION, 2400, 3));
 
 		owner.setHeldItem(hand, new ItemStack(ChastMobItems.SOUL_BOTTLE));
+
+		if (owner instanceof EntityPlayerMP)
+		{
+			((EntityPlayerMP) owner).sendMessage(new TextComponentTranslation("item.soul_bottle_full_friendly.resurrection", new Object[]{}));
+		}
 
 		ChastMobParticles.spawnParticleHeart(owner);
 

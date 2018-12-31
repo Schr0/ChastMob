@@ -1,0 +1,12 @@
+{
+    "type": "forge:ore_shapeless",
+    "ingredients": [
+        {
+            "item": "schr0chastmob:soul_bottle_full",
+            "data": 0
+        }
+    ],
+    "result": {
+        "item": "schr0chastmob:soul_fragment"
+    }
+}
