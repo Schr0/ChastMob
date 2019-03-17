@@ -40,7 +40,7 @@ public class ChastMob
 	/**
 	 * Modのバージョン.
 	 */
-	public static final String MOD_VERSION = "3.0.0";
+	public static final String MOD_VERSION = "3.0.1";
 
 	/**
 	 * ResourceLocationのDomain.

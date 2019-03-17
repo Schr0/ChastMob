@@ -1,30 +1,34 @@
 package schr0.chastmob.entity.ai;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import schr0.chastmob.entity.EntityChast;
 
-public class EntityAIChastStateTrade extends EntityAIChast
+public class EntityAIChastTrade extends EntityAIChast
 {
 
 	private static final double TRADER_RANGE = 16.0D;
 	private Entity trader;
 
-	public EntityAIChastStateTrade(EntityChast entityChast)
+	public EntityAIChastTrade(EntityChast entityChast)
 	{
 		super(entityChast);
-
-		this.trader = null;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.trader != null)
-		{
-			return true;
-		}
+		return (this.trader != null);
+	}
 
-		return false;
+	@Override
+	public void startExecuting()
+	{
+		super.startExecuting();
+
+		this.getEntity().setTrade(true);
 	}
 
 	@Override
@@ -32,7 +36,6 @@ public class EntityAIChastStateTrade extends EntityAIChast
 	{
 		super.resetTask();
 
-		this.trader = null;
 		this.getEntity().setTrade(false);
 	}
 
@@ -46,13 +49,9 @@ public class EntityAIChastStateTrade extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public void startTask(Entity trader)
+	public void setTrading(@Nullable EntityPlayer trader)
 	{
-		if (trader != null)
-		{
-			this.trader = trader;
-			this.getEntity().setTrade(true);
-		}
+		this.trader = trader;
 	}
 
 }

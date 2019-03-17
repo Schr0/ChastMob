@@ -16,46 +16,23 @@ import schr0.chastmob.entity.EntityChast;
 import schr0.chastmob.inventory.InventoryChastEquipments;
 import schr0.chastmob.inventory.InventoryChastMain;
 
-public class EntityAIChastStateDamage extends EntityAIChast
+public class EntityAIChastPanic extends EntityAIChast
 {
 
 	private static final int IDLE_TIME = (2 * 20);
 	private double randPosX;
 	private double randPosY;
 	private double randPosZ;
-	private int timeDamage;
 
-	public EntityAIChastStateDamage(EntityChast entityChast)
+	public EntityAIChastPanic(EntityChast entityChast)
 	{
 		super(entityChast);
-
-		this.randPosX = 0;
-		this.randPosY = 0;
-		this.randPosZ = 0;
-		this.timeDamage = 0;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (0 < this.timeDamage)
-		{
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
-	public void resetTask()
-	{
-		super.resetTask();
-
-		this.randPosX = 0;
-		this.randPosY = 0;
-		this.randPosZ = 0;
-		this.timeDamage = 0;
-		this.getEntity().setDamage(false);
+		return this.getEntity().isPanic();
 	}
 
 	@Override
@@ -63,23 +40,23 @@ public class EntityAIChastStateDamage extends EntityAIChast
 	{
 		super.updateTask();
 
-		--this.timeDamage;
+		this.getEntity().shrinkPanicTime(1);
 
-		if (this.isIdle() || this.getEntity().isEquipHelmet())
+		this.getEntity().setCoverOpen(true);
+
+		if (this.isIdleTime())
 		{
 			return;
 		}
 
-		this.getEntity().setCoverOpen(true);
-
-		if (this.getEntity().getRNG().nextFloat() < 0.5F)
+		if (this.getEntity().getRNG().nextFloat() < 0.50F)
 		{
 			this.onPanicDropItems(this.getEntity());
 		}
 
 		if (this.getEntity().isBurning())
 		{
-			BlockPos blockPos = this.getNearWaterPosition(this.getEntity(), this.getRange());
+			BlockPos blockPos = this.getNearWaterPosition(this.getEntity(), this.getSearchRange());
 
 			if (blockPos == null)
 			{
@@ -94,7 +71,7 @@ public class EntityAIChastStateDamage extends EntityAIChast
 		}
 		else
 		{
-			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.getRange(), this.getRange());
+			Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.getSearchRange(), this.getSearchRange());
 
 			if (vec3d == null)
 			{
@@ -108,32 +85,20 @@ public class EntityAIChastStateDamage extends EntityAIChast
 			}
 		}
 
-		this.getEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.getSpeed());
+		this.getEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.getMoveSpeed());
 	}
 
 	@Override
-	public double getSpeed()
+	public double getMoveSpeed()
 	{
-		return (super.getSpeed() * 2);
+		return (super.getMoveSpeed() * 2);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public void startTask(int sec)
+	private boolean isIdleTime()
 	{
-		sec = Math.max(4, sec);
-		sec = Math.min(8, sec);
-
-		this.timeDamage = ((sec * 20) + IDLE_TIME);
-		this.randPosX = 0;
-		this.randPosY = 0;
-		this.randPosZ = 0;
-		this.getEntity().setDamage(true);
-	}
-
-	private boolean isIdle()
-	{
-		return (this.timeDamage < IDLE_TIME);
+		return (this.getEntity().getPanicTime() < IDLE_TIME);
 	}
 
 	private void onPanicDropItems(EntityChast entityChast)

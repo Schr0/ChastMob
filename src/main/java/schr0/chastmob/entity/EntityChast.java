@@ -47,10 +47,10 @@ import schr0.chastmob.api.ItemChastHelmet;
 import schr0.chastmob.entity.ai.EntityAIChastCollectItem;
 import schr0.chastmob.entity.ai.EntityAIChastFollowOwner;
 import schr0.chastmob.entity.ai.EntityAIChastGoHome;
-import schr0.chastmob.entity.ai.EntityAIChastStateDamage;
-import schr0.chastmob.entity.ai.EntityAIChastStateSit;
-import schr0.chastmob.entity.ai.EntityAIChastStateTrade;
+import schr0.chastmob.entity.ai.EntityAIChastPanic;
+import schr0.chastmob.entity.ai.EntityAIChastSit;
 import schr0.chastmob.entity.ai.EntityAIChastStoreChest;
+import schr0.chastmob.entity.ai.EntityAIChastTrade;
 import schr0.chastmob.entity.ai.EntityAIChastWander;
 import schr0.chastmob.entity.ai.EntityAIChastWatchClosest;
 import schr0.chastmob.init.ChastMobGuis;
@@ -63,34 +63,34 @@ import schr0.chastmob.util.ChastMobParticles;
 public class EntityChast extends EntityGolem
 {
 
+	private static final double MAX_HEALTH = 20.0D;
+	private static final double MOVEMENT_SPEED = 0.25D;
 	private static final float SIZE_WIDTH = 0.9F;
 	private static final float SIZE_HEIGHT = 1.5F;
-	private static final double ENTITY_HEALTH = 20.0D;
-	private static final double ENTITY_SPEED = 0.25D;
-	private static final double SIT_MOUNTED_Y_OFFSET = 0.60D;
+	private static final double SIT_MOUNTED_Y_OFFSET = 0.6D;
 
 	private static final String TAG = ChastMob.MOD_ID + "." + "entity_chast" + ".";
 	private static final String TAG_INVENTORY = TAG + "inventory";
 	private static final String TAG_EQUIPMENTS = TAG + "equipments";
 	private static final String TAG_HOME_CHEST_POS = TAG + "home_chest_pos";
-	private static final String TAG_ARM_COLOR = TAG + "arm_color";
 	private static final String TAG_OWNER_UUID = TAG + "owner_uuid";
+	private static final String TAG_ARM_COLOR = TAG + "arm_color";
+	private static final String TAG_PANIC_TIME = TAG + "panic_time";
 	private static final String TAG_FOLLOW = TAG + "follow";
-	private static final String TAG_STATE_SIT = TAG + "state_sit";
+	private static final String TAG_SIT = TAG + "sit";
 
 	private static final DataParameter<BlockPos> HOME_CHEST_POS = EntityDataManager.<BlockPos> createKey(EntityChast.class, DataSerializers.BLOCK_POS);
+	private static final DataParameter<Optional<UUID>> OWNER_UUID = EntityDataManager.<Optional<UUID>> createKey(EntityChast.class, DataSerializers.OPTIONAL_UNIQUE_ID);
 	private static final DataParameter<Integer> ARM_COLOR = EntityDataManager.<Integer> createKey(EntityChast.class, DataSerializers.VARINT);
 	private static final DataParameter<Byte> COVER_OPEN = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
-	private static final DataParameter<Optional<UUID>> OWNER_UUID = EntityDataManager.<Optional<UUID>> createKey(EntityChast.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+	private static final DataParameter<Integer> PANIC_TIME = EntityDataManager.<Integer> createKey(EntityChast.class, DataSerializers.VARINT);
 	private static final DataParameter<Byte> TAMED = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 	private static final DataParameter<Byte> FOLLOW = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
-	private static final DataParameter<Byte> STATE_SIT = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
-	private static final DataParameter<Byte> STATE_DAMAGE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
-	private static final DataParameter<Byte> STATE_TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+	private static final DataParameter<Byte> SIT = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
+	private static final DataParameter<Byte> TRADE = EntityDataManager.<Byte> createKey(EntityChast.class, DataSerializers.BYTE);
 
-	private EntityAIChastStateDamage aiStateDamage;
-	private EntityAIChastStateSit aiStateSit;
-	private EntityAIChastStateTrade aiStateTrade;
+	private EntityAIChastSit aiSit;
+	private EntityAIChastTrade aiTrade;
 	private InventoryChastMain inventoryMain;
 	private InventoryChastEquipments inventoryEquipments;
 	private float lidAngle;
@@ -108,9 +108,9 @@ public class EntityChast extends EntityGolem
 		super.initEntityAI();
 
 		EntityAIBase aiSwimming = new EntityAISwimming(this);
-		this.aiStateDamage = new EntityAIChastStateDamage(this);
-		this.aiStateSit = new EntityAIChastStateSit(this);
-		this.aiStateTrade = new EntityAIChastStateTrade(this);
+		EntityAIBase aiPanic = new EntityAIChastPanic(this);
+		this.aiTrade = new EntityAIChastTrade(this);
+		this.aiSit = new EntityAIChastSit(this);
 		EntityAIBase aiGoHome = new EntityAIChastGoHome(this);
 		EntityAIBase aiStoreChest = new EntityAIChastStoreChest(this);
 		EntityAIBase aiFollowOwner = new EntityAIChastFollowOwner(this);
@@ -119,34 +119,34 @@ public class EntityChast extends EntityGolem
 		EntityAIBase aiWatchClosest = new EntityAIChastWatchClosest(this);
 
 		aiSwimming.setMutexBits(0);
-		this.aiStateDamage.setMutexBits(1);
-		this.aiStateSit.setMutexBits(1);
-		this.aiStateTrade.setMutexBits(1);
+		aiPanic.setMutexBits(1);
+		this.aiTrade.setMutexBits(1);
+		this.aiSit.setMutexBits(1);
 		aiGoHome.setMutexBits(1);
 		aiStoreChest.setMutexBits(1);
 		aiFollowOwner.setMutexBits(1);
 		aiCollectItem.setMutexBits(1);
 		aiWander.setMutexBits(1);
-		aiWatchClosest.setMutexBits(2);
+		aiWatchClosest.setMutexBits(1);
 
-		this.tasks.addTask(0, aiSwimming);
-		this.tasks.addTask(1, this.aiStateDamage);
-		this.tasks.addTask(2, this.aiStateSit);
-		this.tasks.addTask(3, this.aiStateTrade);
-		this.tasks.addTask(4, aiGoHome);
-		this.tasks.addTask(5, aiStoreChest);
-		this.tasks.addTask(6, aiCollectItem);
-		this.tasks.addTask(7, aiFollowOwner);
-		this.tasks.addTask(8, aiWander);
-		this.tasks.addTask(9, aiWatchClosest);
+		this.tasks.addTask(1, aiSwimming);
+		this.tasks.addTask(2, aiPanic);
+		this.tasks.addTask(3, this.aiTrade);
+		this.tasks.addTask(4, this.aiSit);
+		this.tasks.addTask(5, aiGoHome);
+		this.tasks.addTask(6, aiStoreChest);
+		this.tasks.addTask(7, aiCollectItem);
+		this.tasks.addTask(8, aiFollowOwner);
+		this.tasks.addTask(9, aiWander);
+		this.tasks.addTask(10, aiWatchClosest);
 	}
 
 	@Override
 	protected void applyEntityAttributes()
 	{
 		super.applyEntityAttributes();
-		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(ENTITY_HEALTH);
-		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(ENTITY_SPEED);
+		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(MAX_HEALTH);
+		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(MOVEMENT_SPEED);
 	}
 
 	@Override
@@ -156,12 +156,12 @@ public class EntityChast extends EntityGolem
 		this.getDataManager().register(HOME_CHEST_POS, BlockPos.ORIGIN);
 		this.getDataManager().register(ARM_COLOR, Integer.valueOf(EnumDyeColor.WHITE.getDyeDamage()));
 		this.getDataManager().register(COVER_OPEN, Byte.valueOf((byte) 0));
+		this.getDataManager().register(PANIC_TIME, 0);
 		this.getDataManager().register(OWNER_UUID, Optional.<UUID> absent());
 		this.getDataManager().register(TAMED, Byte.valueOf((byte) 0));
 		this.getDataManager().register(FOLLOW, Byte.valueOf((byte) 0));
-		this.getDataManager().register(STATE_DAMAGE, Byte.valueOf((byte) 0));
-		this.getDataManager().register(STATE_SIT, Byte.valueOf((byte) 0));
-		this.getDataManager().register(STATE_TRADE, Byte.valueOf((byte) 0));
+		this.getDataManager().register(SIT, Byte.valueOf((byte) 0));
+		this.getDataManager().register(TRADE, Byte.valueOf((byte) 0));
 	}
 
 	@Override
@@ -180,6 +180,8 @@ public class EntityChast extends EntityGolem
 
 		compound.setByte(TAG_ARM_COLOR, (byte) this.getArmColor().getDyeDamage());
 
+		compound.setInteger(TAG_PANIC_TIME, this.getPanicTime());
+
 		if (this.getOwnerUUID() == null)
 		{
 			compound.setString(TAG_OWNER_UUID, "");
@@ -191,7 +193,7 @@ public class EntityChast extends EntityGolem
 
 		compound.setBoolean(TAG_FOLLOW, this.isFollow());
 
-		compound.setBoolean(TAG_STATE_SIT, this.isSit());
+		compound.setBoolean(TAG_SIT, this.isSit());
 	}
 
 	@Override
@@ -215,7 +217,7 @@ public class EntityChast extends EntityGolem
 
 		this.setArmColor(EnumDyeColor.byDyeDamage(compound.getByte(TAG_ARM_COLOR)));
 
-		this.setCoverOpen(false);
+		this.setPanicTime(compound.getInteger(TAG_PANIC_TIME));
 
 		String ownerUUID;
 
@@ -243,17 +245,11 @@ public class EntityChast extends EntityGolem
 
 		this.setFollow(compound.getBoolean(TAG_FOLLOW));
 
-		this.setSit(compound.getBoolean(TAG_STATE_SIT));
+		this.setSitting(compound.getBoolean(TAG_SIT));
 
-		this.setDamage(false);
+		this.setTrading((EntityPlayer) null);
 
-		this.setTrade(false);
-
-		this.setSitAI(this.isSit());
-
-		this.setDamageAI(0);
-
-		this.setTradeAI(null);
+		this.setCoverOpen(false);
 	}
 
 	@Override
@@ -318,7 +314,7 @@ public class EntityChast extends EntityGolem
 	{
 		super.updatePassenger(passenger);
 
-		if (!this.getEntityWorld().isRemote && this.isDamage())
+		if (!this.getEntityWorld().isRemote && this.isPanic())
 		{
 			passenger.dismountRidingEntity();
 		}
@@ -418,25 +414,26 @@ public class EntityChast extends EntityGolem
 			}
 		}
 
-		if (this.isDamage())
+		if (this.isDefense())
 		{
-			if (this.isEquipHelmet())
+			if (isServerWorld)
 			{
-				if (isServerWorld)
-				{
-					ChastMobParticles.spawnParticleDefense(this);
+				ChastMobParticles.spawnParticleDefense(this);
 
-					this.playSound(SoundEvents.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.5F, (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F + 1.0F);
-				}
-
-				return false;
+				this.playSound(SoundEvents.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.5F, (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F + 1.0F);
 			}
+
+			return false;
 		}
 		else
 		{
 			if (isServerWorld && (source.getTrueSource() instanceof EntityLivingBase))
 			{
-				this.setDamageAI((int) amount);
+				int panicTime = (int) amount;
+				panicTime = Math.max(panicTime, 6);
+				panicTime = Math.min(panicTime, 12);
+
+				this.setPanicTime((panicTime * 20));
 			}
 		}
 
@@ -475,7 +472,7 @@ public class EntityChast extends EntityGolem
 	@Override
 	public boolean processInteract(EntityPlayer player, EnumHand hand)
 	{
-		if (this.isDamage() || (hand == EnumHand.OFF_HAND))
+		if (this.isPanic() || (hand == EnumHand.OFF_HAND))
 		{
 			return false;
 		}
@@ -575,7 +572,7 @@ public class EntityChast extends EntityGolem
 			{
 				if (isServerWorld)
 				{
-					this.setSitAI(!this.isSit());
+					this.setSitting(!this.isSit());
 				}
 
 				return this.onSuccessProcessInteract(player, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, true);
@@ -667,12 +664,6 @@ public class EntityChast extends EntityGolem
 
 	// TODO /* ======================================== DATAMANAGER START =====================================*/
 
-	@SideOnly(Side.CLIENT)
-	public float getCoverRotateAngleX(float partialTickTime)
-	{
-		return ((this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * partialTickTime) * 0.5F * (float) Math.PI);
-	}
-
 	public BlockPos getHomeChestPosition()
 	{
 		return (BlockPos) this.getDataManager().get(HOME_CHEST_POS);
@@ -698,11 +689,11 @@ public class EntityChast extends EntityGolem
 		return ((((Byte) this.getDataManager().get(COVER_OPEN)).byteValue() & 1) != 0);
 	}
 
-	public void setCoverOpen(boolean isCoverOpen)
+	public void setCoverOpen(boolean flag)
 	{
 		byte b0 = ((Byte) this.getDataManager().get(COVER_OPEN)).byteValue();
 
-		if (isCoverOpen)
+		if (flag)
 		{
 			this.getDataManager().set(COVER_OPEN, Byte.valueOf((byte) (b0 | 1)));
 		}
@@ -716,6 +707,11 @@ public class EntityChast extends EntityGolem
 	public UUID getOwnerUUID()
 	{
 		return (UUID) ((Optional) this.getDataManager().get(OWNER_UUID)).orNull();
+	}
+
+	public void setOwnerUUID(@Nullable UUID ownerUUID)
+	{
+		this.getDataManager().set(OWNER_UUID, Optional.fromNullable(ownerUUID));
 	}
 
 	public boolean isOwner(Entity owner)
@@ -752,107 +748,132 @@ public class EntityChast extends EntityGolem
 		}
 	}
 
-	public void setOwnerUUID(@Nullable UUID ownerUUID)
-	{
-		this.getDataManager().set(OWNER_UUID, Optional.fromNullable(ownerUUID));
-	}
-
 	public boolean isTamed()
 	{
-		return (((Byte) this.getDataManager().get(TAMED)).byteValue() & 1) != 0;
+		return (((Byte) this.getDataManager().get(TAMED)).byteValue() == 1);
 	}
 
-	public void setTamed(boolean isTamed)
+	public void setTamed(boolean flag)
 	{
 		byte b0 = ((Byte) this.getDataManager().get(TAMED)).byteValue();
 
-		if (isTamed)
+		if (flag)
 		{
-			this.getDataManager().set(TAMED, Byte.valueOf((byte) (b0 | 1)));
+			this.getDataManager().set(TAMED, Byte.valueOf((byte) 1));
 		}
 		else
 		{
-			this.getDataManager().set(TAMED, Byte.valueOf((byte) (b0 & -2)));
+			this.getDataManager().set(TAMED, Byte.valueOf((byte) 0));
 		}
 	}
 
 	public boolean isFollow()
 	{
-		return (((Byte) this.getDataManager().get(FOLLOW)).byteValue() & 1) != 0;
+		return (((Byte) this.getDataManager().get(FOLLOW)).byteValue() == 1);
 	}
 
-	public void setFollow(boolean isFollow)
+	public void setFollow(boolean flag)
 	{
 		byte b0 = ((Byte) this.getDataManager().get(FOLLOW)).byteValue();
 
-		if (isFollow)
+		if (flag)
 		{
-			this.getDataManager().set(FOLLOW, Byte.valueOf((byte) (b0 | 1)));
+			this.getDataManager().set(FOLLOW, Byte.valueOf((byte) 1));
 		}
 		else
 		{
-			this.getDataManager().set(FOLLOW, Byte.valueOf((byte) (b0 & -2)));
+			this.getDataManager().set(FOLLOW, Byte.valueOf((byte) 0));
 		}
 	}
 
-	public boolean isDamage()
+	public int getPanicTime()
 	{
-		return (((Byte) this.getDataManager().get(STATE_DAMAGE)).byteValue() & 1) != 0;
+		return ((Integer) this.getDataManager().get(PANIC_TIME)).intValue();
 	}
 
-	public void setDamage(boolean isDamage)
+	public void setPanicTime(int amount)
 	{
-		byte b0 = ((Byte) this.getDataManager().get(STATE_DAMAGE)).byteValue();
+		amount = Math.max(amount, 0);
 
-		if (isDamage)
-		{
-			this.getDataManager().set(STATE_DAMAGE, Byte.valueOf((byte) (b0 | 1)));
-		}
-		else
-		{
-			this.getDataManager().set(STATE_DAMAGE, Byte.valueOf((byte) (b0 & -2)));
-		}
+		this.getDataManager().set(PANIC_TIME, amount);
+	}
+
+	public boolean isPanic()
+	{
+		return (0 < this.getPanicTime());
+	}
+
+	public boolean isDefense()
+	{
+		return (this.isPanic() && this.isEquipHelmet());
+	}
+
+	public void shrinkPanicTime(int amount)
+	{
+		this.setPanicTime(this.getPanicTime() - amount);
 	}
 
 	public boolean isSit()
 	{
-		return (((Byte) this.getDataManager().get(STATE_SIT)).byteValue() & 1) != 0;
+		return (((Byte) this.getDataManager().get(SIT)).byteValue() == 1);
 	}
 
-	public void setSit(boolean isSit)
+	public void setSit(boolean flag)
 	{
-		byte b0 = ((Byte) this.getDataManager().get(STATE_SIT)).byteValue();
+		byte b0 = ((Byte) this.getDataManager().get(SIT)).byteValue();
 
-		if (isSit)
+		if (flag)
 		{
-			this.getDataManager().set(STATE_SIT, Byte.valueOf((byte) (b0 | 1)));
+			this.getDataManager().set(SIT, Byte.valueOf((byte) 1));
 		}
 		else
 		{
-			this.getDataManager().set(STATE_SIT, Byte.valueOf((byte) (b0 & -2)));
+			this.getDataManager().set(SIT, Byte.valueOf((byte) 0));
 		}
 	}
 
 	public boolean isTrade()
 	{
-		return (((Byte) this.getDataManager().get(STATE_TRADE)).byteValue() & 1) != 0;
+		return (((Byte) this.getDataManager().get(TRADE)).byteValue() == 1);
 	}
 
-	public void setTrade(boolean isTrade)
+	public void setTrade(boolean flag)
 	{
-		byte b0 = ((Byte) this.getDataManager().get(STATE_TRADE)).byteValue();
+		byte b0 = ((Byte) this.getDataManager().get(TRADE)).byteValue();
 
-		if (isTrade)
+		if (flag)
 		{
-			this.getDataManager().set(STATE_TRADE, Byte.valueOf((byte) (b0 | 1)));
+			this.getDataManager().set(TRADE, Byte.valueOf((byte) 1));
 		}
 		else
 		{
-			this.getDataManager().set(STATE_TRADE, Byte.valueOf((byte) (b0 & -2)));
+			this.getDataManager().set(TRADE, Byte.valueOf((byte) 0));
 		}
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
+
+	@SideOnly(Side.CLIENT)
+	public float getCoverRotateAngleX(float partialTickTime)
+	{
+		return ((this.prevLidAngle + (this.lidAngle - this.prevLidAngle) * partialTickTime) * 0.5F * (float) Math.PI);
+	}
+
+	public void setTrading(@Nullable EntityPlayer trader)
+	{
+		if (this.aiTrade != null)
+		{
+			this.aiTrade.setTrading(trader);
+		}
+	}
+
+	public void setSitting(boolean isSitting)
+	{
+		if (this.aiSit != null)
+		{
+			this.aiSit.setSitting(isSitting);
+		}
+	}
 
 	public boolean canBlockBeSeen(BlockPos pos)
 	{
@@ -985,64 +1006,6 @@ public class EntityChast extends EntityGolem
 		}
 
 		return this.getPosition();
-	}
-
-	public double getAISpeed()
-	{
-		return 1.25D;
-	}
-
-	public int getAIRange()
-	{
-		return 5;
-	}
-
-	public void setSitAI(boolean isSit)
-	{
-		if (this.aiStateSit != null)
-		{
-			if (isSit)
-			{
-				this.aiStateSit.startTask();
-			}
-			else
-			{
-				this.aiStateSit.resetTask();
-			}
-		}
-	}
-
-	public void setDamageAI(int timeCount)
-	{
-		if (this.aiStateDamage != null)
-		{
-			if (0 < timeCount)
-			{
-				this.aiStateDamage.startTask(timeCount);
-
-				this.setSitAI(false);
-				this.setTradeAI(null);
-			}
-			else
-			{
-				this.aiStateDamage.resetTask();
-			}
-		}
-	}
-
-	public void setTradeAI(@Nullable Entity trader)
-	{
-		if (this.aiStateTrade != null)
-		{
-			if (trader != null)
-			{
-				this.aiStateTrade.startTask(trader);
-			}
-			else
-			{
-				this.aiStateTrade.resetTask();
-			}
-		}
 	}
 
 	public void onSpawnByPlayer(EntityPlayer player)

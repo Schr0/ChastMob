@@ -13,23 +13,25 @@ import schr0.chastmob.entity.EntityChast;
 public class EntityAIChastGoHome extends EntityAIChast
 {
 
-	private TileEntityChest targetHomeChest;
-
 	public EntityAIChastGoHome(EntityChast entityChast)
 	{
 		super(entityChast);
-
-		this.targetHomeChest = null;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getMode() == ChastMode.PATROL)
+		if (this.getEntity().getMode() == ChastMode.PATROL)
 		{
-			this.targetHomeChest = this.getHomeChest();
+			for (EntityChast ownerChast : this.getAroundEntityChasts())
+			{
+				if (ownerChast.equals(this.getEntity()))
+				{
+					return false;
+				}
+			}
 
-			if (this.targetHomeChest != null)
+			if (this.getEntity().getCanSeeHomeChest(false) != null)
 			{
 				return true;
 			}
@@ -39,45 +41,32 @@ public class EntityAIChastGoHome extends EntityAIChast
 	}
 
 	@Override
-	public boolean shouldContinueExecuting()
-	{
-		if (this.isTimeOut())
-		{
-			return false;
-		}
-
-		return (this.targetHomeChest != null);
-	}
-
-	@Override
-	public void resetTask()
-	{
-		super.resetTask();
-
-		if (this.targetHomeChest != null)
-		{
-			this.forceMoveToTargetBlockPos(this.targetHomeChest.getPos());
-		}
-
-		this.targetHomeChest = null;
-	}
-
-	@Override
 	public void updateTask()
 	{
 		super.updateTask();
 
-		BlockPos targetPos = this.targetHomeChest.getPos();
+		TileEntityChest homeChest = this.getEntity().getCanSeeHomeChest(false);
+
+		if (homeChest == null)
+		{
+			return;
+		}
+
+		BlockPos targetPos = homeChest.getPos();
 
 		this.getEntity().getLookHelper().setLookPosition(targetPos.getX(), targetPos.getY(), targetPos.getZ(), 10.0F, this.getEntity().getVerticalFaceSpeed());
 
-		if (this.getEntity().getDistanceSqToCenter(targetPos) < this.getGoHomeRange())
+		if (this.getGoHomeRange() < this.getEntity().getDistanceSqToCenter(targetPos))
 		{
-			this.targetHomeChest = null;
-		}
-		else
-		{
-			this.getEntity().getNavigator().tryMoveToXYZ(targetPos.getX(), targetPos.getY(), targetPos.getZ(), this.getSpeed());
+			if (this.isTimeOut())
+			{
+				if (this.getEntity().canBlockBeSeen(targetPos))
+				{
+					this.forceMoveToTargetBlockPos(targetPos);
+				}
+			}
+
+			this.getEntity().getNavigator().tryMoveToXYZ(targetPos.getX(), targetPos.getY(), targetPos.getZ(), this.getMoveSpeed());
 		}
 	}
 
@@ -85,7 +74,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 
 	private int getGoHomeRange()
 	{
-		return (this.getRange() * this.getRange());
+		return (this.getSearchRange() * this.getSearchRange());
 	}
 
 	@Nullable
@@ -106,7 +95,7 @@ public class EntityAIChastGoHome extends EntityAIChast
 	{
 		BlockPos pos = this.getEntity().getCenterPosition();
 
-		return this.getWorld().getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
+		return this.getWorld().getEntitiesWithinAABB(EntityChast.class, new AxisAlignedBB(pos).grow(this.getSearchRange(), this.getSearchRange(), this.getSearchRange()));
 	}
 
 }

@@ -10,14 +10,14 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import schr0.chastmob.entity.EntityChast;
 
-public class EntityAIChastStateSit extends EntityAIChast
+public class EntityAIChastSit extends EntityAIChast
 {
 
 	private static final double OCELOT_SIT_RANGE = 1.5D;
 	private static final double OCELOT_MOVE_SPEED = 0.8D;
 	private boolean isSitting;
 
-	public EntityAIChastStateSit(EntityChast entityChast)
+	public EntityAIChastSit(EntityChast entityChast)
 	{
 		super(entityChast);
 
@@ -27,12 +27,30 @@ public class EntityAIChastStateSit extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
+		if (!this.getEntity().isTamed())
+		{
+			return false;
+		}
+
+		if (!this.getEntity().onGround)
+		{
+			return false;
+		}
+
 		if (this.getEntity().isInWater())
 		{
 			return false;
 		}
 
 		return this.isSitting;
+	}
+
+	@Override
+	public void startExecuting()
+	{
+		super.startExecuting();
+
+		this.getEntity().setSit(true);
 	}
 
 	@Override
@@ -48,7 +66,6 @@ public class EntityAIChastStateSit extends EntityAIChast
 			}
 		}
 
-		this.isSitting = false;
 		this.getEntity().setSit(false);
 	}
 
@@ -96,10 +113,19 @@ public class EntityAIChastStateSit extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	public void startTask()
+	public void setSitting(boolean sitting)
 	{
-		this.isSitting = true;
-		this.getEntity().setSit(true);
+		this.isSitting = sitting;
+	}
+
+	private boolean canOcelotSit(EntityOcelot ocelot)
+	{
+		if (ocelot.isTamed() && !ocelot.isSitting())
+		{
+			return ocelot.getEntitySenses().canSee(this.getEntity());
+		}
+
+		return false;
 	}
 
 	@Nullable
@@ -130,17 +156,7 @@ public class EntityAIChastStateSit extends EntityAIChast
 	{
 		BlockPos pos = this.getEntity().getCenterPosition();
 
-		return this.getWorld().getEntitiesWithinAABB(EntityOcelot.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
-	}
-
-	private boolean canOcelotSit(EntityOcelot ocelot)
-	{
-		if (ocelot.isTamed() && !ocelot.isSitting())
-		{
-			return ocelot.getEntitySenses().canSee(this.getEntity());
-		}
-
-		return false;
+		return this.getWorld().getEntitiesWithinAABB(EntityOcelot.class, new AxisAlignedBB(pos).grow(this.getSearchRange(), this.getSearchRange(), this.getSearchRange()));
 	}
 
 }

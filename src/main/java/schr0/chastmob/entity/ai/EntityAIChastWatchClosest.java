@@ -17,8 +17,6 @@ public class EntityAIChastWatchClosest extends EntityAIChast
 	public EntityAIChastWatchClosest(EntityChast entityChast)
 	{
 		super(entityChast);
-
-		this.targetEntity = null;
 	}
 
 	@Override
@@ -54,14 +52,6 @@ public class EntityAIChastWatchClosest extends EntityAIChast
 	}
 
 	@Override
-	public void resetTask()
-	{
-		super.resetTask();
-
-		this.targetEntity = null;
-	}
-
-	@Override
 	public void updateTask()
 	{
 		super.updateTask();
@@ -71,14 +61,6 @@ public class EntityAIChastWatchClosest extends EntityAIChast
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	@Nullable
-	private EntityLivingBase getNearestEntity()
-	{
-		BlockPos pos = this.getEntity().getPosition();
-
-		return (EntityLivingBase) this.getWorld().findNearestEntityWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()), this.getEntity());
-	}
-
 	private boolean canWatchClosest(Entity entity)
 	{
 		if (entity.isEntityAlive())
@@ -87,6 +69,14 @@ public class EntityAIChastWatchClosest extends EntityAIChast
 		}
 
 		return false;
+	}
+
+	@Nullable
+	private EntityLivingBase getNearestEntity()
+	{
+		BlockPos pos = this.getEntity().getPosition();
+
+		return (EntityLivingBase) this.getWorld().findNearestEntityWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos).grow(this.getSearchRange(), this.getSearchRange(), this.getSearchRange()), this.getEntity());
 	}
 
 }

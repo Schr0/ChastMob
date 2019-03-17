@@ -17,22 +17,24 @@ public class EntityAIChastCollectItem extends EntityAIChast
 {
 
 	private static final double COLLECT_RANGE = 1.5D;
+	private static final int LIMIT_COLLECT_INTERVAL = 5;
 	private EntityItem targetEntityItem;
+	private int collectInterval;
 
 	public EntityAIChastCollectItem(EntityChast entityChast)
 	{
 		super(entityChast);
-
-		this.targetEntityItem = null;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		this.targetEntityItem = this.getNearestEntityItem();
+		this.targetEntityItem = this.getCanCollectEntityItem();
 
 		if (this.targetEntityItem != null)
 		{
+			this.collectInterval = 0;
+
 			return true;
 		}
 
@@ -42,20 +44,17 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	@Override
 	public boolean shouldContinueExecuting()
 	{
-		if (this.isTimeOut())
+		if (0 < this.collectInterval)
 		{
-			return false;
+			return true;
 		}
 
-		return (this.targetEntityItem != null);
-	}
+		if (this.canCollectEntityItem(this.targetEntityItem))
+		{
+			return true;
+		}
 
-	@Override
-	public void resetTask()
-	{
-		super.resetTask();
-
-		this.targetEntityItem = null;
+		return false;
 	}
 
 	@Override
@@ -63,68 +62,58 @@ public class EntityAIChastCollectItem extends EntityAIChast
 	{
 		super.updateTask();
 
+		if (this.isTimeOut())
+		{
+			if (this.shouldExecute())
+			{
+				this.resetTime();
+			}
+
+			return;
+		}
+
 		this.getEntity().getLookHelper().setLookPositionWithEntity(this.targetEntityItem, this.getEntity().getHorizontalFaceSpeed(), this.getEntity().getVerticalFaceSpeed());
 
-		if (this.getEntity().getDistanceSq(this.targetEntityItem) < COLLECT_RANGE)
+		if (0 < this.collectInterval)
 		{
-			for (EntityItem aroundEntityItem : this.getAroundEntityItems())
-			{
-				if (this.areEntityItemEqual(this.targetEntityItem, aroundEntityItem))
-				{
-					if (!this.getEntity().isCoverOpen())
-					{
-						this.getEntity().setCoverOpen(true);
+			this.getEntity().setCoverOpen(true);
 
-						return;
-					}
-
-					TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getEntity().getInventoryMain(), aroundEntityItem);
-
-					this.targetEntityItem = null;
-				}
-			}
+			--this.collectInterval;
 		}
 		else
 		{
-			this.getEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.getSpeed());
+			this.getEntity().setCoverOpen(false);
+
+			if (this.getEntity().getDistanceSq(this.targetEntityItem) < COLLECT_RANGE)
+			{
+				for (EntityItem aroundEntityItem : this.getAroundEntityItems())
+				{
+					if (this.areEntityItemEqual(this.targetEntityItem, aroundEntityItem))
+					{
+						TileEntityHopper.putDropInInventoryAllSlots((IInventory) null, this.getEntity().getInventoryMain(), aroundEntityItem);
+
+						this.collectInterval = LIMIT_COLLECT_INTERVAL;
+
+						return;
+					}
+				}
+			}
+			else
+			{
+				this.getEntity().getNavigator().tryMoveToEntityLiving(this.targetEntityItem, this.getMoveSpeed());
+			}
 		}
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	@Nullable
-	private EntityItem getNearestEntityItem()
+	private boolean canCollectEntityItem(@Nullable EntityItem entityItem)
 	{
-		EntityItem nearestEntityItem = null;
-		double rangeOrigin = 0;
-
-		for (EntityItem aroundEntityItem : this.getAroundEntityItems())
+		if (entityItem == null)
 		{
-			if (this.canCollectItem(aroundEntityItem))
-			{
-				double range = this.getEntity().getDistanceSq(aroundEntityItem);
-
-				if ((range < rangeOrigin) || (rangeOrigin == 0))
-				{
-					rangeOrigin = range;
-
-					nearestEntityItem = aroundEntityItem;
-				}
-			}
+			return false;
 		}
 
-		return nearestEntityItem;
-	}
-
-	private List<EntityItem> getAroundEntityItems()
-	{
-		BlockPos pos = this.getEntity().getCenterPosition();
-
-		return this.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos).grow(this.getRange(), this.getRange(), this.getRange()));
-	}
-
-	private boolean canCollectItem(EntityItem entityItem)
-	{
 		ItemStack stack = entityItem.getItem().copy();
 		ItemStack stackMainhand = this.getEntity().getHeldItemMainhand().copy();
 		ItemStack stackOffhand = this.getEntity().getHeldItemOffhand().copy();
@@ -154,11 +143,49 @@ public class EntityAIChastCollectItem extends EntityAIChast
 		return false;
 	}
 
+	@Nullable
+	private EntityItem getCanCollectEntityItem()
+	{
+		EntityItem canCollectEntityItem = null;
+		double rangeOrigin = 0;
+
+		for (EntityItem aroundEntityItem : this.getAroundEntityItems())
+		{
+			if (this.canCollectEntityItem(aroundEntityItem))
+			{
+				double range = this.getEntity().getDistanceSq(aroundEntityItem);
+
+				if ((range < rangeOrigin) || (rangeOrigin == 0))
+				{
+					rangeOrigin = range;
+
+					canCollectEntityItem = aroundEntityItem;
+				}
+			}
+		}
+
+		return canCollectEntityItem;
+	}
+
+	private List<EntityItem> getAroundEntityItems()
+	{
+		BlockPos pos = this.getEntity().getCenterPosition();
+		double range = this.getSearchRange();
+
+		return this.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos).grow(range, range, range));
+	}
+
 	private boolean areEntityItemEqual(EntityItem entityItemA, EntityItem entityItemB)
 	{
 		if ((entityItemA != null) && (entityItemB != null))
 		{
-			return ItemStack.areItemsEqual(entityItemA.getItem(), entityItemB.getItem());
+			double rangeA = this.getEntity().getDistanceSq(entityItemA);
+			double rangeB = this.getEntity().getDistanceSq(entityItemB);
+
+			if (rangeA == rangeB)
+			{
+				return ItemStack.areItemsEqual(entityItemA.getItem(), entityItemB.getItem());
+			}
 		}
 
 		return false;

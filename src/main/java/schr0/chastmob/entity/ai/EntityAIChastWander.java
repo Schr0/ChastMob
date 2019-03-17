@@ -16,16 +16,12 @@ public class EntityAIChastWander extends EntityAIChast
 	public EntityAIChastWander(EntityChast entityChast)
 	{
 		super(entityChast);
-
-		this.randPosX = 0;
-		this.randPosY = 0;
-		this.randPosZ = 0;
 	}
 
 	@Override
 	public boolean shouldExecute()
 	{
-		if ((this.getMode() == ChastMode.FREEDOM) || (this.getMode() == ChastMode.PATROL))
+		if ((this.getEntity().getMode() == ChastMode.FREEDOM) || (this.getEntity().getMode() == ChastMode.PATROL))
 		{
 			this.randPosX = 0;
 			this.randPosY = 0;
@@ -33,7 +29,7 @@ public class EntityAIChastWander extends EntityAIChast
 
 			if (this.getEntity().getNavigator().noPath() && (this.getRandom().nextInt(CHANCE) == 0))
 			{
-				Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.getRange(), this.getRange());
+				Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.getEntity(), this.getSearchRange(), this.getSearchRange());
 
 				if (vec3d == null)
 				{
@@ -56,22 +52,7 @@ public class EntityAIChastWander extends EntityAIChast
 	@Override
 	public boolean shouldContinueExecuting()
 	{
-		if (this.isTimeOut())
-		{
-			return false;
-		}
-
 		return !this.getEntity().getNavigator().noPath();
-	}
-
-	@Override
-	public void resetTask()
-	{
-		super.resetTask();
-
-		this.randPosX = 0;
-		this.randPosY = 0;
-		this.randPosZ = 0;
 	}
 
 	@Override
@@ -79,7 +60,7 @@ public class EntityAIChastWander extends EntityAIChast
 	{
 		super.updateTask();
 
-		this.getEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.getSpeed());
+		this.getEntity().getNavigator().tryMoveToXYZ(this.randPosX, this.randPosY, this.randPosZ, this.getMoveSpeed());
 	}
 
 }

@@ -29,7 +29,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 	@Override
 	public boolean shouldExecute()
 	{
-		if (this.getMode() == ChastMode.PATROL)
+		if (this.getEntity().getMode() == ChastMode.PATROL)
 		{
 			if (this.getEntity().getInventoryMain().isEmpty())
 			{
@@ -108,7 +108,7 @@ public class EntityAIChastStoreChest extends EntityAIChast
 		}
 		else
 		{
-			this.getEntity().getNavigator().tryMoveToXYZ(targetPos.getX(), targetPos.getY(), targetPos.getZ(), this.getSpeed());
+			this.getEntity().getNavigator().tryMoveToXYZ(targetPos.getX(), targetPos.getY(), targetPos.getZ(), this.getMoveSpeed());
 		}
 	}
 

@@ -10,7 +10,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import schr0.chastmob.entity.ChastMode;
 import schr0.chastmob.entity.EntityChast;
 
 public abstract class EntityAIChast extends EntityAIBase
@@ -22,7 +21,6 @@ public abstract class EntityAIChast extends EntityAIBase
 	public EntityAIChast(EntityChast entityChast)
 	{
 		this.entityChast = entityChast;
-		this.time = 0;
 	}
 
 	@Override
@@ -49,6 +47,11 @@ public abstract class EntityAIChast extends EntityAIBase
 
 	// TODO /* ======================================== MOD START =====================================*/
 
+	public Random getRandom()
+	{
+		return this.entityChast.getEntityWorld().rand;
+	}
+
 	public World getWorld()
 	{
 		return this.entityChast.getEntityWorld();
@@ -59,24 +62,14 @@ public abstract class EntityAIChast extends EntityAIBase
 		return this.entityChast;
 	}
 
-	public ChastMode getMode()
-	{
-		return this.entityChast.getMode();
-	}
-
-	public double getSpeed()
+	public double getMoveSpeed()
 	{
 		return 1.25D;
 	}
 
-	public int getRange()
+	public int getSearchRange()
 	{
 		return 5;
-	}
-
-	public Random getRandom()
-	{
-		return this.entityChast.getEntityWorld().rand;
 	}
 
 	public int getTimeLimit()
@@ -87,6 +80,11 @@ public abstract class EntityAIChast extends EntityAIBase
 	public boolean isTimeOut()
 	{
 		return (this.time < 0);
+	}
+
+	public void resetTime()
+	{
+		this.time = 0;
 	}
 
 	public void forceMoveToTargetBlockPos(BlockPos blockPos)

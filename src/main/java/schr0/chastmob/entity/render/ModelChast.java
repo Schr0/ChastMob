@@ -109,8 +109,8 @@ public class ModelChast extends ModelBase
 		}
 
 		EntityChast chast = (EntityChast) entityIn;
-		boolean isDefending = (chast.isDamage() && chast.isEquipHelmet());
-		boolean isPanicking = (chast.isDamage() && !chast.isEquipHelmet());
+		boolean isDefending = (chast.isDefense());
+		boolean isPanicking = (chast.isPanic());
 
 		if (chast.isRiding() || !chast.getPassengers().isEmpty())
 		{
